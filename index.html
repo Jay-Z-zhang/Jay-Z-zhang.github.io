@@ -1,516 +1,462 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Jayz Zhang</title>
+  <meta name="description" content="Jayz Zhang - Growth PM">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            background: '#0b0f1a',
+            foreground: '#f1f5f9',
+            primary: { DEFAULT: '#22c55e', foreground: '#000000' },
+            secondary: { DEFAULT: '#131928', foreground: '#94a3b8' },
+            muted:     { DEFAULT: '#131928', foreground: '#64748b' },
+            accent:    { DEFAULT: '#4ade80', foreground: '#000000' },
+            border:    '#1e293b',
+          },
+          fontFamily: {
+            display: ['-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', '"PingFang SC"', 'sans-serif'],
+          },
+        }
+      }
+    }
+  </script>
   <style>
-    /* ── Token System ──────────────────────── */
-    :root {
-      --bg:         #0c0c0e;
-      --surface:    #161618;
-      --border:     #252528;
-      --text:       #ededf0;
-      --muted:      #6b6b7a;
-      --accent:     #e8a046;
-      --accent-dim: rgba(232, 160, 70, 0.10);
-    }
-
-    /* ── Reset ─────────────────────────────── */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: -apple-system, "SF Pro Text", "PingFang SC", "Helvetica Neue", sans-serif;
-      font-size: 15px;
-      line-height: 1.7;
-      -webkit-font-smoothing: antialiased;
-    }
-    a { color: inherit; text-decoration: none; }
+    body { background-color: #0b0f1a; }
 
-    /* ── Nav ───────────────────────────────── */
-    nav {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      z-index: 100;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 40px;
-      height: 60px;
-      background: rgba(12, 12, 14, 0.8);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border-bottom: 1px solid var(--border);
-    }
-    .nav-logo {
-      font-size: 14px;
-      font-weight: 600;
-      letter-spacing: 0.02em;
-    }
-    .nav-links {
-      display: flex;
-      gap: 28px;
-      list-style: none;
-    }
-    .nav-links a {
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--muted);
-      transition: color 0.2s;
-    }
-    .nav-links a:hover { color: var(--text); }
-
-    /* ── Hero ──────────────────────────────── */
-    #hero {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 120px 40px 80px;
-    }
-    .hero-avatar {
-      width: 84px;
-      height: 84px;
-      border-radius: 50%;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      margin-bottom: 28px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 34px;
-      overflow: hidden;
-    }
-    .hero-name {
-      font-size: clamp(38px, 6vw, 62px);
-      font-weight: 700;
-      letter-spacing: -0.03em;
-      line-height: 1.1;
-    }
-    /* Signature element: Chinese name in amber beneath */
-    .hero-name-zh {
-      display: block;
-      font-size: 0.38em;
-      font-weight: 400;
-      color: var(--accent);
-      letter-spacing: 0.35em;
-      margin-top: 10px;
-    }
-    .hero-role {
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--muted);
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      margin-top: 20px;
-      margin-bottom: 16px;
-    }
-    .hero-tagline {
-      font-size: clamp(15px, 2vw, 18px);
-      color: var(--muted);
-      max-width: 420px;
-      margin: 0 auto 36px;
-      line-height: 1.65;
-    }
-    .hero-tagline em {
-      color: var(--text);
-      font-style: normal;
-    }
-    .hero-ctas {
-      display: flex;
-      gap: 10px;
-      justify-content: center;
-      flex-wrap: wrap;
+    .fluid-bg {
+      background:
+        radial-gradient(ellipse 65% 60% at 80% 15%, rgba(34,197,94,0.07) 0%, transparent 55%),
+        radial-gradient(ellipse 45% 40% at 10% 85%, rgba(74,222,128,0.04) 0%, transparent 45%),
+        #0b0f1a;
     }
 
-    /* ── Buttons ───────────────────────────── */
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 9px 20px;
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: 500;
-      cursor: pointer;
-      border: 1px solid transparent;
-      transition: all 0.18s;
-    }
-    .btn-primary {
-      background: var(--accent);
-      color: #0c0c0e;
-      border-color: var(--accent);
-    }
-    .btn-primary:hover {
-      filter: brightness(1.08);
-      transform: translateY(-1px);
-    }
-    .btn-secondary {
-      background: transparent;
-      color: var(--text);
-      border-color: var(--border);
-    }
-    .btn-secondary:hover {
-      border-color: var(--muted);
-      background: var(--surface);
+    .glow-border {
+      border: 1px solid rgba(34,197,94,0.25);
+      box-shadow: 0 0 28px rgba(34,197,94,0.07);
     }
 
-    /* ── Section wrapper ───────────────────── */
-    .section-wrap {
-      max-width: 720px;
-      margin: 0 auto;
-      padding: 96px 40px;
+    /* Typewriter cursor */
+    .typewriter-cursor {
+      display: inline-block;
+      width: 2px;
+      height: 1.3em;
+      background-color: #4ade80;
+      margin-left: 3px;
+      vertical-align: middle;
+      animation: cursor-blink 1s step-end infinite;
     }
-    .section-label {
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 36px;
-    }
+    @keyframes cursor-blink { 0%,100%{opacity:1} 50%{opacity:0} }
 
-    /* ── Project cards ─────────────────────── */
-    .projects-list {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-    .project-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      overflow: hidden;
-      transition: border-color 0.2s;
-    }
-    .project-card:hover {
-      border-color: rgba(232, 160, 70, 0.28);
-    }
-    .project-header {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      padding: 22px 24px;
-      cursor: pointer;
-      user-select: none;
-      gap: 12px;
-    }
-    .project-header-left {
-      display: flex;
-      align-items: flex-start;
-      gap: 14px;
-    }
-    .project-index {
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--accent);
-      letter-spacing: 0.05em;
-      padding-top: 3px;
-      flex-shrink: 0;
-      width: 20px;
-    }
-    .project-title {
-      font-size: 16px;
-      font-weight: 600;
-      color: var(--text);
-      line-height: 1.35;
-    }
-    .project-subtitle {
-      font-size: 12px;
-      color: var(--muted);
-      margin-top: 3px;
-    }
-    .project-tags {
-      display: flex;
-      gap: 5px;
-      flex-wrap: wrap;
-      margin-top: 9px;
-    }
-    .tag {
-      font-size: 11px;
-      font-weight: 500;
-      padding: 2px 7px;
-      border-radius: 4px;
-      background: var(--accent-dim);
-      color: var(--accent);
-      letter-spacing: 0.02em;
-    }
-    .project-toggle {
-      width: 26px;
-      height: 26px;
-      border-radius: 50%;
-      border: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--muted);
-      flex-shrink: 0;
-      margin-top: 2px;
-      font-size: 18px;
-      line-height: 1;
-      transition: all 0.22s ease;
-    }
-    .project-card.open .project-toggle {
-      transform: rotate(45deg);
-      border-color: var(--accent);
-      color: var(--accent);
-    }
-
-    /* Accordion body */
-    .project-body {
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height 0.38s ease;
-    }
-    .project-body-inner {
-      padding: 20px 24px 24px 58px;
-      border-top: 1px solid var(--border);
-    }
-    .project-body-inner p {
-      color: var(--muted);
-      font-size: 14px;
-      line-height: 1.8;
-      margin-bottom: 12px;
-    }
-    .project-body-inner p:last-of-type { margin-bottom: 16px; }
-    .project-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--accent);
-      transition: opacity 0.18s;
-    }
-    .project-link:hover { opacity: 0.7; }
-    .project-link::after { content: ' ↗'; }
-
-    /* ── About grid ────────────────────────── */
-    .about-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 2px;
-    }
-    .about-item {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      padding: 22px;
-      border-radius: 12px;
-    }
-    .about-item h3 {
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 10px;
-    }
-    .about-item p {
-      font-size: 14px;
-      color: var(--muted);
-      line-height: 1.75;
-    }
-    .about-item p strong {
-      color: var(--text);
-      font-weight: 500;
-    }
-    .about-item a {
-      color: var(--accent);
-    }
-    .about-item a:hover {
-      text-decoration: underline;
-    }
-
-    /* ── Footer ────────────────────────────── */
-    footer {
-      border-top: 1px solid var(--border);
-      padding: 36px 40px;
-      text-align: center;
-      font-size: 13px;
-      color: var(--muted);
-    }
-    footer a { transition: color 0.2s; }
-    footer a:hover { color: var(--text); }
-
-    /* ── Scroll fade-in ────────────────────── */
-    .fade-in {
+    /* Scroll reveal - matches original opacity-0 translate-y-10 */
+    .scroll-section {
       opacity: 0;
-      transform: translateY(18px);
-      transition: opacity 0.55s ease, transform 0.55s ease;
+      transform: translateY(40px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
     }
-    .fade-in.visible {
+    .scroll-section.visible {
       opacity: 1;
-      transform: none;
+      transform: translateY(0);
     }
 
-    /* ── Mobile ────────────────────────────── */
-    @media (max-width: 580px) {
-      nav { padding: 0 20px; }
-      .nav-links { gap: 20px; }
-      #hero { padding: 100px 24px 60px; }
-      .section-wrap { padding: 72px 24px; }
-      .project-body-inner { padding-left: 24px; }
-      .about-grid { grid-template-columns: 1fr; }
-      footer { padding: 28px 24px; }
+    /* Nav scroll bg */
+    nav.has-bg {
+      background: rgba(11,15,26,0.88) !important;
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border-bottom: 1px solid #1e293b;
     }
+
+    /* Project detail accordion */
+    .detail-panel {
+      overflow: hidden;
+      max-height: 0;
+      opacity: 0;
+      transition: max-height 0.5s ease, opacity 0.4s ease;
+    }
+    .detail-panel.open { max-height: 500px; opacity: 1; }
+
+    .chevron { transition: transform 0.3s ease; }
+    .chevron.up { transform: rotate(180deg); }
+
+    /* Gallery image hover */
+    .gallery-img-wrap { overflow: hidden; }
+    .gallery-img-wrap img { transition: transform 0.5s ease; }
+    .gallery-img-wrap:hover img { transform: scale(1.05); }
 
     @media (prefers-reduced-motion: reduce) {
-      .fade-in { opacity: 1; transform: none; transition: none; }
-      html { scroll-behavior: auto; }
+      .scroll-section { opacity:1; transform:none; transition:none; }
+      .typewriter-cursor { animation:none; }
+      .gallery-img-wrap img { transition:none; }
     }
   </style>
 </head>
-<body>
 
-  <!-- Nav -->
-  <nav>
-    <span class="nav-logo">Jayz Zhang</span>
-    <ul class="nav-links">
-      <li><a href="#projects">项目</a></li>
-      <li><a href="#about">关于</a></li>
-      <li><a href="https://github.com/Jay-Z-zhang" target="_blank">GitHub</a></li>
-    </ul>
-  </nav>
+<body class="bg-background text-foreground font-display">
 
-  <!-- Hero -->
-  <section id="hero">
-    <div class="hero-avatar">🌿</div>
-    <h1 class="hero-name">
-      Jayz Zhang
-      <span class="hero-name-zh">张　　志</span>
-    </h1>
-    <p class="hero-role">Growth PM · Trip &amp; TrainPal</p>
-    <p class="hero-tagline">
-      用 <em>AI 重构工作方式</em> ——<br>
-      从杂货铺到欧洲铁路，一个 PM 的产品实验室
-    </p>
-    <div class="hero-ctas">
-      <a href="#projects" class="btn btn-primary">查看项目</a>
-      <a href="https://github.com/Jay-Z-zhang" target="_blank" class="btn btn-secondary">GitHub ↗</a>
+<!-- ─────────── NAV ─────────── -->
+<nav id="nav" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-transparent">
+  <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+    <a href="#hero" class="font-display text-lg font-bold text-primary">Jayz Zhang</a>
+    <div class="flex gap-8">
+      <a href="#hero"     class="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">首页</a>
+      <a href="#projects" class="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">作品</a>
+      <a href="#gallery"  class="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">关于我</a>
     </div>
-  </section>
+  </div>
+</nav>
 
-  <!-- Projects -->
-  <section id="projects">
-    <div class="section-wrap">
-      <p class="section-label">项目 / Projects</p>
-      <div class="projects-list">
+<!-- ─────────── HERO ─────────── -->
+<section id="hero" class="fluid-bg min-h-screen flex items-center relative overflow-hidden">
+  <div class="absolute top-20 left-10 w-72 h-72 bg-primary/5 rounded-full blur-3xl"></div>
+  <div class="absolute bottom-20 right-10 w-96 h-96 bg-accent/5 rounded-full blur-3xl"></div>
 
-        <div class="project-card fade-in" onclick="toggleProject(this)">
-          <div class="project-header">
-            <div class="project-header-left">
-              <span class="project-index">01</span>
-              <div>
-                <div class="project-title">Jayz 的杂货铺</div>
-                <div class="project-subtitle">微信小程序 · 2025</div>
-                <div class="project-tags">
-                  <span class="tag">微信小程序</span>
-                  <span class="tag">TDesign</span>
-                  <span class="tag">云开发</span>
-                  <span class="tag">WeChat Pay</span>
-                </div>
-              </div>
-            </div>
-            <div class="project-toggle">+</div>
-          </div>
-          <div class="project-body">
-            <div class="project-body-inner">
-              <p>从零搭建的微信小程序电商原型，覆盖完整购物链路：商品浏览、加购物车、规格选择、订单结算、优惠券折扣、支付成功页。</p>
-              <p>基于 TDesign Miniprogram 组件库，主题色定制为暖棕色系。购物车、订单支持微信云开发持久化，本地 mock 与云端双模式一键切换，方便演示和上线。</p>
-              <p>商品覆盖健康食品（黑糖姜枣膏、玉灵膏）和鲜活海鲜两大品类，完整 SKU 规格体系。</p>
-              <a href="https://github.com/Jay-Z-zhang" class="project-link">查看源码</a>
-            </div>
-          </div>
-        </div>
+  <div class="max-w-6xl mx-auto px-6 w-full grid md:grid-cols-2 gap-12 items-center relative z-10">
 
-        <div class="project-card fade-in" onclick="toggleProject(this)" style="transition-delay:0.08s">
-          <div class="project-header">
-            <div class="project-header-left">
-              <span class="project-index">02</span>
-              <div>
-                <div class="project-title">jayz-work-report</div>
-                <div class="project-subtitle">Claude Code Skill · 2025</div>
-                <div class="project-tags">
-                  <span class="tag">Claude Code</span>
-                  <span class="tag">飞书 MCP</span>
-                  <span class="tag">自动化</span>
-                  <span class="tag">OKR</span>
-                </div>
-              </div>
-            </div>
-            <div class="project-toggle">+</div>
-          </div>
-          <div class="project-body">
-            <div class="project-body-inner">
-              <p>读取飞书消息、文档、OKR，自动生成周报 / 日报 / OKR 进展报告的 Claude Code Skill。</p>
-              <p>数据字段留空，进展话术和趋势判断由 Skill 生成，直接可发给老板。按 TrainPal / Trip 分产品线、按活动维度（老带新 / 长期活动）组织内容，输出格式严格对齐团队周报模板。</p>
-              <p>可作为独立 Skill 调用，也可注入自建 Agent 的 System Prompt，适配 Dify / Coze / 自建任意平台。</p>
-              <a href="https://github.com/Jay-Z-zhang" class="project-link">获取 Skill</a>
-            </div>
-          </div>
-        </div>
+    <!-- 头像 -->
+    <div class="flex justify-center md:justify-end">
+      <!-- 替换 src 为你的真实头像照片 URL -->
+      <img
+        src="https://placehold.co/320x384/131928/4ade80?text=你的头像"
+        alt="Jayz Zhang"
+        class="w-72 h-80 md:w-80 md:h-96 rounded-2xl object-cover glow-border"
+      >
+    </div>
 
+    <!-- 文案 -->
+    <div class="space-y-6">
+      <h1 class="font-display text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-tight">
+        张志
+        <span class="block text-2xl md:text-3xl text-primary mt-2">Jayz Zhang</span>
+      </h1>
+      <div class="h-10 flex items-center">
+        <span id="typewriter" class="font-display text-xl md:text-2xl text-accent"></span>
+        <span class="typewriter-cursor"></span>
+      </div>
+      <p class="text-lg text-muted-foreground font-medium tracking-wide">"用 AI 重构工作方式"</p>
+      <div class="flex gap-3 pt-4">
+        <a href="#projects" class="px-6 py-3 rounded-lg bg-primary text-primary-foreground font-medium text-sm hover:bg-primary/90 transition-colors">查看作品</a>
+        <a href="#gallery"  class="px-6 py-3 rounded-lg border border-border text-foreground font-medium text-sm hover:bg-secondary transition-colors">了解更多</a>
       </div>
     </div>
-  </section>
 
-  <!-- About -->
-  <section id="about">
-    <div class="section-wrap">
-      <p class="section-label">关于 / About</p>
-      <div class="about-grid">
-        <div class="about-item fade-in">
-          <h3>当前在做</h3>
-          <p><strong>Trip & TrainPal</strong> 增长 PM，负责 UK / EU 裂变拉新，OKR 聚焦 Share &amp; Referral 渠道新客增长。</p>
-        </div>
-        <div class="about-item fade-in" style="transition-delay:0.06s">
-          <h3>工具栈</h3>
-          <p><strong>Claude Code</strong> · 飞书 MCP · 微信云开发 · TDesign · 以及越来越多的 AI 工具</p>
-        </div>
-        <div class="about-item fade-in" style="transition-delay:0.12s">
-          <h3>联系</h3>
-          <p>GitHub：<a href="https://github.com/Jay-Z-zhang" target="_blank"><strong>@Jay-Z-zhang</strong></a></p>
-        </div>
-        <div class="about-item fade-in" style="transition-delay:0.18s">
-          <h3>方法论</h3>
-          <p>先把事情做出来，再把做出来的事情讲清楚。</p>
+  </div>
+</section>
+
+<!-- ─────────── PROJECTS ─────────── -->
+<section id="projects">
+
+  <!-- 作品 1 -->
+  <div class="min-h-screen flex items-center py-20 scroll-section">
+    <div class="max-w-6xl mx-auto px-6 w-full grid md:grid-cols-2 gap-12 items-center">
+      <div>
+        <div class="aspect-video rounded-xl border border-border bg-secondary/20 overflow-hidden glow-border hover:border-primary/30 transition-colors">
+          <!-- 替换 src 为项目截图 -->
+          <img src="https://placehold.co/800x450/131928/4ade80?text=项目截图+1" alt="作品 1" class="w-full h-full object-cover">
         </div>
       </div>
+      <div class="space-y-5">
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-medium text-primary bg-primary/10 px-3 py-1 rounded-full">作品 1</span>
+        </div>
+        <h2 class="font-display text-3xl md:text-4xl font-bold text-foreground">[项目标题 1]</h2>
+        <p class="text-lg text-muted-foreground">[项目一句话简介]</p>
+        <button class="flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors" onclick="toggleDetail(this)">
+          <span>展开详情</span>
+          <svg class="chevron w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="detail-panel">
+          <div class="space-y-3 pt-2">
+            <div>
+              <span class="text-sm font-semibold text-accent">产品定位：</span>
+              <span class="text-sm text-secondary-foreground">[产品定位详情]</span>
+            </div>
+            <div>
+              <span class="text-sm font-semibold text-accent">设计思路：</span>
+              <span class="text-sm text-secondary-foreground">[设计思路详情]</span>
+            </div>
+          </div>
+        </div>
+        <a href="#" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors">
+          访问项目
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
+        </a>
+      </div>
     </div>
-  </section>
+  </div>
 
-  <!-- Footer -->
-  <footer>
-    <p>© 2025 Jayz Zhang &nbsp;·&nbsp; Built with ☕ &nbsp;·&nbsp;
-      <a href="https://github.com/Jay-Z-zhang" target="_blank">GitHub</a>
-    </p>
-  </footer>
+  <!-- 作品 2（图片在右） -->
+  <div class="min-h-screen flex items-center py-20 scroll-section">
+    <div class="max-w-6xl mx-auto px-6 w-full grid md:grid-cols-2 gap-12 items-center">
+      <div class="md:order-2">
+        <div class="aspect-video rounded-xl border border-border bg-secondary/20 overflow-hidden glow-border hover:border-primary/30 transition-colors">
+          <img src="https://placehold.co/800x450/131928/4ade80?text=项目截图+2" alt="作品 2" class="w-full h-full object-cover">
+        </div>
+      </div>
+      <div class="space-y-5 md:order-1">
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-medium text-primary bg-primary/10 px-3 py-1 rounded-full">作品 2</span>
+        </div>
+        <h2 class="font-display text-3xl md:text-4xl font-bold text-foreground">[项目标题 2]</h2>
+        <p class="text-lg text-muted-foreground">[项目一句话简介]</p>
+        <button class="flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors" onclick="toggleDetail(this)">
+          <span>展开详情</span>
+          <svg class="chevron w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="detail-panel">
+          <div class="space-y-3 pt-2">
+            <div>
+              <span class="text-sm font-semibold text-accent">核心功能：</span>
+              <span class="text-sm text-secondary-foreground">[核心功能详情]</span>
+            </div>
+            <div>
+              <span class="text-sm font-semibold text-accent">设计思路：</span>
+              <span class="text-sm text-secondary-foreground">[设计思路详情]</span>
+            </div>
+          </div>
+        </div>
+        <a href="#" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors">
+          访问项目
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
 
-  <script>
-    function toggleProject(card) {
-      const body = card.querySelector('.project-body');
-      const isOpen = card.classList.contains('open');
-      document.querySelectorAll('.project-card.open').forEach(c => {
-        c.classList.remove('open');
-        c.querySelector('.project-body').style.maxHeight = null;
-      });
-      if (!isOpen) {
-        card.classList.add('open');
-        body.style.maxHeight = body.scrollHeight + 'px';
+  <!-- 作品 3 -->
+  <div class="min-h-screen flex items-center py-20 scroll-section">
+    <div class="max-w-6xl mx-auto px-6 w-full grid md:grid-cols-2 gap-12 items-center">
+      <div>
+        <div class="aspect-video rounded-xl border border-border bg-secondary/20 overflow-hidden glow-border hover:border-primary/30 transition-colors">
+          <img src="https://placehold.co/800x450/131928/4ade80?text=项目截图+3" alt="作品 3" class="w-full h-full object-cover">
+        </div>
+      </div>
+      <div class="space-y-5">
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-medium text-primary bg-primary/10 px-3 py-1 rounded-full">作品 3</span>
+        </div>
+        <h2 class="font-display text-3xl md:text-4xl font-bold text-foreground">[项目标题 3]</h2>
+        <p class="text-lg text-muted-foreground">[Agent 全流程架构设计 + Workflow 落地]</p>
+        <button class="flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors" onclick="toggleDetail(this)">
+          <span>展开详情</span>
+          <svg class="chevron w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="detail-panel">
+          <div class="space-y-3 pt-2">
+            <div>
+              <span class="text-sm font-semibold text-accent">产品定位：</span>
+              <span class="text-sm text-secondary-foreground">[产品定位详情]</span>
+            </div>
+          </div>
+          <div class="mt-6">
+            <p class="text-sm font-semibold text-accent mb-3">Agent 架构流程：</p>
+            <div class="flex flex-wrap gap-y-3 gap-x-0 items-center">
+              <div class="flex items-center">
+                <div class="px-3 py-2 rounded-md bg-primary/10 border border-primary/20 text-xs font-medium text-primary whitespace-nowrap">[节点 1]</div>
+                <span class="text-primary/40 mx-1 text-xs">→</span>
+              </div>
+              <div class="flex items-center">
+                <div class="px-3 py-2 rounded-md bg-primary/10 border border-primary/20 text-xs font-medium text-primary whitespace-nowrap">[节点 2]</div>
+                <span class="text-primary/40 mx-1 text-xs">→</span>
+              </div>
+              <div class="flex items-center">
+                <div class="px-3 py-2 rounded-md bg-primary/10 border border-primary/20 text-xs font-medium text-primary whitespace-nowrap">[节点 3]</div>
+                <span class="text-primary/40 mx-1 text-xs">→</span>
+              </div>
+              <div class="flex items-center">
+                <div class="px-3 py-2 rounded-md bg-primary/10 border border-primary/20 text-xs font-medium text-primary whitespace-nowrap">[节点 4]</div>
+                <span class="text-primary/40 mx-1 text-xs">→</span>
+              </div>
+              <div class="flex items-center">
+                <div class="px-3 py-2 rounded-md bg-primary/10 border border-primary/20 text-xs font-medium text-primary whitespace-nowrap">[节点 5]</div>
+                <span class="text-primary/40 mx-1 text-xs">→</span>
+              </div>
+              <div class="flex items-center">
+                <div class="px-3 py-2 rounded-md bg-primary/10 border border-primary/20 text-xs font-medium text-primary whitespace-nowrap">[节点 6]</div>
+                <span class="text-primary/40 mx-1 text-xs">→</span>
+              </div>
+              <div class="flex items-center">
+                <div class="px-3 py-2 rounded-md bg-primary/10 border border-primary/20 text-xs font-medium text-primary whitespace-nowrap">[节点 7]</div>
+                <span class="text-primary/40 mx-1 text-xs">→</span>
+              </div>
+              <div class="flex items-center">
+                <div class="px-3 py-2 rounded-md bg-primary/10 border border-primary/20 text-xs font-medium text-primary whitespace-nowrap">[节点 8]</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <a href="#" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors">
+          访问项目
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ─────────── GALLERY ─────────── -->
+<section id="gallery" class="py-24 relative">
+  <div class="absolute inset-0 bg-gradient-to-b from-background via-secondary/5 to-background pointer-events-none"></div>
+  <div class="max-w-6xl mx-auto px-6 relative z-10">
+
+    <div class="text-center mb-16">
+      <h2 class="font-display text-3xl md:text-4xl font-bold text-foreground mb-3">In Case You Wanna Know More</h2>
+      <p class="text-muted-foreground">个人志 · 生活的另一面</p>
+    </div>
+
+    <div class="space-y-16">
+
+      <!-- 健身 -->
+      <div>
+        <div class="flex items-center gap-3 mb-6">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-primary"><path d="M14.4 14.4 9.6 9.6"/><path d="M18.657 21.485a2 2 0 1 1-2.829-2.828l-1.767 1.768a2 2 0 1 1-2.829-2.829l6.364-6.364a2 2 0 1 1 2.829 2.829l-1.768 1.767a2 2 0 1 1 2.828 2.829z"/><path d="m21.5 21.5-1.4-1.4"/><path d="M3.9 3.9 2.5 2.5"/><path d="M6.404 12.768a2 2 0 1 1-2.829-2.829l1.768-1.767a2 2 0 1 1-2.828-2.829l2.828-2.828a2 2 0 1 1 2.829 2.828l1.767-1.768a2 2 0 1 1 2.829 2.829z"/></svg>
+          <h3 class="font-display text-xl font-semibold text-foreground">健身</h3>
+          <div class="flex-1 h-px bg-border"></div>
+        </div>
+        <div class="grid grid-cols-3 gap-4">
+          <div class="parallax-item rounded-xl border border-border overflow-hidden hover:border-primary/30 transition-all duration-300 cursor-pointer group gallery-img-wrap">
+            <!-- 替换为你的健身照片 -->
+            <img src="https://placehold.co/400x400/131928/4ade80?text=健身照片+1" alt="健身" class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-500">
+          </div>
+          <div class="parallax-item rounded-xl border border-border overflow-hidden hover:border-primary/30 transition-all duration-300 cursor-pointer group gallery-img-wrap">
+            <img src="https://placehold.co/400x400/131928/4ade80?text=健身照片+2" alt="健身" class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-500">
+          </div>
+          <div class="parallax-item rounded-xl border border-border overflow-hidden hover:border-primary/30 transition-all duration-300 cursor-pointer group gallery-img-wrap">
+            <img src="https://placehold.co/400x400/131928/4ade80?text=健身照片+3" alt="健身" class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-500">
+          </div>
+        </div>
+      </div>
+
+      <!-- 旅游 -->
+      <div>
+        <div class="flex items-center gap-3 mb-6">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-primary"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg>
+          <h3 class="font-display text-xl font-semibold text-foreground">旅游</h3>
+          <div class="flex-1 h-px bg-border"></div>
+        </div>
+        <div class="grid grid-cols-3 gap-4">
+          <div class="parallax-item rounded-xl border border-border overflow-hidden hover:border-primary/30 transition-all duration-300 cursor-pointer group gallery-img-wrap">
+            <img src="https://placehold.co/400x400/131928/4ade80?text=旅游照片+1" alt="旅游" class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-500">
+          </div>
+          <div class="parallax-item rounded-xl border border-border overflow-hidden hover:border-primary/30 transition-all duration-300 cursor-pointer group gallery-img-wrap">
+            <img src="https://placehold.co/400x400/131928/4ade80?text=旅游照片+2" alt="旅游" class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-500">
+          </div>
+          <div class="parallax-item rounded-xl border border-border overflow-hidden hover:border-primary/30 transition-all duration-300 cursor-pointer group gallery-img-wrap">
+            <img src="https://placehold.co/400x400/131928/4ade80?text=旅游照片+3" alt="旅游" class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-500">
+          </div>
+        </div>
+      </div>
+
+      <!-- 摄影 -->
+      <div>
+        <div class="flex items-center gap-3 mb-6">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-primary"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
+          <h3 class="font-display text-xl font-semibold text-foreground">摄影</h3>
+          <div class="flex-1 h-px bg-border"></div>
+        </div>
+        <div class="grid grid-cols-3 gap-4">
+          <div class="parallax-item rounded-xl border border-border overflow-hidden hover:border-primary/30 transition-all duration-300 cursor-pointer group gallery-img-wrap">
+            <img src="https://placehold.co/400x400/131928/4ade80?text=摄影照片+1" alt="摄影" class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-500">
+          </div>
+          <div class="parallax-item rounded-xl border border-border overflow-hidden hover:border-primary/30 transition-all duration-300 cursor-pointer group gallery-img-wrap">
+            <img src="https://placehold.co/400x400/131928/4ade80?text=摄影照片+2" alt="摄影" class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-500">
+          </div>
+          <div class="parallax-item rounded-xl border border-border overflow-hidden hover:border-primary/30 transition-all duration-300 cursor-pointer group gallery-img-wrap">
+            <img src="https://placehold.co/400x400/131928/4ade80?text=摄影照片+3" alt="摄影" class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-500">
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ─────────── FOOTER ─────────── -->
+<footer class="border-t border-border py-8">
+  <div class="max-w-6xl mx-auto px-6 text-center">
+    <p class="text-sm text-muted-foreground">© 2025 Jayz Zhang | Built with 💚</p>
+  </div>
+</footer>
+
+<script>
+  // Nav 滚动背景
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('has-bg', window.scrollY > 20);
+  });
+
+  // 滚动显现（匹配原版 opacity-0 translate-y-10 行为）
+  const revealObserver = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        revealObserver.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.scroll-section').forEach(el => revealObserver.observe(el));
+
+  // 打字机循环效果
+  const phrases = [
+    'Growth PM · Trip & TrainPal',
+    '用 AI 重构工作方式',
+    'Share & Referral · UK / EU',
+  ];
+  const el = document.getElementById('typewriter');
+  let phraseIdx = 0, charIdx = 0, deleting = false;
+
+  function type() {
+    const current = phrases[phraseIdx];
+    if (!deleting) {
+      el.textContent = current.slice(0, ++charIdx);
+      if (charIdx === current.length) {
+        // 打完：停顿 1.8s 再回退
+        setTimeout(() => { deleting = true; requestAnimationFrame(tick); }, 1800);
+        return;
+      }
+    } else {
+      el.textContent = current.slice(0, --charIdx);
+      if (charIdx === 0) {
+        // 删完：换下一条，停顿 300ms 再打
+        deleting = false;
+        phraseIdx = (phraseIdx + 1) % phrases.length;
+        setTimeout(() => requestAnimationFrame(tick), 300);
+        return;
       }
     }
+    requestAnimationFrame(tick);
+  }
 
-    const io = new IntersectionObserver(entries => {
-      entries.forEach(e => {
-        if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
-      });
-    }, { threshold: 0.12 });
-    document.querySelectorAll('.fade-in').forEach(el => io.observe(el));
-  </script>
+  function tick() {
+    setTimeout(type, deleting ? 40 : 80);
+  }
+
+  tick();
+
+  function toggleDetail(btn) {
+    const panel = btn.nextElementSibling;
+    const icon  = btn.querySelector('.chevron');
+    const isOpen = panel.classList.contains('open');
+
+    // 关闭所有
+    document.querySelectorAll('.detail-panel.open').forEach(p => {
+      p.classList.remove('open');
+      p.previousElementSibling.querySelector('.chevron').classList.remove('up');
+    });
+
+    if (!isOpen) {
+      panel.classList.add('open');
+      icon.classList.add('up');
+    }
+  }
+</script>
 
 </body>
 </html>
