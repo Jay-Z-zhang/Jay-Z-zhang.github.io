@@ -1,0 +1,160 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675">
+  <rect width="1200" height="675" fill="#0f1621"/>
+
+  <!-- Title -->
+  <text x="600" y="60" text-anchor="middle" font-family="-apple-system,PingFang SC,sans-serif" font-size="22" font-weight="bold" fill="#f1f5f9">简历生成器</text>
+  <text x="600" y="88" text-anchor="middle" font-family="-apple-system,PingFang SC,sans-serif" font-size="13" fill="#64748b">4套模板 · 实时预览 · 中英双语 · 一键下载</text>
+
+  <!-- Left sidebar mockup -->
+  <rect x="60" y="112" width="240" height="520" rx="10" fill="#131928" stroke="#1e293b" stroke-width="1"/>
+  <!-- sidebar header -->
+  <rect x="60" y="112" width="240" height="40" rx="10" fill="#181b23"/>
+  <rect x="60" y="135" width="240" height="17" fill="#181b23"/>
+  <text x="80" y="136" font-family="-apple-system,PingFang SC,sans-serif" font-size="12" fill="#22c55e" font-weight="600">📄 简历生成器</text>
+  <rect x="190" y="124" width="40" height="18" rx="4" fill="#22c55e"/>
+  <text x="210" y="136" text-anchor="middle" font-family="-apple-system,PingFang SC,sans-serif" font-size="10" fill="#0f1621" font-weight="700">BETA</text>
+
+  <!-- Template selector -->
+  <text x="80" y="175" font-family="-apple-system,PingFang SC,sans-serif" font-size="9" fill="#64748b" font-weight="600" letter-spacing="1">🎨 模板风格</text>
+  <rect x="80" y="182" width="90" height="48" rx="5" fill="#0f1621" stroke="#22c55e" stroke-width="1.5"/>
+  <rect x="80" y="182" width="90" height="26" rx="5" fill="#f8f9ff"/>
+  <rect x="86" y="185" width="20" height="20" rx="3" fill="#4F8BFF"/>
+  <rect x="110" y="185" width="20" height="20" rx="3" fill="#e8f4fd"/>
+  <text x="125" y="238" text-anchor="middle" font-family="-apple-system,PingFang SC,sans-serif" font-size="9" fill="#22c55e">蓝色现代 ✓</text>
+
+  <rect x="180" y="182" width="90" height="48" rx="5" fill="#0f1621" stroke="#1e293b" stroke-width="1"/>
+  <rect x="180" y="182" width="90" height="26" rx="5" fill="#1a1a2e"/>
+  <rect x="186" y="185" width="20" height="20" rx="3" fill="#7c3aed"/>
+  <text x="225" y="238" text-anchor="middle" font-family="-apple-system,PingFang SC,sans-serif" font-size="9" fill="#64748b">深色强调</text>
+
+  <!-- Color swatches -->
+  <text x="80" y="258" font-family="-apple-system,PingFang SC,sans-serif" font-size="9" fill="#64748b" font-weight="600" letter-spacing="1">主题色</text>
+  <circle cx="90" cy="272" r="7" fill="#374151" stroke="#fff" stroke-width="1.5"/>
+  <circle cx="108" cy="272" r="7" fill="#1d4ed8"/>
+  <circle cx="126" cy="272" r="7" fill="#6366f1"/>
+  <circle cx="144" cy="272" r="7" fill="#7c3aed"/>
+  <circle cx="162" cy="272" r="7" fill="#059669"/>
+  <circle cx="180" cy="272" r="7" fill="#b91c1c"/>
+
+  <!-- Basic info fields -->
+  <text x="80" y="300" font-family="-apple-system,PingFang SC,sans-serif" font-size="9" fill="#64748b" font-weight="600" letter-spacing="1">👤 基本信息</text>
+  <rect x="80" y="306" width="93" height="18" rx="4" fill="#0f1621" stroke="#252832" stroke-width="1"/>
+  <text x="86" y="318" font-family="-apple-system,PingFang SC,sans-serif" font-size="9" fill="#64748b">姓名</text>
+  <rect x="183" y="306" width="97" height="18" rx="4" fill="#0f1621" stroke="#252832" stroke-width="1"/>
+  <text x="189" y="318" font-family="-apple-system,PingFang SC,sans-serif" font-size="9" fill="#64748b">求职意向</text>
+
+  <!-- Work entry -->
+  <text x="80" y="345" font-family="-apple-system,PingFang SC,sans-serif" font-size="9" fill="#64748b" font-weight="600" letter-spacing="1">💼 工作经历</text>
+  <rect x="80" y="352" width="200" height="65" rx="5" fill="rgba(15,17,23,.5)" stroke="#1e293b" stroke-width="1"/>
+  <text x="90" y="366" font-family="-apple-system,PingFang SC,sans-serif" font-size="9" fill="#94a3b8" font-weight="600">工作经历 1</text>
+  <rect x="90" y="372" width="180" height="13" rx="3" fill="#131928"/>
+  <rect x="90" y="390" width="120" height="13" rx="3" fill="#131928"/>
+  <rect x="90" y="408" width="180" height="8" rx="3" fill="#131928" opacity="0.5"/>
+
+  <!-- Add button -->
+  <rect x="80" y="424" width="200" height="22" rx="4" fill="transparent" stroke="#252832" stroke-width="1" stroke-dasharray="4,2"/>
+  <text x="180" y="438" text-anchor="middle" font-family="-apple-system,PingFang SC,sans-serif" font-size="10" fill="#64748b">+ 添加工作经历</text>
+
+  <!-- Toggle modules -->
+  <text x="80" y="470" font-family="-apple-system,PingFang SC,sans-serif" font-size="9" fill="#64748b">项目经历</text>
+  <rect x="250" y="460" width="28" height="15" rx="7" fill="#22c55e"/>
+  <circle cx="271" cy="467" r="5.5" fill="#fff"/>
+  <text x="80" y="490" font-family="-apple-system,PingFang SC,sans-serif" font-size="9" fill="#64748b">技能模块</text>
+  <rect x="250" y="480" width="28" height="15" rx="7" fill="#22c55e"/>
+  <circle cx="271" cy="487" r="5.5" fill="#fff"/>
+  <text x="80" y="510" font-family="-apple-system,PingFang SC,sans-serif" font-size="9" fill="#64748b">荣誉奖项</text>
+  <rect x="250" y="500" width="28" height="15" rx="7" fill="#252832"/>
+  <circle cx="257" cy="507" r="5.5" fill="#64748b"/>
+
+  <!-- Download buttons -->
+  <rect x="80" y="580" width="92" height="26" rx="6" fill="#22c55e"/>
+  <text x="126" y="596" text-anchor="middle" font-family="-apple-system,PingFang SC,sans-serif" font-size="10" fill="#0f1621" font-weight="600">⬇ 下载 HTML</text>
+  <rect x="182" y="580" width="78" height="26" rx="6" fill="rgba(239,68,68,.15)" stroke="rgba(239,68,68,.3)" stroke-width="1"/>
+  <text x="221" y="596" text-anchor="middle" font-family="-apple-system,PingFang SC,sans-serif" font-size="10" fill="#f87171" font-weight="500">⬇ 导出 PDF</text>
+
+  <!-- Right: Resume preview (Classic template) -->
+  <rect x="340" y="112" width="450" height="520" rx="4" fill="#ffffff" stroke="#e5e7eb" stroke-width="1"/>
+
+  <!-- Resume header -->
+  <text x="565" y="155" text-anchor="middle" font-family="-apple-system,PingFang SC,sans-serif" font-size="20" font-weight="700" fill="#111">张　志</text>
+  <text x="565" y="172" text-anchor="middle" font-family="-apple-system,PingFang SC,sans-serif" font-size="11" fill="#1d4ed8">增长产品经理 · Growth PM</text>
+  <line x1="360" y1="180" x2="770" y2="180" stroke="#1d4ed8" stroke-width="1.5"/>
+  <text x="565" y="193" text-anchor="middle" font-family="-apple-system,PingFang SC,sans-serif" font-size="10" fill="#6b7280">+86 138 0000 0000  |  hi@jayz.com  |  上海  |  linkedin.com/in/jayz</text>
+
+  <!-- Section: 自我评价 -->
+  <text x="360" y="215" font-family="-apple-system,PingFang SC,sans-serif" font-size="11" font-weight="700" fill="#1d4ed8">自我评价</text>
+  <line x1="360" y1="218" x2="770" y2="218" stroke="#1d4ed8" stroke-width="0.8"/>
+  <text x="360" y="232" font-family="-apple-system,PingFang SC,sans-serif" font-size="10" fill="#374151">专注增长方向的产品经理，擅长裂变活动设计与用户增长数据分析，</text>
+  <text x="360" y="245" font-family="-apple-system,PingFang SC,sans-serif" font-size="10" fill="#374151">有 Trip / TrainPal 等国际出行产品 S&amp;R 渠道从0到1经验。</text>
+
+  <!-- Section: 教育经历 -->
+  <text x="360" y="268" font-family="-apple-system,PingFang SC,sans-serif" font-size="11" font-weight="700" fill="#1d4ed8">教育经历</text>
+  <line x1="360" y1="271" x2="770" y2="271" stroke="#1d4ed8" stroke-width="0.8"/>
+  <text x="360" y="285" font-family="-apple-system,PingFang SC,sans-serif" font-size="11" font-weight="600" fill="#111">北京大学（985、211）</text>
+  <text x="720" y="285" text-anchor="end" font-family="-apple-system,PingFang SC,sans-serif" font-size="10" fill="#6b7280">2020.09 — 2024.06</text>
+  <text x="360" y="299" font-family="-apple-system,PingFang SC,sans-serif" font-size="10" fill="#374151">本科 · 信息管理与信息系统 | <tspan fill="#1d4ed8">GPA 3.85/4.0，专业前 8%</tspan></text>
+
+  <!-- Section: 工作经历 -->
+  <text x="360" y="320" font-family="-apple-system,PingFang SC,sans-serif" font-size="11" font-weight="700" fill="#1d4ed8">工作经历</text>
+  <line x1="360" y1="323" x2="770" y2="323" stroke="#1d4ed8" stroke-width="0.8"/>
+  <text x="360" y="337" font-family="-apple-system,PingFang SC,sans-serif" font-size="11" font-weight="600" fill="#111">Trip.com Group</text>
+  <text x="720" y="337" text-anchor="end" font-family="-apple-system,PingFang SC,sans-serif" font-size="10" fill="#6b7280">2024.07 — 至今</text>
+  <text x="360" y="350" font-family="-apple-system,PingFang SC,sans-serif" font-size="10" fill="#1d4ed8" font-weight="500">增长产品经理 · TrainPal &amp; Trip UK/EU</text>
+  <text x="360" y="364" font-family="-apple-system,PingFang SC,sans-serif" font-size="10" fill="#374151">• 负责 Share &amp; Referral 渠道新客增长，OKR 目标 14万新客</text>
+  <text x="360" y="377" font-family="-apple-system,PingFang SC,sans-serif" font-size="10" fill="#374151">• 设计完整裂变活动漏斗，K 因子从 0.02 提升至 0.08</text>
+  <text x="360" y="390" font-family="-apple-system,PingFang SC,sans-serif" font-size="10" fill="#374151">• 上线 VJ 0元购活动，覆盖英法德西等 12 国市场</text>
+
+  <!-- Section: 技能 -->
+  <text x="360" y="413" font-family="-apple-system,PingFang SC,sans-serif" font-size="11" font-weight="700" fill="#1d4ed8">技能</text>
+  <line x1="360" y1="416" x2="770" y2="416" stroke="#1d4ed8" stroke-width="0.8"/>
+  <text x="360" y="430" font-family="-apple-system,PingFang SC,sans-serif" font-size="10" fill="#374151"><tspan font-weight="600">专业技能：</tspan>SQL · Python · Tableau · A/B Testing · 增长黑客方法论</text>
+  <text x="360" y="444" font-family="-apple-system,PingFang SC,sans-serif" font-size="10" fill="#374151"><tspan font-weight="600">语言：</tspan>普通话（母语）· 英语（CET-6 580）</text>
+
+  <!-- Photo placeholder -->
+  <rect x="720" y="126" width="48" height="64" rx="3" fill="#e5e7eb" stroke="#d1d5db" stroke-width="1"/>
+  <text x="744" y="162" text-anchor="middle" font-family="-apple-system,PingFang SC,sans-serif" font-size="9" fill="#9ca3af">头像</text>
+
+  <!-- Template switcher pills overlay -->
+  <rect x="820" y="112" width="340" height="520" rx="4" fill="#1a1a2e" stroke="#2d2d44" stroke-width="1" opacity="0.92"/>
+  <text x="990" y="155" text-anchor="middle" font-family="-apple-system,PingFang SC,sans-serif" font-size="14" font-weight="700" fill="#e2e8f0">深色模板预览</text>
+  <!-- dark template header -->
+  <rect x="820" y="165" width="340" height="55" fill="url(#grad1)"/>
+  <defs><linearGradient id="grad1" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#7c3aed"/><stop offset="100%" stop-color="#1a1a2e"/></linearGradient></defs>
+  <text x="840" y="188" font-family="-apple-system,PingFang SC,sans-serif" font-size="16" font-weight="700" fill="#fff">张　志</text>
+  <text x="840" y="204" font-family="-apple-system,PingFang SC,sans-serif" font-size="10" fill="rgba(255,255,255,.7)">增长产品经理 · hi@jayz.com · 上海</text>
+
+  <!-- dark sections -->
+  <rect x="836" y="230" width="3" height="12" rx="1" fill="#7c3aed"/>
+  <text x="845" y="241" font-family="-apple-system,PingFang SC,sans-serif" font-size="10" font-weight="700" fill="#7c3aed">教育经历</text>
+  <line x1="893" y1="237" x2="1145" y2="237" stroke="rgba(255,255,255,.1)" stroke-width="1"/>
+  <rect x="836" y="250" width="288" height="38" rx="4" fill="rgba(255,255,255,.04)"/>
+  <text x="846" y="264" font-family="-apple-system,PingFang SC,sans-serif" font-size="10" font-weight="600" fill="#e2e8f0">北京大学</text>
+  <text x="1120" y="264" text-anchor="end" font-family="-apple-system,PingFang SC,sans-serif" font-size="9" fill="#64748b">2020—2024</text>
+  <text x="846" y="280" font-family="-apple-system,PingFang SC,sans-serif" font-size="9" fill="#94a3b8">本科 · 信息管理 | <tspan fill="#7c3aed">GPA 3.85</tspan></text>
+
+  <rect x="836" y="300" width="3" height="12" rx="1" fill="#7c3aed"/>
+  <text x="845" y="311" font-family="-apple-system,PingFang SC,sans-serif" font-size="10" font-weight="700" fill="#7c3aed">工作经历</text>
+  <line x1="893" y1="307" x2="1145" y2="307" stroke="rgba(255,255,255,.1)" stroke-width="1"/>
+  <rect x="836" y="318" width="3" height="55" rx="1" fill="#7c3aed"/>
+  <text x="846" y="330" font-family="-apple-system,PingFang SC,sans-serif" font-size="10" font-weight="600" fill="#e2e8f0">Trip.com Group</text>
+  <text x="846" y="344" font-family="-apple-system,PingFang SC,sans-serif" font-size="9" fill="#7c3aed" font-weight="600">增长产品经理</text>
+  <text x="846" y="358" font-family="-apple-system,PingFang SC,sans-serif" font-size="9" fill="#94a3b8">• 裂变活动设计，K 因子 0.08</text>
+  <text x="846" y="370" font-family="-apple-system,PingFang SC,sans-serif" font-size="9" fill="#94a3b8">• 上线 VJ 0元购，覆盖 12 国市场</text>
+
+  <!-- skill tags dark -->
+  <rect x="836" y="390" width="3" height="12" rx="1" fill="#7c3aed"/>
+  <text x="845" y="401" font-family="-apple-system,PingFang SC,sans-serif" font-size="10" font-weight="700" fill="#7c3aed">技能</text>
+  <line x1="872" y1="397" x2="1145" y2="397" stroke="rgba(255,255,255,.1)" stroke-width="1"/>
+  <rect x="836" y="410" width="40" height="16" rx="8" fill="rgba(124,58,237,.2)" stroke="rgba(124,58,237,.4)" stroke-width="1"/>
+  <text x="856" y="421" text-anchor="middle" font-family="-apple-system,PingFang SC,sans-serif" font-size="9" fill="#a78bfa">SQL</text>
+  <rect x="882" y="410" width="52" height="16" rx="8" fill="rgba(124,58,237,.2)" stroke="rgba(124,58,237,.4)" stroke-width="1"/>
+  <text x="908" y="421" text-anchor="middle" font-family="-apple-system,PingFang SC,sans-serif" font-size="9" fill="#a78bfa">Python</text>
+  <rect x="940" y="410" width="60" height="16" rx="8" fill="rgba(124,58,237,.2)" stroke="rgba(124,58,237,.4)" stroke-width="1"/>
+  <text x="970" y="421" text-anchor="middle" font-family="-apple-system,PingFang SC,sans-serif" font-size="9" fill="#a78bfa">Tableau</text>
+  <rect x="1006" y="410" width="68" height="16" rx="8" fill="rgba(124,58,237,.2)" stroke="rgba(124,58,237,.4)" stroke-width="1"/>
+  <text x="1040" y="421" text-anchor="middle" font-family="-apple-system,PingFang SC,sans-serif" font-size="9" fill="#a78bfa">A/B Testing</text>
+
+  <!-- Bottom label -->
+  <text x="600" y="650" text-anchor="middle" font-family="-apple-system,PingFang SC,sans-serif" font-size="18" font-weight="bold" fill="#f1f5f9">简历生成器 Resume Builder</text>
+  <text x="600" y="668" text-anchor="middle" font-family="-apple-system,PingFang SC,sans-serif" font-size="13" fill="#64748b">4套模板 · 10种主题色 · 动态增减 · 字数提示 · 中英双语</text>
+</svg>
