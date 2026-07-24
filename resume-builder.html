@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>简历生成器</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&family=Source+Serif+4:wght@300;400;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@400;600;700&family=Inter:wght@300;400;500;600;700&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&family=Lato:wght@300;400;700&family=Raleway:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 /* ── App Shell ── */
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -27,7 +27,8 @@ body{background:var(--app-bg);color:var(--app-text);font-family:'Inter','Noto Sa
 .btn-primary:hover{filter:brightness(1.1);}
 .btn-pdf{background:rgba(239,68,68,.1);color:#f87171;border-color:rgba(239,68,68,.25);}
 .btn-pdf:hover{background:rgba(239,68,68,.2);}
-/* ── Layout ── */
+.btn-demo{background:rgba(16,185,129,.1);color:#34d399;border-color:rgba(16,185,129,.25);}
+.btn-demo:hover{background:rgba(16,185,129,.2);}/* ── Layout ── */
 .app-body{flex:1;display:flex;overflow:hidden;}
 /* ── Sidebar (left panel) ── */
 .sidebar{width:380px;flex-shrink:0;background:var(--app-surface);border-right:1px solid var(--app-border);overflow-y:auto;display:flex;flex-direction:column;}
@@ -40,10 +41,13 @@ body{background:var(--app-bg);color:var(--app-text);font-family:'Inter','Noto Sa
 #resume-preview{width:794px;min-height:1123px;background:#fff;box-shadow:0 4px 32px rgba(0,0,0,.3);flex-shrink:0;}
 /* ── Sidebar sections ── */
 .sb-section{border-bottom:1px solid var(--app-border);}
-.sb-section-head{padding:14px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;}
-.sb-section-head h3{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--app-muted);}
+.sb-section-head{padding:14px 18px 14px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;border-left:2px solid transparent;transition:background .2s,border-color .2s;}
+.sb-section-head.open{background:rgba(99,102,241,.08);border-left-color:var(--app-accent);}
+.sb-section-head h3{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--app-muted);display:flex;align-items:center;gap:7px;transition:color .2s;}
+.sb-section-head.open h3{color:var(--app-text);}
 .sb-section-head .chevron{font-size:10px;color:var(--app-muted);transition:transform .2s;}
 .sb-section-head.open .chevron{transform:rotate(180deg);}
+.sb-icon{width:14px;height:14px;flex-shrink:0;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
 .sb-section-body{padding:4px 18px 16px;}
 /* ── Form elements ── */
 .field{margin-bottom:12px;}
@@ -99,6 +103,18 @@ select option{background:#181b23;}
 .font-opt{padding:5px 10px;border:1px solid var(--app-border);border-radius:6px;cursor:pointer;font-size:11px;transition:all .18s;color:var(--app-muted);}
 .font-opt:hover{border-color:#3a3f4e;color:var(--app-text);}
 .font-opt.active{border-color:var(--app-accent);color:var(--app-accent);background:var(--app-accent-dim);}
+/* ── Typo grid ── */
+.typo-grid{display:flex;flex-direction:column;gap:6px;margin-top:4px;}
+.typo-row{display:flex;align-items:center;justify-content:space-between;}
+.typo-label{font-size:11px;color:var(--app-muted);flex:1;min-width:0;}
+.typo-controls{display:flex;align-items:center;gap:5px;flex-shrink:0;}
+.typo-size{width:44px;background:rgba(15,17,23,.6);border:1px solid var(--app-border);color:var(--app-text);border-radius:5px;padding:4px 6px;font-size:11px;font-family:inherit;outline:none;text-align:center;-moz-appearance:textfield;}
+.typo-size::-webkit-inner-spin-button,.typo-size::-webkit-outer-spin-button{opacity:0;}
+.typo-size:focus{border-color:var(--app-accent);}
+.typo-unit{font-size:10px;color:var(--app-muted);}
+.typo-color{width:24px;height:24px;border:2px solid var(--app-border);border-radius:5px;padding:0;cursor:pointer;background:none;outline:none;}
+.typo-color::-webkit-color-swatch-wrapper{padding:2px;}
+.typo-color::-webkit-color-swatch{border:none;border-radius:2px;}
 </style>
 </head>
 <body>
@@ -107,6 +123,7 @@ select option{background:#181b23;}
   <div class="topbar-logo">📄 <strong>简历生成器</strong> <span>BETA</span></div>
   <div style="font-size:11px;color:var(--app-muted)">实时预览 · 4套模板 · 中英双语</div>
   <div class="topbar-actions">
+    <button class="btn btn-demo" onclick="fillDemoData()">✦ 模板预览</button>
     <button class="btn btn-ghost" onclick="resetAll()">重置</button>
     <button class="btn btn-pdf" onclick="exportPDF()">⬇ 导出 PDF</button>
     <button class="btn btn-primary" onclick="downloadHTML()">⬇ 下载 HTML</button>
@@ -118,7 +135,7 @@ select option{background:#181b23;}
 
 <!-- 语言 -->
 <div class="sb-section">
-  <div class="sb-section-head open" onclick="toggleSection(this)"><h3>🌐 语言 / Language</h3><span class="chevron">▼</span></div>
+  <div class="sb-section-head open" onclick="toggleSection(this)"><h3><svg class="sb-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>语言 / Language</h3><span class="chevron">▼</span></div>
   <div class="sb-section-body">
     <div class="lang-tabs">
       <div class="lang-tab active" onclick="setLang('zh',this)">中文</div>
@@ -129,7 +146,7 @@ select option{background:#181b23;}
 
 <!-- 模板选择 -->
 <div class="sb-section">
-  <div class="sb-section-head open" onclick="toggleSection(this)"><h3>🎨 模板风格</h3><span class="chevron">▼</span></div>
+  <div class="sb-section-head open" onclick="toggleSection(this)"><h3><svg class="sb-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>模板风格</h3><span class="chevron">▼</span></div>
   <div class="sb-section-body">
     <div class="tpl-grid">
       <div class="tpl-card active" onclick="setTemplate('classic',this)" title="极简黑白">
@@ -193,9 +210,67 @@ select option{background:#181b23;}
       <label>字体</label>
       <div class="font-options" id="fontOptions">
         <div class="font-opt active" data-font="'Noto Sans SC','Inter',sans-serif" onclick="setFont(this)">思源黑体</div>
-        <div class="font-opt" data-font="'Source Serif 4','Noto Serif SC',serif" onclick="setFont(this)" style="font-family:Georgia,serif">衬线体</div>
+        <div class="font-opt" data-font="'Noto Serif SC',serif" onclick="setFont(this)" style="font-family:'Georgia',serif">宋体</div>
+        <div class="font-opt" data-font="'Source Serif 4',serif" onclick="setFont(this)" style="font-family:'Georgia',serif">衬线</div>
         <div class="font-opt" data-font="'Inter',sans-serif" onclick="setFont(this)" style="font-family:Arial,sans-serif">Inter</div>
+        <div class="font-opt" data-font="'DM Sans',sans-serif" onclick="setFont(this)" style="font-family:Arial,sans-serif">DM Sans</div>
+        <div class="font-opt" data-font="'Lato',sans-serif" onclick="setFont(this)" style="font-family:Arial,sans-serif">Lato</div>
+        <div class="font-opt" data-font="'Raleway',sans-serif" onclick="setFont(this)" style="font-family:Arial,sans-serif">Raleway</div>
         <div class="font-opt" data-font="'JetBrains Mono',monospace" onclick="setFont(this)" style="font-family:monospace">Mono</div>
+      </div>
+    </div>
+    <!-- Typography -->
+    <div class="field" style="margin-top:4px;">
+      <label>字号 &amp; 颜色调整</label>
+      <div class="typo-grid">
+        <div class="typo-row">
+          <span class="typo-label">姓名</span>
+          <div class="typo-controls">
+            <input type="number" class="typo-size" id="sz-name" value="24" min="16" max="36" oninput="render()">
+            <span class="typo-unit">px</span>
+            <input type="color" class="typo-color" id="cl-name" value="#111111" oninput="render()">
+          </div>
+        </div>
+        <div class="typo-row">
+          <span class="typo-label">章节标题</span>
+          <div class="typo-controls">
+            <input type="number" class="typo-size" id="sz-section" value="13" min="10" max="18" oninput="render()">
+            <span class="typo-unit">px</span>
+            <input type="color" class="typo-color" id="cl-section" value="#374151" oninput="render()">
+          </div>
+        </div>
+        <div class="typo-row">
+          <span class="typo-label">机构/公司</span>
+          <div class="typo-controls">
+            <input type="number" class="typo-size" id="sz-org" value="12" min="9" max="16" oninput="render()">
+            <span class="typo-unit">px</span>
+            <input type="color" class="typo-color" id="cl-org" value="#111111" oninput="render()">
+          </div>
+        </div>
+        <div class="typo-row">
+          <span class="typo-label">职位/学位</span>
+          <div class="typo-controls">
+            <input type="number" class="typo-size" id="sz-role" value="11" min="9" max="15" oninput="render()">
+            <span class="typo-unit">px</span>
+            <input type="color" class="typo-color" id="cl-role" value="#374151" oninput="render()">
+          </div>
+        </div>
+        <div class="typo-row">
+          <span class="typo-label">正文内容</span>
+          <div class="typo-controls">
+            <input type="number" class="typo-size" id="sz-body" value="11" min="8" max="14" oninput="render()">
+            <span class="typo-unit">px</span>
+            <input type="color" class="typo-color" id="cl-body" value="#374151" oninput="render()">
+          </div>
+        </div>
+        <div class="typo-row">
+          <span class="typo-label">辅助信息</span>
+          <div class="typo-controls">
+            <input type="number" class="typo-size" id="sz-meta" value="11" min="8" max="14" oninput="render()">
+            <span class="typo-unit">px</span>
+            <input type="color" class="typo-color" id="cl-meta" value="#6b7280" oninput="render()">
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -203,7 +278,7 @@ select option{background:#181b23;}
 
 <!-- 基本信息 -->
 <div class="sb-section">
-  <div class="sb-section-head open" onclick="toggleSection(this)"><h3>👤 基本信息</h3><span class="chevron">▼</span></div>
+  <div class="sb-section-head open" onclick="toggleSection(this)"><h3><svg class="sb-icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>基本信息</h3><span class="chevron">▼</span></div>
   <div class="sb-section-body">
     <div class="toggle-field">
       <label>头像（右上角）</label>
@@ -241,7 +316,7 @@ select option{background:#181b23;}
 
 <!-- 自我评价 -->
 <div class="sb-section">
-  <div class="sb-section-head open" onclick="toggleSection(this)"><h3>📝 自我评价</h3><span class="chevron">▼</span></div>
+  <div class="sb-section-head open" onclick="toggleSection(this)"><h3><svg class="sb-icon" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>自我评价</h3><span class="chevron">▼</span></div>
   <div class="sb-section-body">
     <div class="toggle-field">
       <label>显示此模块</label>
@@ -258,7 +333,7 @@ select option{background:#181b23;}
 
 <!-- 教育经历 -->
 <div class="sb-section">
-  <div class="sb-section-head open" onclick="toggleSection(this)"><h3>🎓 教育经历</h3><span class="chevron">▼</span></div>
+  <div class="sb-section-head open" onclick="toggleSection(this)"><h3><svg class="sb-icon" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>教育经历</h3><span class="chevron">▼</span></div>
   <div class="sb-section-body">
     <div id="eduList"></div>
     <button class="add-btn" onclick="addEntry('edu')">+ 添加教育经历</button>
@@ -267,7 +342,7 @@ select option{background:#181b23;}
 
 <!-- 工作/实习经历 -->
 <div class="sb-section">
-  <div class="sb-section-head open" onclick="toggleSection(this)"><h3>💼 工作经历</h3><span class="chevron">▼</span></div>
+  <div class="sb-section-head open" onclick="toggleSection(this)"><h3><svg class="sb-icon" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>工作经历</h3><span class="chevron">▼</span></div>
   <div class="sb-section-body">
     <div id="workList"></div>
     <button class="add-btn" onclick="addEntry('work')">+ 添加工作/实习经历</button>
@@ -276,7 +351,7 @@ select option{background:#181b23;}
 
 <!-- 项目经历 -->
 <div class="sb-section">
-  <div class="sb-section-head" onclick="toggleSection(this)"><h3>🚀 项目经历</h3><span class="chevron">▼</span></div>
+  <div class="sb-section-head" onclick="toggleSection(this)"><h3><svg class="sb-icon" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>项目经历</h3><span class="chevron">▼</span></div>
   <div class="sb-section-body" style="display:none;">
     <div class="toggle-field">
       <label>显示此模块</label>
@@ -289,7 +364,7 @@ select option{background:#181b23;}
 
 <!-- 技能 -->
 <div class="sb-section">
-  <div class="sb-section-head" onclick="toggleSection(this)"><h3>⚡ 技能</h3><span class="chevron">▼</span></div>
+  <div class="sb-section-head" onclick="toggleSection(this)"><h3><svg class="sb-icon" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>技能</h3><span class="chevron">▼</span></div>
   <div class="sb-section-body" style="display:none;">
     <div class="toggle-field">
       <label>显示此模块</label>
@@ -312,7 +387,7 @@ select option{background:#181b23;}
 
 <!-- 荣誉奖项 -->
 <div class="sb-section">
-  <div class="sb-section-head" onclick="toggleSection(this)"><h3>🏆 荣誉奖项</h3><span class="chevron">▼</span></div>
+  <div class="sb-section-head" onclick="toggleSection(this)"><h3><svg class="sb-icon" viewBox="0 0 24 24"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>荣誉奖项</h3><span class="chevron">▼</span></div>
   <div class="sb-section-body" style="display:none;">
     <div class="toggle-field">
       <label>显示此模块</label>
@@ -325,7 +400,7 @@ select option{background:#181b23;}
 
 <!-- 论文/作品 -->
 <div class="sb-section">
-  <div class="sb-section-head" onclick="toggleSection(this)"><h3>📄 论文/作品</h3><span class="chevron">▼</span></div>
+  <div class="sb-section-head" onclick="toggleSection(this)"><h3><svg class="sb-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>论文/作品</h3><span class="chevron">▼</span></div>
   <div class="sb-section-body" style="display:none;">
     <div class="toggle-field">
       <label>显示此模块</label>
@@ -545,6 +620,8 @@ function renderEntryList(type) {
 }
 
 // ── Get all form values ──
+function gn(id, fallback) { const el = document.getElementById(id); return el ? (parseFloat(el.value) || fallback) : fallback; }
+function gcl(id) { const el = document.getElementById(id); return el ? el.value : '#374151'; }
 function getValues() {
   const g = id => (document.getElementById(id) || {value:''}).value.trim();
   const gc = id => (document.getElementById(id) || {checked:false}).checked;
@@ -565,6 +642,20 @@ function getValues() {
     project: S.projectEntries.map(e => e.data),
     award: S.awardEntries.map(e => e.data),
     pub: S.pubEntries.map(e => e.data),
+    t: {
+      szName:    gn('sz-name', 24),
+      szSection: gn('sz-section', 13),
+      szOrg:     gn('sz-org', 12),
+      szRole:    gn('sz-role', 11),
+      szBody:    gn('sz-body', 11),
+      szMeta:    gn('sz-meta', 11),
+      clName:    gcl('cl-name'),
+      clSection: gcl('cl-section'),
+      clOrg:     gcl('cl-org'),
+      clRole:    gcl('cl-role'),
+      clBody:    gcl('cl-body'),
+      clMeta:    gcl('cl-meta'),
+    },
   };
 }
 
@@ -600,143 +691,149 @@ function contactRow(v, col) {
 }
 
 function renderClassic(v, col, font) {
+  const t = v.t;
   const sections = [];
   sections.push(`
     <div style="text-align:center;padding-bottom:12px;border-bottom:2px solid ${col};margin-bottom:14px;position:relative;">
       ${v.showPhoto && v.photoUrl ? `<img src="${v.photoUrl}" style="position:absolute;right:0;top:0;width:62px;height:82px;object-fit:cover;border-radius:3px;">` : ''}
-      <div style="font-size:24px;font-weight:700;letter-spacing:.02em;color:#111;">${v.name || '姓名'}${v.nameEn ? `<span style="font-size:15px;font-weight:400;color:#6b7280;margin-left:10px;">${v.nameEn}</span>` : ''}</div>
-      ${v.jobTitle ? `<div style="font-size:13px;color:${col};margin-top:4px;font-weight:500;">${v.jobTitle}</div>` : ''}
-      <div style="font-size:11px;margin-top:6px;">${contactRow(v,'#374151')}</div>
+      <div style="font-size:${t.szName}px;font-weight:700;letter-spacing:.02em;color:${t.clName};">${v.name || '姓名'}${v.nameEn ? `<span style="font-size:${Math.round(t.szName*0.62)}px;font-weight:400;color:${t.clMeta};margin-left:10px;">${v.nameEn}</span>` : ''}</div>
+      ${v.jobTitle ? `<div style="font-size:${t.szRole}px;color:${col};margin-top:4px;font-weight:500;">${v.jobTitle}</div>` : ''}
+      <div style="font-size:${t.szMeta}px;margin-top:6px;">${contactRow(v, t.clBody)}</div>
     </div>`);
-  if (v.showSummary && v.summary) sections.push(sectionClassic('自我评价', `<p style="line-height:1.7;font-size:12px;color:#374151;">${v.summary}</p>`, col));
+  if (v.showSummary && v.summary) sections.push(sectionClassic('自我评价', `<p style="line-height:1.7;font-size:${t.szBody}px;color:${t.clBody};">${v.summary}</p>`, col, t));
   if (v.edu.length) sections.push(sectionClassic('教育经历', v.edu.map(e=>`
     <div style="margin-bottom:8px;"><div style="display:flex;justify-content:space-between;">
-      <strong style="font-size:12px;">${e.school||''}</strong><span style="font-size:11px;color:#6b7280;">${e.period||''}</span>
-    </div><div style="font-size:11px;color:#374151;">${e.degree||''}${e.gpa?` &nbsp;|&nbsp; <span style="color:${col}">${e.gpa}</span>`:''}</div></div>`).join(''), col));
+      <strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${e.school||''}</strong><span style="font-size:${t.szMeta}px;color:${t.clMeta};">${e.period||''}</span>
+    </div><div style="font-size:${t.szRole}px;color:${t.clRole};">${e.degree||''}${e.gpa?` &nbsp;|&nbsp; <span style="color:${col}">${e.gpa}</span>`:''}</div></div>`).join(''), col, t));
   if (v.work.length) sections.push(sectionClassic('工作经历', v.work.map(e=>`
     <div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;">
-      <strong style="font-size:12px;">${e.company||''}</strong><span style="font-size:11px;color:#6b7280;">${e.period||''}</span>
-    </div><div style="font-size:11px;color:${col};font-weight:500;margin-bottom:3px;">${e.role||''}</div>
-    <div style="font-size:11px;color:#374151;line-height:1.65;">${descLines(e.desc)}</div></div>`).join(''), col));
+      <strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${e.company||''}</strong><span style="font-size:${t.szMeta}px;color:${t.clMeta};">${e.period||''}</span>
+    </div><div style="font-size:${t.szRole}px;color:${col};font-weight:500;margin-bottom:3px;">${e.role||''}</div>
+    <div style="font-size:${t.szBody}px;color:${t.clBody};line-height:1.65;">${descLines(e.desc)}</div></div>`).join(''), col, t));
   if (v.showProject && v.project.length) sections.push(sectionClassic('项目经历', v.project.map(e=>`
     <div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;align-items:baseline;">
-      <strong style="font-size:12px;">${e.name||''}</strong><span style="font-size:11px;color:#6b7280;">${e.period||''}</span>
-    </div><div style="font-size:11px;color:${col};margin-bottom:2px;">${e.role||''}${e.link?` · <a href="${e.link}" style="color:${col};text-decoration:none;">🔗 链接</a>`:''}</div>
-    <div style="font-size:11px;color:#374151;line-height:1.65;">${descLines(e.desc)}</div></div>`).join(''), col));
+      <strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${e.name||''}</strong><span style="font-size:${t.szMeta}px;color:${t.clMeta};">${e.period||''}</span>
+    </div><div style="font-size:${t.szRole}px;color:${col};margin-bottom:2px;">${e.role||''}${e.link?` · <a href="${e.link}" style="color:${col};text-decoration:none;">🔗 链接</a>`:''}</div>
+    <div style="font-size:${t.szBody}px;color:${t.clBody};line-height:1.65;">${descLines(e.desc)}</div></div>`).join(''), col, t));
   if (v.showSkills && (v.skillTools||v.skillLang||v.skillCerts)) {
     const sk = [];
-    if (v.skillTools) sk.push(`<div style="margin-bottom:4px;font-size:11px;"><strong>专业技能：</strong>${v.skillTools}</div>`);
-    if (v.skillLang) sk.push(`<div style="margin-bottom:4px;font-size:11px;"><strong>语言能力：</strong>${v.skillLang}</div>`);
-    if (v.skillCerts) sk.push(`<div style="font-size:11px;"><strong>证书资质：</strong>${v.skillCerts}</div>`);
-    sections.push(sectionClassic('技能', sk.join(''), col));
+    if (v.skillTools) sk.push(`<div style="margin-bottom:4px;font-size:${t.szBody}px;color:${t.clBody};"><strong>专业技能：</strong>${v.skillTools}</div>`);
+    if (v.skillLang) sk.push(`<div style="margin-bottom:4px;font-size:${t.szBody}px;color:${t.clBody};"><strong>语言能力：</strong>${v.skillLang}</div>`);
+    if (v.skillCerts) sk.push(`<div style="font-size:${t.szBody}px;color:${t.clBody};"><strong>证书资质：</strong>${v.skillCerts}</div>`);
+    sections.push(sectionClassic('技能', sk.join(''), col, t));
   }
   if (v.showAwards && v.award.length) sections.push(sectionClassic('荣誉奖项', v.award.map(e=>`
-    <div style="display:flex;justify-content:space-between;margin-bottom:4px;font-size:11px;">
-      <span><strong style="color:${col}">${e.name||''}</strong>${e.org?` · ${e.org}`:''}</span><span style="color:#6b7280;">${e.year||''}</span>
-    </div>`).join(''), col));
+    <div style="display:flex;justify-content:space-between;margin-bottom:4px;font-size:${t.szBody}px;">
+      <span><strong style="color:${col}">${e.name||''}</strong>${e.org?` · <span style="color:${t.clBody}">${e.org}</span>`:''}</span><span style="color:${t.clMeta};">${e.year||''}</span>
+    </div>`).join(''), col, t));
   if (v.showPubs && v.pub.length) sections.push(sectionClassic('论文/作品', v.pub.map(e=>`
-    <div style="margin-bottom:6px;font-size:11px;"><strong>${e.title||''}</strong>${e.venue?` · <em style="color:#6b7280;">${e.venue}</em>`:''}${e.link?` · <a href="${e.link}" style="color:${col};">${e.link}</a>`:''}</div>`).join(''), col));
-  return `<div style="padding:32px 40px;font-family:${font};color:#111;">${sections.join('')}</div>`;
+    <div style="margin-bottom:6px;font-size:${t.szBody}px;color:${t.clBody};"><strong>${e.title||''}</strong>${e.venue?` · <em style="color:${t.clMeta};">${e.venue}</em>`:''}${e.link?` · <a href="${e.link}" style="color:${col};">${e.link}</a>`:''}</div>`).join(''), col, t));
+  return `<div style="padding:32px 40px;font-family:${font};color:${t.clBody};">${sections.join('')}</div>`;
 }
-function sectionClassic(title, body, col) {
+function sectionClassic(title, body, col, t) {
+  const sz = t ? t.szSection : 13;
+  const cl = t ? t.clSection : col;
   return `<div style="margin-bottom:16px;">
-    <div style="font-size:13px;font-weight:700;color:${col};border-bottom:1px solid ${col};padding-bottom:3px;margin-bottom:8px;letter-spacing:.04em;">${title}</div>
+    <div style="font-size:${sz}px;font-weight:700;color:${cl};border-bottom:1px solid ${cl};padding-bottom:3px;margin-bottom:8px;letter-spacing:.04em;">${title}</div>
     ${body}
   </div>`;
 }
 
 function renderModern(v, col, font) {
+  const t = v.t;
   const sections = [];
-  if (v.showSummary && v.summary) sections.push(sectionModern('自我评价', `<p style="font-size:12px;color:#374151;line-height:1.7;">${v.summary}</p>`, col));
+  if (v.showSummary && v.summary) sections.push(sectionModern('自我评价', `<p style="font-size:${t.szBody}px;color:${t.clBody};line-height:1.7;">${v.summary}</p>`, col, t));
   if (v.edu.length) sections.push(sectionModern('教育经历', v.edu.map(e=>`
     <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
-      <div><strong style="font-size:12px;">${e.school||''}</strong><br><span style="font-size:11px;color:#374151;">${e.degree||''}</span>${e.gpa?`<br><span style="font-size:10px;color:${col}">${e.gpa}</span>`:''}</div>
-      <span style="font-size:11px;color:#6b7280;white-space:nowrap;padding-top:2px;">${e.period||''}</span>
-    </div>`).join(''), col));
+      <div><strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${e.school||''}</strong><br><span style="font-size:${t.szRole}px;color:${t.clRole};">${e.degree||''}</span>${e.gpa?`<br><span style="font-size:${t.szMeta}px;color:${col}">${e.gpa}</span>`:''}</div>
+      <span style="font-size:${t.szMeta}px;color:${t.clMeta};white-space:nowrap;padding-top:2px;">${e.period||''}</span>
+    </div>`).join(''), col, t));
   if (v.work.length) sections.push(sectionModern('工作经历', v.work.map(e=>`
     <div style="margin-bottom:12px;padding:10px;background:${rgba(col,.05)};border-radius:6px;border-left:3px solid ${col};">
-      <div style="display:flex;justify-content:space-between;"><strong style="font-size:12px;">${e.company||''}</strong><span style="font-size:11px;color:#6b7280;">${e.period||''}</span></div>
-      <div style="font-size:11px;color:${col};font-weight:600;margin:2px 0 4px;">${e.role||''}</div>
-      <div style="font-size:11px;color:#374151;line-height:1.65;">${descLines(e.desc)}</div>
-    </div>`).join(''), col));
+      <div style="display:flex;justify-content:space-between;"><strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${e.company||''}</strong><span style="font-size:${t.szMeta}px;color:${t.clMeta};">${e.period||''}</span></div>
+      <div style="font-size:${t.szRole}px;color:${col};font-weight:600;margin:2px 0 4px;">${e.role||''}</div>
+      <div style="font-size:${t.szBody}px;color:${t.clBody};line-height:1.65;">${descLines(e.desc)}</div>
+    </div>`).join(''), col, t));
   if (v.showProject && v.project.length) sections.push(sectionModern('项目经历', v.project.map(e=>`
     <div style="margin-bottom:10px;padding:10px;background:#f8faff;border-radius:6px;border:1px solid ${rgba(col,.2)};">
       <div style="display:flex;justify-content:space-between;align-items:center;">
-        <strong style="font-size:12px;">${e.name||''}</strong>
-        ${e.link?`<a href="${e.link}" style="font-size:10px;color:${col};text-decoration:none;background:${rgba(col,.1)};padding:2px 6px;border-radius:4px;">🔗 查看</a>`:''}
+        <strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${e.name||''}</strong>
+        ${e.link?`<a href="${e.link}" style="font-size:${t.szMeta}px;color:${col};text-decoration:none;background:${rgba(col,.1)};padding:2px 6px;border-radius:4px;">🔗 查看</a>`:''}
       </div>
-      <div style="font-size:11px;color:#6b7280;margin:2px 0;">${e.role||''} ${e.period?`· ${e.period}`:''}</div>
-      <div style="font-size:11px;color:#374151;line-height:1.65;">${descLines(e.desc)}</div>
-    </div>`).join(''), col));
+      <div style="font-size:${t.szRole}px;color:${t.clMeta};margin:2px 0;">${e.role||''} ${e.period?`· ${e.period}`:''}</div>
+      <div style="font-size:${t.szBody}px;color:${t.clBody};line-height:1.65;">${descLines(e.desc)}</div>
+    </div>`).join(''), col, t));
   if (v.showSkills && (v.skillTools||v.skillLang||v.skillCerts)) {
-    const tags = (v.skillTools||'').split(',').filter(s=>s.trim()).map(s=>`<span style="background:${rgba(col,.1)};color:${col};padding:2px 8px;border-radius:12px;font-size:11px;margin:2px;display:inline-block;">${s.trim()}</span>`).join('');
-    sections.push(sectionModern('技能', `<div style="margin-bottom:4px;">${tags}</div>${v.skillLang?`<div style="font-size:11px;color:#374151;margin-top:6px;"><strong>语言：</strong>${v.skillLang}</div>`:''}${v.skillCerts?`<div style="font-size:11px;color:#374151;margin-top:3px;"><strong>证书：</strong>${v.skillCerts}</div>`:''}`, col));
+    const tags = (v.skillTools||'').split(',').filter(s=>s.trim()).map(s=>`<span style="background:${rgba(col,.1)};color:${col};padding:2px 8px;border-radius:12px;font-size:${t.szBody}px;margin:2px;display:inline-block;">${s.trim()}</span>`).join('');
+    sections.push(sectionModern('技能', `<div style="margin-bottom:4px;">${tags}</div>${v.skillLang?`<div style="font-size:${t.szBody}px;color:${t.clBody};margin-top:6px;"><strong>语言：</strong>${v.skillLang}</div>`:''}${v.skillCerts?`<div style="font-size:${t.szBody}px;color:${t.clBody};margin-top:3px;"><strong>证书：</strong>${v.skillCerts}</div>`:''}`, col, t));
   }
-  if (v.showAwards && v.award.length) sections.push(sectionModern('荣誉奖项', v.award.map(e=>`<div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px;"><span>🏆 <strong>${e.name||''}</strong>${e.org?` · ${e.org}`:''}</span><span style="color:#6b7280;">${e.year||''}</span></div>`).join(''), col));
-  if (v.showPubs && v.pub.length) sections.push(sectionModern('论文/作品', v.pub.map(e=>`<div style="margin-bottom:6px;font-size:11px;"><strong>${e.title||''}</strong>${e.venue?` · <em style="color:#6b7280;">${e.venue}</em>`:''}${e.link?` · <a href="${e.link}" style="color:${col};">${e.link}</a>`:''}</div>`).join(''), col));
-  return `<div style="font-family:${font};">
+  if (v.showAwards && v.award.length) sections.push(sectionModern('荣誉奖项', v.award.map(e=>`<div style="display:flex;justify-content:space-between;font-size:${t.szBody}px;margin-bottom:4px;"><span><strong style="color:${col}">${e.name||''}</strong>${e.org?` · <span style="color:${t.clBody}">${e.org}</span>`:''}</span><span style="color:${t.clMeta};">${e.year||''}</span></div>`).join(''), col, t));
+  if (v.showPubs && v.pub.length) sections.push(sectionModern('论文/作品', v.pub.map(e=>`<div style="margin-bottom:6px;font-size:${t.szBody}px;color:${t.clBody};"><strong>${e.title||''}</strong>${e.venue?` · <em style="color:${t.clMeta};">${e.venue}</em>`:''}${e.link?` · <a href="${e.link}" style="color:${col};">${e.link}</a>`:''}</div>`).join(''), col, t));
+  return `<div style="font-family:${font};color:${t.clBody};">
     <div style="background:${col};color:#fff;padding:28px 36px 20px;">
       ${v.showPhoto && v.photoUrl ? `<img src="${v.photoUrl}" style="float:right;width:62px;height:82px;object-fit:cover;border-radius:4px;margin-left:12px;">` : ''}
-      <div style="font-size:26px;font-weight:700;letter-spacing:.01em;">${v.name||'姓名'}${v.nameEn?`<span style="font-size:14px;font-weight:300;opacity:.85;margin-left:10px;">${v.nameEn}</span>`:''}</div>
-      ${v.jobTitle?`<div style="font-size:13px;opacity:.9;margin-top:4px;font-weight:400;">${v.jobTitle}</div>`:''}
-      <div style="font-size:11px;opacity:.85;margin-top:8px;">${contactRow(v,'rgba(255,255,255,.9)')}</div>
+      <div style="font-size:${t.szName}px;font-weight:700;letter-spacing:.01em;">${v.name||'姓名'}${v.nameEn?`<span style="font-size:${Math.round(t.szName*0.54)}px;font-weight:300;opacity:.85;margin-left:10px;">${v.nameEn}</span>`:''}</div>
+      ${v.jobTitle?`<div style="font-size:${t.szRole}px;opacity:.9;margin-top:4px;font-weight:400;">${v.jobTitle}</div>`:''}
+      <div style="font-size:${t.szMeta}px;opacity:.85;margin-top:8px;">${contactRow(v,'rgba(255,255,255,.9)')}</div>
     </div>
     <div style="padding:24px 36px;">${sections.join('')}</div>
   </div>`;
 }
-function sectionModern(title, body, col) {
+function sectionModern(title, body, col, t) {
+  const sz = t ? t.szSection : 12;
   return `<div style="margin-bottom:18px;">
-    <div style="background:${col};color:#fff;font-size:12px;font-weight:700;padding:4px 10px;border-radius:4px;display:inline-block;margin-bottom:10px;letter-spacing:.06em;">${title}</div>
+    <div style="background:${col};color:#fff;font-size:${sz}px;font-weight:700;padding:4px 10px;border-radius:4px;display:inline-block;margin-bottom:10px;letter-spacing:.06em;">${title}</div>
     ${body}
   </div>`;
 }
 
 function renderDark(v, col, font) {
-  const isDk = isDark(col);
+  const t = v.t;
   const bg = '#1a1a2e'; const bg2 = '#16213e'; const textLight = '#e2e8f0';
   const sections = [];
-  if (v.showSummary && v.summary) sections.push(sectionDark('自我评价', `<p style="font-size:12px;color:#94a3b8;line-height:1.7;">${v.summary}</p>`, col));
+  if (v.showSummary && v.summary) sections.push(sectionDark('自我评价', `<p style="font-size:${t.szBody}px;color:#94a3b8;line-height:1.7;">${v.summary}</p>`, col, t));
   if (v.edu.length) sections.push(sectionDark('教育经历', v.edu.map(e=>`
     <div style="margin-bottom:8px;padding:8px 10px;background:rgba(255,255,255,.04);border-radius:6px;">
-      <div style="display:flex;justify-content:space-between;"><strong style="font-size:12px;color:${textLight};">${e.school||''}</strong><span style="font-size:11px;color:#64748b;">${e.period||''}</span></div>
-      <div style="font-size:11px;color:#94a3b8;margin-top:2px;">${e.degree||''}${e.gpa?` | <span style="color:${col}">${e.gpa}</span>`:''}</div>
-    </div>`).join(''), col));
+      <div style="display:flex;justify-content:space-between;"><strong style="font-size:${t.szOrg}px;color:${textLight};">${e.school||''}</strong><span style="font-size:${t.szMeta}px;color:#64748b;">${e.period||''}</span></div>
+      <div style="font-size:${t.szRole}px;color:#94a3b8;margin-top:2px;">${e.degree||''}${e.gpa?` | <span style="color:${col}">${e.gpa}</span>`:''}</div>
+    </div>`).join(''), col, t));
   if (v.work.length) sections.push(sectionDark('工作经历', v.work.map(e=>`
     <div style="margin-bottom:12px;border-left:3px solid ${col};padding-left:12px;">
-      <div style="display:flex;justify-content:space-between;"><strong style="font-size:12px;color:${textLight};">${e.company||''}</strong><span style="font-size:11px;color:#64748b;">${e.period||''}</span></div>
-      <div style="font-size:11px;color:${col};font-weight:600;margin:2px 0 4px;">${e.role||''}</div>
-      <div style="font-size:11px;color:#94a3b8;line-height:1.65;">${descLines(e.desc)}</div>
-    </div>`).join(''), col));
+      <div style="display:flex;justify-content:space-between;"><strong style="font-size:${t.szOrg}px;color:${textLight};">${e.company||''}</strong><span style="font-size:${t.szMeta}px;color:#64748b;">${e.period||''}</span></div>
+      <div style="font-size:${t.szRole}px;color:${col};font-weight:600;margin:2px 0 4px;">${e.role||''}</div>
+      <div style="font-size:${t.szBody}px;color:#94a3b8;line-height:1.65;">${descLines(e.desc)}</div>
+    </div>`).join(''), col, t));
   if (v.showProject && v.project.length) sections.push(sectionDark('项目经历', v.project.map(e=>`
     <div style="margin-bottom:10px;padding:10px;background:rgba(255,255,255,.05);border-radius:8px;border:1px solid ${rgba(col,.25)};">
       <div style="display:flex;justify-content:space-between;align-items:center;">
-        <strong style="font-size:12px;color:${textLight};">${e.name||''}</strong>
-        ${e.link?`<a href="${e.link}" style="font-size:10px;color:${col};text-decoration:none;background:${rgba(col,.15)};padding:2px 6px;border-radius:4px;">🔗 链接</a>`:''}
+        <strong style="font-size:${t.szOrg}px;color:${textLight};">${e.name||''}</strong>
+        ${e.link?`<a href="${e.link}" style="font-size:${t.szMeta}px;color:${col};text-decoration:none;background:${rgba(col,.15)};padding:2px 6px;border-radius:4px;">🔗 链接</a>`:''}
       </div>
-      <div style="font-size:11px;color:#64748b;margin:2px 0;">${e.role||''} ${e.period?`· ${e.period}`:''}</div>
-      <div style="font-size:11px;color:#94a3b8;line-height:1.65;">${descLines(e.desc)}</div>
-    </div>`).join(''), col));
+      <div style="font-size:${t.szRole}px;color:#64748b;margin:2px 0;">${e.role||''} ${e.period?`· ${e.period}`:''}</div>
+      <div style="font-size:${t.szBody}px;color:#94a3b8;line-height:1.65;">${descLines(e.desc)}</div>
+    </div>`).join(''), col, t));
   if (v.showSkills && (v.skillTools||v.skillLang||v.skillCerts)) {
-    const tags = (v.skillTools||'').split(',').filter(s=>s.trim()).map(s=>`<span style="background:${rgba(col,.15)};color:${col};border:1px solid ${rgba(col,.3)};padding:2px 8px;border-radius:12px;font-size:11px;margin:2px;display:inline-block;">${s.trim()}</span>`).join('');
-    sections.push(sectionDark('技能', `<div>${tags}</div>${v.skillLang?`<div style="font-size:11px;color:#94a3b8;margin-top:6px;"><span style="color:${col};font-weight:600;">语言 </span>${v.skillLang}</div>`:''}${v.skillCerts?`<div style="font-size:11px;color:#94a3b8;margin-top:3px;"><span style="color:${col};font-weight:600;">证书 </span>${v.skillCerts}</div>`:''}`, col));
+    const tags = (v.skillTools||'').split(',').filter(s=>s.trim()).map(s=>`<span style="background:${rgba(col,.15)};color:${col};border:1px solid ${rgba(col,.3)};padding:2px 8px;border-radius:12px;font-size:${t.szBody}px;margin:2px;display:inline-block;">${s.trim()}</span>`).join('');
+    sections.push(sectionDark('技能', `<div>${tags}</div>${v.skillLang?`<div style="font-size:${t.szBody}px;color:#94a3b8;margin-top:6px;"><span style="color:${col};font-weight:600;">语言 </span>${v.skillLang}</div>`:''}${v.skillCerts?`<div style="font-size:${t.szBody}px;color:#94a3b8;margin-top:3px;"><span style="color:${col};font-weight:600;">证书 </span>${v.skillCerts}</div>`:''}`, col, t));
   }
-  if (v.showAwards && v.award.length) sections.push(sectionDark('荣誉奖项', v.award.map(e=>`<div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px;color:#94a3b8;"><span>✦ <span style="color:${textLight}">${e.name||''}</span>${e.org?` · ${e.org}`:''}</span><span style="color:#64748b;">${e.year||''}</span></div>`).join(''), col));
-  if (v.showPubs && v.pub.length) sections.push(sectionDark('论文/作品', v.pub.map(e=>`<div style="margin-bottom:6px;font-size:11px;color:#94a3b8;"><span style="color:${textLight}">${e.title||''}</span>${e.venue?` · <em>${e.venue}</em>`:''}${e.link?` · <a href="${e.link}" style="color:${col};">${e.link}</a>`:''}</div>`).join(''), col));
+  if (v.showAwards && v.award.length) sections.push(sectionDark('荣誉奖项', v.award.map(e=>`<div style="display:flex;justify-content:space-between;font-size:${t.szBody}px;margin-bottom:4px;color:#94a3b8;"><span>✦ <span style="color:${textLight}">${e.name||''}</span>${e.org?` · ${e.org}`:''}</span><span style="color:#64748b;">${e.year||''}</span></div>`).join(''), col, t));
+  if (v.showPubs && v.pub.length) sections.push(sectionDark('论文/作品', v.pub.map(e=>`<div style="margin-bottom:6px;font-size:${t.szBody}px;color:#94a3b8;"><span style="color:${textLight}">${e.title||''}</span>${e.venue?` · <em>${e.venue}</em>`:''}${e.link?` · <a href="${e.link}" style="color:${col};">${e.link}</a>`:''}</div>`).join(''), col, t));
   return `<div style="font-family:${font};background:${bg};min-height:1123px;">
     <div style="background:linear-gradient(135deg,${col} 0%,${bg2} 60%);padding:28px 36px 20px;">
       ${v.showPhoto && v.photoUrl ? `<img src="${v.photoUrl}" style="float:right;width:62px;height:82px;object-fit:cover;border-radius:6px;border:2px solid ${rgba(col,.4)};margin-left:12px;">` : ''}
-      <div style="font-size:26px;font-weight:700;color:#fff;letter-spacing:.01em;">${v.name||'姓名'}${v.nameEn?`<span style="font-size:14px;font-weight:300;opacity:.7;margin-left:10px;">${v.nameEn}</span>`:''}</div>
-      ${v.jobTitle?`<div style="font-size:13px;color:${lighten(col,120)};margin-top:4px;">${v.jobTitle}</div>`:''}
-      <div style="font-size:11px;color:rgba(255,255,255,.7);margin-top:8px;">${contactRow(v,'rgba(255,255,255,.9)')}</div>
+      <div style="font-size:${t.szName}px;font-weight:700;color:#fff;letter-spacing:.01em;">${v.name||'姓名'}${v.nameEn?`<span style="font-size:${Math.round(t.szName*0.54)}px;font-weight:300;opacity:.7;margin-left:10px;">${v.nameEn}</span>`:''}</div>
+      ${v.jobTitle?`<div style="font-size:${t.szRole}px;color:${lighten(col,120)};margin-top:4px;">${v.jobTitle}</div>`:''}
+      <div style="font-size:${t.szMeta}px;color:rgba(255,255,255,.7);margin-top:8px;">${contactRow(v,'rgba(255,255,255,.9)')}</div>
     </div>
     <div style="padding:24px 36px;">${sections.join('')}</div>
   </div>`;
 }
-function sectionDark(title, body, col) {
+function sectionDark(title, body, col, t) {
+  const sz = t ? t.szSection : 13;
   return `<div style="margin-bottom:18px;">
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
       <div style="width:3px;height:14px;background:${col};border-radius:2px;"></div>
-      <span style="font-size:13px;font-weight:700;color:${col};letter-spacing:.06em;">${title}</span>
+      <span style="font-size:${sz}px;font-weight:700;color:${col};letter-spacing:.06em;">${title}</span>
       <div style="flex:1;height:1px;background:rgba(255,255,255,.08);"></div>
     </div>
     ${body}
@@ -744,56 +841,56 @@ function sectionDark(title, body, col) {
 }
 
 function renderTwoCol(v, col, font) {
-  const sideCol = col; const sideBg = isDark(col) ? col : col;
-  const textOnSide = '#fff';
-  // Sidebar sections
+  const t = v.t;
   const sideContent = [];
   if (v.showPhoto && v.photoUrl) sideContent.push(`<div style="text-align:center;margin-bottom:16px;"><img src="${v.photoUrl}" style="width:80px;height:107px;object-fit:cover;border-radius:6px;border:2px solid rgba(255,255,255,.3);"></div>`);
   sideContent.push(`<div style="text-align:center;margin-bottom:16px;">
-    <div style="font-size:18px;font-weight:700;color:#fff;line-height:1.3;">${v.name||'姓名'}</div>
-    ${v.nameEn?`<div style="font-size:11px;color:rgba(255,255,255,.6);margin-top:2px;">${v.nameEn}</div>`:''}
-    ${v.jobTitle?`<div style="font-size:11px;color:rgba(255,255,255,.85);margin-top:6px;font-weight:500;">${v.jobTitle}</div>`:''}
+    <div style="font-size:${Math.round(t.szName*0.75)}px;font-weight:700;color:#fff;line-height:1.3;">${v.name||'姓名'}</div>
+    ${v.nameEn?`<div style="font-size:${t.szMeta}px;color:rgba(255,255,255,.6);margin-top:2px;">${v.nameEn}</div>`:''}
+    ${v.jobTitle?`<div style="font-size:${t.szMeta}px;color:rgba(255,255,255,.85);margin-top:6px;font-weight:500;">${v.jobTitle}</div>`:''}
   </div>`);
   const contacts = [];
-  if (v.phone) contacts.push(`📞 ${v.phone}`);
-  if (v.email) contacts.push(`✉ ${v.email}`);
-  if (v.city) contacts.push(`📍 ${v.city}`);
-  if (v.linkedin) contacts.push(`💼 ${v.linkedin}`);
-  if (v.wechat) contacts.push(`💬 ${v.wechat}`);
-  if (contacts.length) sideContent.push(`<div style="margin-bottom:16px;">${sideSection2('联系方式')}<div style="font-size:10.5px;color:rgba(255,255,255,.8);line-height:2;">${contacts.join('<br>')}</div></div>`);
-  if (v.showSkills && v.skillTools) sideContent.push(`<div style="margin-bottom:14px;">${sideSection2('技能')}<div>${(v.skillTools||'').split(',').filter(s=>s.trim()).map(s=>`<div style="margin-bottom:4px;"><span style="font-size:10.5px;color:rgba(255,255,255,.8);">${s.trim()}</span><div style="height:2px;background:rgba(255,255,255,.15);border-radius:1px;margin-top:2px;"><div style="height:100%;width:75%;background:rgba(255,255,255,.5);border-radius:1px;"></div></div></div>`).join('')}</div></div>`);
-  if (v.showSkills && v.skillLang) sideContent.push(`<div style="margin-bottom:14px;">${sideSection2('语言')}<div style="font-size:10.5px;color:rgba(255,255,255,.8);line-height:1.8;">${v.skillLang}</div></div>`);
-  if (v.showSkills && v.skillCerts) sideContent.push(`<div style="margin-bottom:14px;">${sideSection2('证书')}<div style="font-size:10.5px;color:rgba(255,255,255,.8);line-height:1.8;">${v.skillCerts}</div></div>`);
-  if (v.showAwards && v.award.length) sideContent.push(`<div style="margin-bottom:14px;">${sideSection2('荣誉奖项')}${v.award.map(e=>`<div style="font-size:10.5px;color:rgba(255,255,255,.8);margin-bottom:4px;"><strong>${e.name||''}</strong><br>${e.org||''} ${e.year||''}</div>`).join('')}</div>`);
+  if (v.phone) contacts.push(v.phone);
+  if (v.email) contacts.push(v.email);
+  if (v.city) contacts.push(v.city);
+  if (v.linkedin) contacts.push(v.linkedin);
+  if (v.wechat) contacts.push(v.wechat);
+  if (contacts.length) sideContent.push(`<div style="margin-bottom:16px;">${sideSection2('联系方式')}<div style="font-size:${t.szMeta}px;color:rgba(255,255,255,.8);line-height:2;">${contacts.join('<br>')}</div></div>`);
+  if (v.showSkills && v.skillTools) sideContent.push(`<div style="margin-bottom:14px;">${sideSection2('技能')}<div>${(v.skillTools||'').split(',').filter(s=>s.trim()).map(s=>`<div style="font-size:${t.szMeta}px;color:rgba(255,255,255,.8);padding:2px 0;border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:4px;">${s.trim()}</div>`).join('')}</div></div>`);
+  if (v.showSkills && v.skillLang) sideContent.push(`<div style="margin-bottom:14px;">${sideSection2('语言')}<div style="font-size:${t.szMeta}px;color:rgba(255,255,255,.8);line-height:1.8;">${v.skillLang}</div></div>`);
+  if (v.showSkills && v.skillCerts) sideContent.push(`<div style="margin-bottom:14px;">${sideSection2('证书')}<div style="font-size:${t.szMeta}px;color:rgba(255,255,255,.8);line-height:1.8;">${v.skillCerts}</div></div>`);
+  if (v.showAwards && v.award.length) sideContent.push(`<div style="margin-bottom:14px;">${sideSection2('荣誉奖项')}${v.award.map(e=>`<div style="font-size:${t.szMeta}px;color:rgba(255,255,255,.8);margin-bottom:4px;"><strong>${e.name||''}</strong><br>${e.org||''} ${e.year||''}</div>`).join('')}</div>`);
   // Main sections
   const mainContent = [];
-  if (v.showSummary && v.summary) mainContent.push(sectionMain('自我评价', `<p style="font-size:12px;color:#374151;line-height:1.7;">${v.summary}</p>`, col));
+  if (v.showSummary && v.summary) mainContent.push(sectionMain('自我评价', `<p style="font-size:${t.szBody}px;color:${t.clBody};line-height:1.7;">${v.summary}</p>`, col, t));
   if (v.edu.length) mainContent.push(sectionMain('教育经历', v.edu.map(e=>`
     <div style="margin-bottom:8px;"><div style="display:flex;justify-content:space-between;">
-      <strong style="font-size:12px;">${e.school||''}</strong><span style="font-size:11px;color:#6b7280;">${e.period||''}</span>
-    </div><div style="font-size:11px;color:#374151;">${e.degree||''}${e.gpa?` | <span style="color:${col}">${e.gpa}</span>`:''}</div></div>`).join(''), col));
+      <strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${e.school||''}</strong><span style="font-size:${t.szMeta}px;color:${t.clMeta};">${e.period||''}</span>
+    </div><div style="font-size:${t.szRole}px;color:${t.clRole};">${e.degree||''}${e.gpa?` | <span style="color:${col}">${e.gpa}</span>`:''}</div></div>`).join(''), col, t));
   if (v.work.length) mainContent.push(sectionMain('工作经历', v.work.map(e=>`
     <div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;">
-      <strong style="font-size:12px;">${e.company||''}</strong><span style="font-size:11px;color:#6b7280;">${e.period||''}</span>
-    </div><div style="font-size:11px;color:${col};font-weight:600;margin-bottom:3px;">${e.role||''}</div>
-    <div style="font-size:11px;color:#374151;line-height:1.65;">${descLines(e.desc)}</div></div>`).join(''), col));
+      <strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${e.company||''}</strong><span style="font-size:${t.szMeta}px;color:${t.clMeta};">${e.period||''}</span>
+    </div><div style="font-size:${t.szRole}px;color:${col};font-weight:600;margin-bottom:3px;">${e.role||''}</div>
+    <div style="font-size:${t.szBody}px;color:${t.clBody};line-height:1.65;">${descLines(e.desc)}</div></div>`).join(''), col, t));
   if (v.showProject && v.project.length) mainContent.push(sectionMain('项目经历', v.project.map(e=>`
     <div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;align-items:baseline;">
-      <strong style="font-size:12px;">${e.name||''}</strong><span style="font-size:11px;color:#6b7280;">${e.period||''}</span>
-    </div><div style="font-size:11px;color:${col};margin-bottom:2px;">${e.role||''}${e.link?` · <a href="${e.link}" style="color:${col};">🔗 链接</a>`:''}</div>
-    <div style="font-size:11px;color:#374151;line-height:1.65;">${descLines(e.desc)}</div></div>`).join(''), col));
-  if (v.showPubs && v.pub.length) mainContent.push(sectionMain('论文/作品', v.pub.map(e=>`<div style="margin-bottom:6px;font-size:11px;"><strong>${e.title||''}</strong>${e.venue?` · <em style="color:#6b7280;">${e.venue}</em>`:''}${e.link?` · <a href="${e.link}" style="color:${col};">${e.link}</a>`:''}</div>`).join(''), col));
-  return `<div style="font-family:${font};display:flex;min-height:1123px;">
-    <div style="width:220px;flex-shrink:0;background:${col};padding:28px 18px;min-height:1123px;">${sideContent.join('')}</div>
+      <strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${e.name||''}</strong><span style="font-size:${t.szMeta}px;color:${t.clMeta};">${e.period||''}</span>
+    </div><div style="font-size:${t.szRole}px;color:${col};margin-bottom:2px;">${e.role||''}${e.link?` · <a href="${e.link}" style="color:${col};">🔗 链接</a>`:''}</div>
+    <div style="font-size:${t.szBody}px;color:${t.clBody};line-height:1.65;">${descLines(e.desc)}</div></div>`).join(''), col, t));
+  if (v.showPubs && v.pub.length) mainContent.push(sectionMain('论文/作品', v.pub.map(e=>`<div style="margin-bottom:6px;font-size:${t.szBody}px;color:${t.clBody};"><strong>${e.title||''}</strong>${e.venue?` · <em style="color:${t.clMeta};">${e.venue}</em>`:''}${e.link?` · <a href="${e.link}" style="color:${col};">${e.link}</a>`:''}</div>`).join(''), col, t));
+  return `<div style="font-family:${font};display:flex;min-height:1123px;color:${t.clBody};">
+    <div style="width:220px;flex-shrink:0;background:${col};color:#fff;padding:28px 18px;min-height:1123px;">${sideContent.join('')}</div>
     <div style="flex:1;padding:28px 28px;">${mainContent.join('')}</div>
   </div>`;
 }
 function sideSection2(title) {
   return `<div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.5);letter-spacing:.1em;text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,.15);padding-bottom:4px;margin-bottom:8px;">${title}</div>`;
 }
-function sectionMain(title, body, col) {
+function sectionMain(title, body, col, t) {
+  const sz = t ? t.szSection : 13;
+  const cl = t ? t.clSection : col;
   return `<div style="margin-bottom:18px;">
-    <div style="font-size:13px;font-weight:700;color:${col};border-bottom:2px solid ${col};padding-bottom:3px;margin-bottom:8px;letter-spacing:.04em;">${title}</div>
+    <div style="font-size:${sz}px;font-weight:700;color:${cl};border-bottom:2px solid ${cl};padding-bottom:3px;margin-bottom:8px;letter-spacing:.04em;">${title}</div>
     ${body}
   </div>`;
 }
@@ -822,7 +919,7 @@ function getFullHTML() {
   else if (S.template === 'dark') body = renderDark(v,col,font);
   else if (S.template === 'twocol') body = renderTwoCol(v,col,font);
   return `<!DOCTYPE html><html lang="zh"><head><meta charset="UTF-8">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&family=Source+Serif+4:wght@300;400;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@400;600;700&family=Inter:wght@300;400;500;600;700&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&family=Lato:wght@300;400;700&family=Raleway:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>*{box-sizing:border-box;margin:0;padding:0;}body{background:#d1d5db;display:flex;justify-content:center;padding:24px;}
 @media print{body{background:#fff;padding:0;}#page{box-shadow:none;}}
 #page{width:794px;min-height:1123px;background:#fff;box-shadow:0 4px 24px rgba(0,0,0,.2);}</style>
@@ -846,6 +943,96 @@ function exportPDF() {
 function resetAll() {
   if (!confirm('确认重置所有内容？')) return;
   location.reload();
+}
+
+// ── Demo data ──
+function fillDemoData() {
+  // Basic info — desensitized
+  document.getElementById('name').value = '李明远';
+  document.getElementById('nameEn').value = 'Alex Li';
+  document.getElementById('jobTitle').value = '增长产品经理 / Growth PM';
+  document.getElementById('phone').value = '+86 138 **** 8888';
+  document.getElementById('email').value = 'alexli@example.com';
+  document.getElementById('city').value = '上海';
+  document.getElementById('linkedin').value = 'linkedin.com/in/alexli';
+
+  // Summary
+  document.getElementById('showSummary').checked = true;
+  document.getElementById('summaryBody').style.display = '';
+  document.getElementById('summary').value = '5 年增长方向产品经验，主导多个裂变拉新与留存项目，累计带动新增注册用户 300 万+。擅长数据驱动决策、A/B 实验设计及跨团队协作，曾在字节跳动、美团担任核心 PM 职位。';
+
+  // Skills
+  document.getElementById('showSkills').checked = true;
+  document.getElementById('skillTools').value = 'SQL, Python, Mixpanel, Amplitude, A/B Testing, Figma, Tableau';
+  document.getElementById('skillLang').value = '普通话（母语），英语（CET-6 588）';
+  document.getElementById('skillCerts').value = 'Google Analytics 认证，PMP';
+
+  // Clear existing entries
+  S.eduEntries = [];
+  S.workEntries = [];
+  S.projectEntries = [];
+  S.awardEntries = [];
+  S.pubEntries = [];
+
+  // Education
+  const edu1 = {id: Date.now(), data: {school:'复旦大学', degree:'硕士 · 计算机科学与技术', period:'2017.09 — 2020.06', gpa:'GPA 3.8/4.0，专业前 8%'}};
+  const edu2 = {id: Date.now()+1, data: {school:'华中科技大学', degree:'本科 · 软件工程', period:'2013.09 — 2017.06', gpa:''}};
+  S.eduEntries = [edu1, edu2];
+
+  // Work
+  const work1 = {id: Date.now()+10, data: {
+    company:'字节跳动',
+    role:'高级产品经理 · 增长组',
+    period:'2022.03 — 至今',
+    desc:'• 主导抖音海外版拉新裂变体系搭建，设计"邀请有礼"双边激励机制，首月带动新增 DAU 12 万，ROI 1:4.2\n• 推动归因模型从 Last-Click 升级为数据驱动归因，渠道预算分配效率提升 23%\n• 联合数据团队搭建增长实验平台，支持同时在线 60+ A/B 实验，实验周期缩短 40%'
+  }};
+  const work2 = {id: Date.now()+11, data: {
+    company:'美团',
+    role:'产品经理 · 用户增长',
+    period:'2020.07 — 2022.02',
+    desc:'• 负责美团外卖新用户激活链路优化，通过落地页分层实验将注册转化率提升 18%\n• 设计"老带新"裂变活动，单次活动新增绑卡用户 8 万，获客成本降低 35%\n• 主导用户分层召回策略，沉默用户 7 日回归率从 6% 提升至 11%'
+  }};
+  S.workEntries = [work1, work2];
+
+  // Projects
+  document.getElementById('showProject').checked = true;
+  const proj1 = {id: Date.now()+20, data: {
+    name:'增长实验自动化平台',
+    role:'产品负责人',
+    period:'2023.06 — 2023.12',
+    link:'',
+    desc:'• 解决业务侧实验配置繁琐、依赖研发排期问题，实现 PM 自助配置上线\n• 技术栈：React + Node.js + ClickHouse，接入 5 条业务线\n• 上线后实验迭代速度提升 3 倍，月均节省研发工时 200h+'
+  }};
+  const proj2 = {id: Date.now()+21, data: {
+    name:'裂变活动效果归因看板',
+    role:'独立设计 & 需求方',
+    period:'2022.11',
+    link:'',
+    desc:'• 整合多渠道归因数据，实现活动 ROI 实时可视化，替代 3 张手工报表\n• 基于 SQL + Tableau，数据延迟从 T+1 降至 2 小时内刷新'
+  }};
+  S.projectEntries = [proj1, proj2];
+
+  // Awards
+  document.getElementById('showAwards').checked = true;
+  const award1 = {id: Date.now()+30, data: {name:'字节跳动年度最佳增长项目奖', org:'字节跳动', year:'2023'}};
+  const award2 = {id: Date.now()+31, data: {name:'全国大学生数学建模竞赛 二等奖', org:'教育部', year:'2016'}};
+  S.awardEntries = [award1, award2];
+
+  // Re-render all entry lists
+  renderEntryList('edu');
+  renderEntryList('work');
+  renderEntryList('project');
+  renderEntryList('award');
+
+  // Expand all sections so the user sees everything is filled
+  document.querySelectorAll('.sb-section-head').forEach(head => {
+    if (!head.classList.contains('open')) {
+      head.classList.add('open');
+      head.nextElementSibling.style.display = '';
+    }
+  });
+
+  render();
 }
 
 // ── Init ──
