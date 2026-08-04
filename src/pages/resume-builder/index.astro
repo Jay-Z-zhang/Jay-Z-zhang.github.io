@@ -1,0 +1,188 @@
+---
+import Layout from "@layouts/Layout.astro";
+import Container from "@components/Container.astro";
+import BackToPrevious from "@components/BackToPrevious.astro";
+---
+
+<Layout title="简历生成器" description="多模板在线简历工具 — 实时预览、一键导出 PDF/HTML、中英双语、8 种字体">
+  <Container>
+    <div class="mb-6 pt-8">
+      <BackToPrevious href="/projects">← 返回作品</BackToPrevious>
+    </div>
+
+    <!-- ═══ HERO ═══ -->
+    <section class="relative py-16 overflow-hidden">
+      <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] pointer-events-none"></div>
+      <div class="absolute bottom-0 left-0 w-[300px] h-[300px] bg-accent/5 rounded-full blur-[100px] pointer-events-none"></div>
+
+      <div class="relative z-10">
+        <div class="flex items-center gap-2 mb-6">
+          <span class="inline-flex items-center gap-1.5 text-[11px] font-semibold text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20 tracking-wide">
+            <span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+            产品工具
+          </span>
+          <span class="text-[11px] font-medium text-muted-fg bg-secondary/60 px-3 py-1 rounded-full border border-border">效率工具</span>
+        </div>
+
+        <h1 class="text-4xl md:text-5xl font-bold text-foreground leading-tight tracking-tight mb-4">
+          简历生成器
+          <span class="block text-lg md:text-xl font-normal text-muted-fg mt-3 tracking-normal">多模板 · 实时预览 · 一键导出 · 中英双语</span>
+        </h1>
+
+        <p class="text-base md:text-lg text-muted-fg leading-relaxed max-w-2xl">
+          左侧编辑、右侧实时预览的在线简历工具。支持
+          <span class="text-primary font-medium">4 套模板</span>、
+          <span class="text-primary font-medium">8 种字体</span>、
+          <span class="text-primary font-medium">10 种主题色</span>，
+          一键导出 PDF 或 HTML，让写简历回归内容本身。
+        </p>
+      </div>
+    </section>
+
+    <!-- ═══ 项目配图 ═══ -->
+    <section class="mb-16">
+      <div class="rounded-2xl border border-border/60 bg-secondary/30 overflow-hidden glow-border">
+        <img src="/images/resume-builder.svg" alt="简历生成器" class="w-full h-auto">
+      </div>
+    </section>
+
+    <!-- ═══ 核心功能 ═══ -->
+    <section class="mb-16">
+      <div class="flex items-center gap-3 mb-6">
+        <span class="section-label text-[11px] font-semibold tracking-widest text-muted-fg uppercase flex items-center gap-3">
+          <span class="w-5 h-px bg-primary"></span>
+          核心功能
+        </span>
+        <div class="flex-1 h-px bg-border/50"></div>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-4">
+        <div class="rounded-xl border border-border bg-gradient-to-b from-secondary/30 to-transparent p-6 space-y-4 group hover:border-primary/20 hover:shadow-lg transition-all duration-300">
+          <div class="w-10 h-10 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+          </div>
+          <h3 class="text-sm font-semibold text-foreground">4 套专业模板</h3>
+          <p class="text-xs text-muted-fg leading-relaxed">极简黑白、蓝色现代、深色强调、双栏布局，一键切换风格</p>
+        </div>
+
+        <div class="rounded-xl border border-border bg-gradient-to-b from-secondary/30 to-transparent p-6 space-y-4 group hover:border-primary/20 hover:shadow-lg transition-all duration-300">
+          <div class="w-10 h-10 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></svg>
+          </div>
+          <h3 class="text-sm font-semibold text-foreground">8 种字体 + 10 种主题色</h3>
+          <p class="text-xs text-muted-fg leading-relaxed">思源黑体、Inter、DM Sans 等，字号颜色逐层微调</p>
+        </div>
+
+        <div class="rounded-xl border border-border bg-gradient-to-b from-secondary/30 to-transparent p-6 space-y-4 group hover:border-primary/20 hover:shadow-lg transition-all duration-300">
+          <div class="w-10 h-10 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+          </div>
+          <h3 class="text-sm font-semibold text-foreground">一键导出 PDF / HTML</h3>
+          <p class="text-xs text-muted-fg leading-relaxed">打印级 PDF 导出，或下载独立 HTML 文件随时编辑</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ 使用场景 ═══ -->
+    <section class="mb-16">
+      <div class="flex items-center gap-3 mb-6">
+        <span class="section-label text-[11px] font-semibold tracking-widest text-muted-fg uppercase flex items-center gap-3">
+          <span class="w-5 h-px bg-primary"></span>
+          使用场景
+        </span>
+        <div class="flex-1 h-px bg-border/50"></div>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-4">
+        <div class="rounded-xl border border-border bg-secondary/20 p-6 relative overflow-hidden group hover:border-primary/15 transition-all duration-300">
+          <div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-primary/40 to-transparent"></div>
+          <div class="text-[11px] font-bold text-primary/60 font-mono mb-3">01</div>
+          <h3 class="text-sm font-semibold text-foreground mb-2">求职投简历</h3>
+          <p class="text-xs text-muted-fg leading-relaxed">快速生成专业简历，针对岗位调整内容和模板风格</p>
+        </div>
+        <div class="rounded-xl border border-border bg-secondary/20 p-6 relative overflow-hidden group hover:border-primary/15 transition-all duration-300">
+          <div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-primary/40 to-transparent"></div>
+          <div class="text-[11px] font-bold text-primary/60 font-mono mb-3">02</div>
+          <h3 class="text-sm font-semibold text-foreground mb-2">中英双语简历</h3>
+          <p class="text-xs text-muted-fg leading-relaxed">一键切换中英文界面，外企/海外求职无缝适配</p>
+        </div>
+        <div class="rounded-xl border border-border bg-secondary/20 p-6 relative overflow-hidden group hover:border-primary/15 transition-all duration-300">
+          <div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-primary/40 to-transparent"></div>
+          <div class="text-[11px] font-bold text-primary/60 font-mono mb-3">03</div>
+          <h3 class="text-sm font-semibold text-foreground mb-2">作品集展示</h3>
+          <p class="text-xs text-muted-fg leading-relaxed">下载 HTML 嵌入个人网站，作为交互式作品集展示</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ CTA ══ -->
+    <section class="mb-16">
+      <div class="rounded-2xl border border-border/60 bg-gradient-to-b from-secondary/30 to-transparent p-10 text-center space-y-6">
+        <h2 class="text-2xl md:text-3xl font-bold text-foreground">准备好生成你的简历了吗？</h2>
+        <p class="text-muted-fg max-w-md mx-auto">打开工具 → 填写信息 → 选择模板 → 导出 PDF，全程不超过 10 分钟。</p>
+        <div class="flex flex-wrap items-center justify-center gap-3 pt-2">
+          <a
+            href="/apps/resume-builder/"
+            class="inline-flex items-center gap-2 px-8 py-3 rounded-lg bg-primary text-primary-fg text-sm font-semibold hover:bg-primary/90 transition-all duration-200 hover:shadow-[0_0_16px_rgba(34,197,94,0.3)]"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
+            打开简历生成器
+          </a>
+          <a
+            href="https://github.com/Jay-Z-zhang"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center gap-2 px-5 py-3 rounded-lg border border-border text-foreground text-sm font-medium hover:bg-secondary hover:border-primary/20 transition-all duration-200"
+          >
+            <svg height="16" width="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+            GitHub 源码
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ 分隔线 ═══ -->
+    <div class="h-px bg-gradient-to-r from-transparent via-border to-transparent mb-16"></div>
+
+    <!-- ═══ 在线体验 ═══ -->
+    <section class="pb-16">
+      <div class="text-center mb-8">
+        <div class="inline-flex items-center gap-2 text-[11px] font-semibold tracking-widest text-muted-fg uppercase mb-4">
+          <span class="w-5 h-px bg-primary"></span>
+          在线体验
+          <span class="w-5 h-px bg-primary"></span>
+        </div>
+        <h2 class="text-2xl md:text-3xl font-bold text-foreground">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-4px;margin-right:8px;opacity:.7"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+          实时预览，所见即所得
+        </h2>
+        <p class="text-sm text-muted-fg mt-3 max-w-md mx-auto">左侧填写信息，右侧 A4 纸张实时渲染，切换模板即时生效</p>
+      </div>
+
+      <div class="rounded-2xl border border-border/60 bg-secondary/20 overflow-hidden glow-border">
+        <div class="px-4 py-3 border-b border-border/40 flex items-center gap-2">
+          <span class="w-3 h-3 rounded-full bg-[#ff5f57]"></span>
+          <span class="w-3 h-3 rounded-full bg-[#febc2e]"></span>
+          <span class="w-3 h-3 rounded-full bg-[#28c840]"></span>
+          <span class="ml-3 text-xs text-muted-fg font-mono">jayzzhang.online/apps/resume-builder</span>
+        </div>
+        <iframe
+          src="/apps/resume-builder/"
+          class="w-full"
+          style="height: 3200px; border: none;"
+          title="简历生成器"
+        ></iframe>
+      </div>
+    </section>
+  </Container>
+
+  <style>
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+    .animate-pulse {
+      animation: pulse 2s ease-in-out infinite;
+    }
+  </style>
+</Layout>
