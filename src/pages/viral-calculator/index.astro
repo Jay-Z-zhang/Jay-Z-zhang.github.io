@@ -6,110 +6,208 @@ import BackToPrevious from "@components/BackToPrevious.astro";
 
 <Layout title="裂变漏斗计算器" description="增长 PM 必备工具 — 快速估算裂变活动 ROI、K 因子、获客成本">
   <Container>
-    <div class="mb-6">
+    <div class="mb-6 pt-8">
       <BackToPrevious href="/projects">← 返回作品</BackToPrevious>
     </div>
 
-    <!-- 项目说明 -->
-    <div class="py-12 space-y-8">
-      <div class="space-y-4">
-        <div class="flex items-center gap-3">
-          <span class="text-xs font-medium text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20">产品工具</span>
-          <span class="text-xs font-medium text-muted-fg bg-secondary px-3 py-1 rounded-full border border-border">Growth PM</span>
-        </div>
-        <h1 class="text-4xl font-bold text-foreground">裂变漏斗计算器</h1>
-        <p class="text-xl text-muted-fg leading-relaxed">一个帮你在活动设计阶段就能预估效果的在线计算器，支持 K 因子、转化率、获客成本等核心指标的实时计算。</p>
-      </div>
+    <!-- ═══ HERO ═══ -->
+    <section class="relative py-16 overflow-hidden">
+      <!-- Background glows -->
+      <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] pointer-events-none"></div>
+      <div class="absolute bottom-0 left-0 w-[300px] h-[300px] bg-accent/5 rounded-full blur-[100px] pointer-events-none"></div>
 
-      <!-- 项目配图 -->
-      <div class="rounded-xl border border-border bg-secondary/20 overflow-hidden glow-border">
+      <div class="relative z-10">
+        <!-- Tags -->
+        <div class="flex items-center gap-2 mb-6">
+          <span class="inline-flex items-center gap-1.5 text-[11px] font-semibold text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20 tracking-wide">
+            <span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+            产品工具
+          </span>
+          <span class="text-[11px] font-medium text-muted-fg bg-secondary/60 px-3 py-1 rounded-full border border-border">Growth PM</span>
+        </div>
+
+        <!-- Title -->
+        <h1 class="text-4xl md:text-5xl font-bold text-foreground leading-tight tracking-tight mb-4">
+          裂变漏斗计算器
+          <span class="block text-lg md:text-xl font-normal text-muted-fg mt-3 tracking-normal">为增长团队打造的裂变活动预估工具</span>
+        </h1>
+
+        <p class="text-base md:text-lg text-muted-fg leading-relaxed max-w-2xl">
+          在活动设计阶段就能预估效果——输入 DAU、分享率、转化率等参数，
+          实时计算 <span class="text-primary font-medium">K 因子</span>、<span class="text-primary font-medium">CAC</span> 和 <span class="text-primary font-medium">ROI</span>，
+          辅助预算决策和方案评审。
+        </p>
+      </div>
+    </section>
+
+    <!-- ═══ 项目配图 ═══ -->
+    <section class="mb-16">
+      <div class="rounded-2xl border border-border/60 bg-secondary/30 overflow-hidden glow-border">
         <img src="/images/viral-calculator.svg" alt="裂变漏斗计算器" class="w-full h-auto">
       </div>
+    </section>
 
-      <!-- 核心功能 -->
+    <!-- ═══ 核心指标 ═══ -->
+    <section class="mb-16">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div class="rounded-xl border border-border bg-gradient-to-b from-secondary/40 to-secondary/10 p-4 text-center group hover:border-primary/20 transition-all duration-300">
+          <div class="text-2xl md:text-3xl font-extrabold text-primary font-mono tabular-nums">K</div>
+          <div class="text-[11px] text-muted-fg mt-1">K 因子</div>
+        </div>
+        <div class="rounded-xl border border-border bg-gradient-to-b from-secondary/40 to-secondary/10 p-4 text-center group hover:border-primary/20 transition-all duration-300">
+          <div class="text-2xl md:text-3xl font-extrabold text-primary font-mono tabular-nums">CAC</div>
+          <div class="text-[11px] text-muted-fg mt-1">获客成本</div>
+        </div>
+        <div class="rounded-xl border border-border bg-gradient-to-b from-secondary/40 to-secondary/10 p-4 text-center group hover:border-primary/20 transition-all duration-300">
+          <div class="text-2xl md:text-3xl font-extrabold text-primary font-mono tabular-nums">ROI</div>
+          <div class="text-[11px] text-muted-fg mt-1">投入产出比</div>
+        </div>
+        <div class="rounded-xl border border-border bg-gradient-to-b from-secondary/40 to-secondary/10 p-4 text-center group hover:border-primary/20 transition-all duration-300">
+          <div class="text-2xl md:text-3xl font-extrabold text-primary font-mono tabular-nums">GMV</div>
+          <div class="text-[11px] text-muted-fg mt-1">交易总额</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ 核心功能 ═══ -->
+    <section class="mb-16">
+      <div class="flex items-center gap-3 mb-6">
+        <span class="section-label text-[11px] font-semibold tracking-widest text-muted-fg uppercase flex items-center gap-3">
+          <span class="w-5 h-px bg-primary"></span>
+          核心功能
+        </span>
+        <div class="flex-1 h-px bg-border/50"></div>
+      </div>
+
       <div class="grid md:grid-cols-3 gap-4">
-        <div class="rounded-xl border border-border bg-secondary/20 p-5 space-y-2">
-          <div class="text-2xl">📊</div>
+        <!-- Feature 1 -->
+        <div class="rounded-xl border border-border bg-gradient-to-b from-secondary/30 to-transparent p-6 space-y-4 group hover:border-primary/20 hover:shadow-[0_0_0_1px_rgba(34,197,94,0.1),0_8px_32px_rgba(0,0,0,0.3)] transition-all duration-300">
+          <div class="w-10 h-10 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/>
+            </svg>
+          </div>
           <h3 class="text-sm font-semibold text-foreground">K 因子实时计算</h3>
-          <p class="text-xs text-muted-fg">分享率 × 传播人数 × 助力率 × 新客转化率，一目了然</p>
+          <p class="text-xs text-muted-fg leading-relaxed">分享率 × 传播人数 × 助力率 × 新客转化率，拖动滑块即可看到 K 因子的实时变化</p>
         </div>
-        <div class="rounded-xl border border-border bg-secondary/20 p-5 space-y-2">
-          <div class="text-2xl"></div>
+
+        <!-- Feature 2 -->
+        <div class="rounded-xl border border-border bg-gradient-to-b from-secondary/30 to-transparent p-6 space-y-4 group hover:border-primary/20 hover:shadow-[0_0_0_1px_rgba(34,197,94,0.1),0_8px_32px_rgba(0,0,0,0.3)] transition-all duration-300">
+          <div class="w-10 h-10 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+            </svg>
+          </div>
           <h3 class="text-sm font-semibold text-foreground">ROI 敏感性分析</h3>
-          <p class="text-xs text-muted-fg">调整任意参数，实时看 ROI 和获客成本的变化</p>
+          <p class="text-xs text-muted-fg leading-relaxed">调整任意参数，实时查看 ROI 和获客成本的变化，快速定位最优方案</p>
         </div>
-        <div class="rounded-xl border border-border bg-secondary/20 p-5 space-y-2">
-          <div class="text-2xl">⚖️</div>
+
+        <!-- Feature 3 -->
+        <div class="rounded-xl border border-border bg-gradient-to-b from-secondary/30 to-transparent p-6 space-y-4 group hover:border-primary/20 hover:shadow-[0_0_0_1px_rgba(34,197,94,0.1),0_8px_32px_rgba(0,0,0,0.3)] transition-all duration-300">
+          <div class="w-10 h-10 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/>
+            </svg>
+          </div>
           <h3 class="text-sm font-semibold text-foreground">裂变 vs 广告对比</h3>
-          <p class="text-xs text-muted-fg">对比两种获客渠道的 CAC 和 ROI，辅助预算决策</p>
+          <p class="text-xs text-muted-fg leading-relaxed">对比两种获客渠道的 CAC 和 ROI，用数据辅助预算分配决策</p>
         </div>
       </div>
+    </section>
 
-      <!-- 使用场景 -->
-      <div class="rounded-xl border border-border bg-secondary/20 p-6 space-y-4">
-        <h2 class="text-lg font-semibold text-foreground">使用场景</h2>
-        <div class="space-y-3">
-          <div class="flex items-start gap-3">
-            <span class="text-primary font-bold text-sm mt-0.5">01</span>
-            <div>
-              <p class="text-sm text-foreground font-medium">活动方案评审</p>
-              <p class="text-xs text-muted-fg">快速验证数字是否合理，避免上线后发现 ROI 算不过来</p>
-            </div>
-          </div>
-          <div class="flex items-start gap-3">
-            <span class="text-primary font-bold text-sm mt-0.5">02</span>
-            <div>
-              <p class="text-sm text-foreground font-medium">活动复盘对比</p>
-              <p class="text-xs text-muted-fg">对比预估 vs 实际数据，优化下次活动模型</p>
-            </div>
-          </div>
-          <div class="flex items-start gap-3">
-            <span class="text-primary font-bold text-sm mt-0.5">03</span>
-            <div>
-              <p class="text-sm text-foreground font-medium">向上汇报</p>
-              <p class="text-xs text-muted-fg">用数据说话，给老板展示活动的预期收益和回本周期</p>
-            </div>
-          </div>
-        </div>
+    <!-- ═══ 使用场景 ═══ -->
+    <section class="mb-16">
+      <div class="flex items-center gap-3 mb-6">
+        <span class="section-label text-[11px] font-semibold tracking-widest text-muted-fg uppercase flex items-center gap-3">
+          <span class="w-5 h-px bg-primary"></span>
+          使用场景
+        </span>
+        <div class="flex-1 h-px bg-border/50"></div>
       </div>
 
-      <!-- GitHub 链接 -->
-      <div class="flex items-center gap-4">
+      <div class="grid md:grid-cols-3 gap-4">
+        <div class="rounded-xl border border-border bg-secondary/20 p-6 relative overflow-hidden group hover:border-primary/15 transition-all duration-300">
+          <div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-primary/40 to-transparent"></div>
+          <div class="text-[11px] font-bold text-primary/60 font-mono mb-3">01</div>
+          <h3 class="text-sm font-semibold text-foreground mb-2">活动方案评审</h3>
+          <p class="text-xs text-muted-fg leading-relaxed">快速验证数字是否合理，避免上线后才发现 ROI 算不过来</p>
+        </div>
+        <div class="rounded-xl border border-border bg-secondary/20 p-6 relative overflow-hidden group hover:border-primary/15 transition-all duration-300">
+          <div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-primary/40 to-transparent"></div>
+          <div class="text-[11px] font-bold text-primary/60 font-mono mb-3">02</div>
+          <h3 class="text-sm font-semibold text-foreground mb-2">活动复盘对比</h3>
+          <p class="text-xs text-muted-fg leading-relaxed">对比预估 vs 实际数据，找到偏差原因，优化下次活动模型</p>
+        </div>
+        <div class="rounded-xl border border-border bg-secondary/20 p-6 relative overflow-hidden group hover:border-primary/15 transition-all duration-300">
+          <div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-primary/40 to-transparent"></div>
+          <div class="text-[11px] font-bold text-primary/60 font-mono mb-3">03</div>
+          <h3 class="text-sm font-semibold text-foreground mb-2">向上汇报</h3>
+          <p class="text-xs text-muted-fg leading-relaxed">用数据说话，给老板展示活动的预期收益和回本周期</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ CTA 按钮 ═══ -->
+    <section class="mb-16">
+      <div class="flex flex-wrap items-center gap-3">
         <a
           href="https://github.com/Jay-Z-zhang"
           target="_blank"
           rel="noopener noreferrer"
-          class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-primary text-primary-fg text-sm font-medium hover:bg-primary/90 transition-colors"
+          class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-primary text-primary-fg text-sm font-medium hover:bg-primary/90 transition-all duration-200 hover:shadow-[0_0_16px_rgba(34,197,94,0.3)]"
         >
           <svg height="16" width="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
           GitHub 源码
         </a>
         <a
           href="/projects"
-          class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg border border-border text-foreground text-sm font-medium hover:bg-secondary transition-colors"
+          class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg border border-border text-foreground text-sm font-medium hover:bg-secondary hover:border-primary/20 transition-all duration-200"
         >
           查看全部作品
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
         </a>
       </div>
-    </div>
+    </section>
 
-    <!-- 分隔线 -->
-    <div class="h-px bg-border"></div>
+    <!-- ═══ 分隔线 ═══ -->
+    <div class="h-px bg-gradient-to-r from-transparent via-border to-transparent mb-16"></div>
 
-    <!-- 计算器嵌入 -->
-    <div class="py-12">
+    <!-- ══ 在线体验 ═══ -->
+    <section class="pb-16">
       <div class="text-center mb-8">
-        <h2 class="text-2xl font-bold text-foreground">🔁 在线体验</h2>
-        <p class="text-sm text-muted-fg mt-2">拖动滑块调整参数，实时查看漏斗效果和核心指标</p>
+        <div class="inline-flex items-center gap-2 text-[11px] font-semibold tracking-widest text-muted-fg uppercase mb-4">
+          <span class="w-5 h-px bg-primary"></span>
+          在线体验
+          <span class="w-5 h-px bg-primary"></span>
+        </div>
+        <h2 class="text-2xl md:text-3xl font-bold text-foreground">🔁 拖动滑块，实时计算</h2>
+        <p class="text-sm text-muted-fg mt-3 max-w-md mx-auto">调整 DAU、分享率、转化率等参数，实时查看漏斗效果和核心指标变化</p>
       </div>
-      <div class="rounded-xl border border-border bg-secondary/20 overflow-hidden">
+
+      <div class="rounded-2xl border border-border/60 bg-secondary/20 overflow-hidden glow-border">
+        <div class="px-4 py-3 border-b border-border/40 flex items-center gap-2">
+          <span class="w-3 h-3 rounded-full bg-[#ff5f57]"></span>
+          <span class="w-3 h-3 rounded-full bg-[#febc2e]"></span>
+          <span class="w-3 h-3 rounded-full bg-[#28c840]"></span>
+          <span class="ml-3 text-xs text-muted-fg font-mono">jayzzhang.online/viral-calculator</span>
+        </div>
         <iframe
           src="/apps/viral-calculator/"
           class="w-full"
-          style="height: 2400px; border: none;"
+          style="height: 2600px; border: none;"
           title="裂变漏斗计算器"
         ></iframe>
       </div>
-    </div>
+    </section>
   </Container>
+
+  <style>
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+    .animate-pulse {
+      animation: pulse 2s ease-in-out infinite;
+    }
+  </style>
 </Layout>
