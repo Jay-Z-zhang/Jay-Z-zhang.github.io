@@ -35,10 +35,9 @@ const projects: CollectionEntry<"projects">[] = (
           <span class="block text-2xl md:text-3xl text-primary mt-2">Jayz Zhang</span>
         </h1>
         <div class="h-10 flex items-center">
-          <span class="text-xl md:text-2xl text-accent">Growth PM · Trip &amp; TrainPal</span>
+          <span class="text-xl md:text-2xl text-accent" id="typewriter"></span>
           <span class="typewriter-cursor"></span>
         </div>
-        <p class="text-lg text-muted-fg font-medium tracking-wide">"用 AI 重构工作方式"</p>
         <div class="flex gap-3 pt-4">
           <a href="/projects" class="px-6 py-3 rounded-lg bg-primary text-primary-fg font-medium text-sm hover:bg-primary/90 transition-colors">查看作品</a>
           <a href="https://github.com/Jay-Z-zhang" target="_blank" rel="noopener noreferrer" class="px-6 py-3 rounded-lg border border-border text-foreground font-medium text-sm hover:bg-secondary transition-colors inline-flex items-center gap-2">
@@ -203,3 +202,40 @@ const projects: CollectionEntry<"projects">[] = (
   </section>
 
 </Layout>
+
+<script is:inline>
+  const phrases = [
+    'Growth PM',
+    '用 AI 重构工作方式',
+    'Share & Referral',
+  ];
+  const el = document.getElementById('typewriter');
+  if (!el) return;
+  let phraseIdx = 0, charIdx = 0, deleting = false;
+
+  function type() {
+    const current = phrases[phraseIdx];
+    if (!deleting) {
+      el.textContent = current.slice(0, ++charIdx);
+      if (charIdx === current.length) {
+        setTimeout(() => { deleting = true; requestAnimationFrame(tick); }, 1800);
+        return;
+      }
+    } else {
+      el.textContent = current.slice(0, --charIdx);
+      if (charIdx === 0) {
+        deleting = false;
+        phraseIdx = (phraseIdx + 1) % phrases.length;
+        setTimeout(() => requestAnimationFrame(tick), 300);
+        return;
+      }
+    }
+    requestAnimationFrame(tick);
+  }
+
+  function tick() {
+    setTimeout(type, deleting ? 40 : 80);
+  }
+
+  tick();
+</script>

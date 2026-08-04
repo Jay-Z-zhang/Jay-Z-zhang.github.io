@@ -7,7 +7,7 @@ import Search from "astro-pagefind/components/Search";
     transition:persist
     id="backdrop"
     class="invisible fixed left-0 top-0 z-50 flex h-screen w-full justify-center p-6"
-    style="background: rgba(0,0,0,0.7); backdrop-filter: blur(8px);"
+    style="background: rgba(0,0,0,0.5); backdrop-filter: blur(8px);"
   >
     <div
       id="pagefind-container"
@@ -92,7 +92,7 @@ import Search from "astro-pagefind/components/Search";
   :root {
     --pagefind-ui-scale: 0.75;
     --pagefind-ui-border-width: 1px;
-    --pagefind-ui-border-radius: 3px;
+    --pagefind-ui-border-radius: 6px;
     --pagefind-ui-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", sans-serif;
     --pagefind-ui-primary: #22c55e;
     --pagefind-ui-text: #94a3b8;
@@ -101,35 +101,53 @@ import Search from "astro-pagefind/components/Search";
     --pagefind-ui-tag: #1e293b;
   }
 
+  .light {
+    --pagefind-ui-primary: #16a34a;
+    --pagefind-ui-text: #475569;
+    --pagefind-ui-background: #ffffff;
+    --pagefind-ui-border: #e2e8f0;
+    --pagefind-ui-tag: #e2e8f0;
+  }
+
   #search input {
     font-weight: normal;
-    background-color: #0b0f1a;
-    color: #f1f5f9;
-    border-color: #1e293b;
+    background-color: var(--pagefind-ui-background);
+    color: var(--pagefind-ui-text);
+    border-color: var(--pagefind-ui-border);
+  }
+
+  .light #search input {
+    background-color: #f8fafc;
+    color: #0f172a;
+    border-color: #e2e8f0;
   }
 
   #search p {
     font-weight: normal;
-    color: #94a3b8;
+    color: var(--pagefind-ui-text);
   }
 
   #search .pagefind-ui__result-title {
     font-weight: 600;
-    color: #f1f5f9;
+    color: var(--color-foreground, #f1f5f9);
+  }
+
+  .light #search .pagefind-ui__result-title {
+    color: #0f172a;
   }
 
   #search .pagefind-ui__message {
     padding: 0;
     padding-bottom: 0.75rem;
-    color: #64748b;
+    color: var(--color-muted-fg, #64748b);
   }
 
   #search .pagefind-ui__result-extract {
-    color: #94a3b8;
+    color: var(--pagefind-ui-text);
   }
 
   #search .pagefind-ui__result-extract mark {
-    color: #22c55e;
+    color: var(--pagefind-ui-primary);
     background: transparent;
   }
 </style>

@@ -17,6 +17,19 @@
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
 }
 
+/* ── Light theme overrides ── */
+.light {
+  --color-background: #f8fafc;
+  --color-foreground: #0f172a;
+  --color-primary: #16a34a;
+  --color-primary-fg: #ffffff;
+  --color-secondary: #ffffff;
+  --color-secondary-fg: #475569;
+  --color-muted-fg: #64748b;
+  --color-accent: #16a34a;
+  --color-border: #e2e8f0;
+}
+
 /* ── Base ── */
 @layer base {
   *,
@@ -30,6 +43,10 @@
     color-scheme: dark;
     scroll-behavior: smooth;
     scroll-padding-top: 100px;
+  }
+
+  .light html {
+    color-scheme: light;
   }
 
   html,
@@ -52,8 +69,12 @@
   header.has-bg {
     background: rgba(11, 15, 26, 0.88) !important;
     backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
+    -webkit-backbackdrop-filter: blur(18px);
     border-bottom: 1px solid var(--color-border);
+  }
+
+  .light header.has-bg {
+    background: rgba(248, 250, 252, 0.88) !important;
   }
 
   main {
@@ -78,10 +99,22 @@
     var(--color-background);
 }
 
+.light .fluid-bg {
+  background:
+    radial-gradient(ellipse 65% 60% at 80% 15%, rgba(22, 163, 74, 0.05) 0%, transparent 55%),
+    radial-gradient(ellipse 45% 40% at 10% 85%, rgba(22, 163, 74, 0.03) 0%, transparent 45%),
+    var(--color-background);
+}
+
 /* ── Glow border ── */
 .glow-border {
   border: 1px solid rgba(34, 197, 94, 0.25);
   box-shadow: 0 0 28px rgba(34, 197, 94, 0.07);
+}
+
+.light .glow-border {
+  border-color: rgba(22, 163, 74, 0.3);
+  box-shadow: 0 0 20px rgba(22, 163, 74, 0.1);
 }
 
 /* ── Typewriter cursor ── */
@@ -121,13 +154,17 @@
   @apply translate-y-0 opacity-100;
 }
 
-/* ── Article prose (dark theme) ── */
+/* ── Article prose ── */
 article {
-  @apply prose prose-neutral max-w-full prose-invert;
-  @apply prose-headings:font-semibold prose-headings:text-white;
+  @apply prose prose-neutral max-w-full;
+  @apply prose-headings:font-semibold prose-headings:text-foreground;
   @apply prose-a:text-primary prose-a:no-underline;
   @apply prose-strong:text-foreground;
   @apply prose-code:text-accent;
+}
+
+.light article {
+  @apply prose-invert:prose-headings:text-foreground;
 }
 
 article a {
@@ -146,6 +183,10 @@ pre {
   background-color: var(--color-secondary) !important;
 }
 
+.light pre {
+  background-color: #f1f5f9 !important;
+}
+
 :root {
   --astro-code-foreground: #fafafa;
   --astro-code-background: #131928;
@@ -158,6 +199,20 @@ pre {
   --astro-code-token-string-expression: #ae42a0;
   --astro-code-token-punctuation: #94a3b8;
   --astro-code-token-link: #4ade80;
+}
+
+.light {
+  --astro-code-foreground: #0f172a;
+  --astro-code-background: #f1f5f9;
+  --astro-code-token-comment: #64748b;
+  --astro-code-token-keyword: #16a34a;
+  --astro-code-token-string: #059669;
+  --astro-code-token-function: #0d9488;
+  --astro-code-token-constant: #0f766e;
+  --astro-code-token-parameter: #2563eb;
+  --astro-code-token-string-expression: #7c3aed;
+  --astro-code-token-punctuation: #475569;
+  --astro-code-token-link: #059669;
 }
 
 /* ── Gallery image hover ── */
@@ -173,7 +228,7 @@ pre {
   transform: scale(1.05);
 }
 
-/* ── Project detail accordion ── */
+/* ─ Project detail accordion ── */
 .detail-panel {
   overflow: hidden;
   max-height: 0;
@@ -211,11 +266,20 @@ html.scrolled #back-to-top {
 
 .copy-code:hover {
   @apply transition-colors;
-  background-color: #1a2236;
+  background-color: var(--color-border);
 }
 
 .copy-code:active {
   @apply scale-90 transition-transform;
+}
+
+/* ── Theme toggle button ── */
+.theme-toggle {
+  @apply flex items-center justify-center w-9 h-9 rounded-sm border border-border bg-secondary text-muted-fg transition-colors duration-200;
+}
+
+.theme-toggle:hover {
+  @apply text-primary border-primary/30;
 }
 
 /* ── Reduced motion ── */
