@@ -204,38 +204,41 @@ const projects: CollectionEntry<"projects">[] = (
 </Layout>
 
 <script is:inline>
+  // 打字机效果
   const phrases = [
     'Growth PM',
     '用 AI 重构工作方式',
     'Share & Referral',
   ];
-  const el = document.getElementById('typewriter');
-  if (!el) return;
-  let phraseIdx = 0, charIdx = 0, deleting = false;
 
-  function type() {
-    const current = phrases[phraseIdx];
-    if (!deleting) {
-      el.textContent = current.slice(0, ++charIdx);
-      if (charIdx === current.length) {
-        setTimeout(() => { deleting = true; requestAnimationFrame(tick); }, 1800);
-        return;
+  function initTypewriter() {
+    const el = document.getElementById('typewriter');
+    if (!el) return;
+    let phraseIdx = 0, charIdx = 0, deleting = false;
+
+    function type() {
+      const current = phrases[phraseIdx];
+      if (!deleting) {
+        el.textContent = current.slice(0, ++charIdx);
+        if (charIdx === current.length) {
+          setTimeout(() => { deleting = true; type(); }, 1800);
+          return;
+        }
+      } else {
+        el.textContent = current.slice(0, --charIdx);
+        if (charIdx === 0) {
+          deleting = false;
+          phraseIdx = (phraseIdx + 1) % phrases.length;
+          setTimeout(type, 300);
+          return;
+        }
       }
-    } else {
-      el.textContent = current.slice(0, --charIdx);
-      if (charIdx === 0) {
-        deleting = false;
-        phraseIdx = (phraseIdx + 1) % phrases.length;
-        setTimeout(() => requestAnimationFrame(tick), 300);
-        return;
-      }
+      setTimeout(type, deleting ? 40 : 80);
     }
-    requestAnimationFrame(tick);
+
+    type();
   }
 
-  function tick() {
-    setTimeout(type, deleting ? 40 : 80);
-  }
-
-  tick();
+  document.addEventListener('DOMContentLoaded', initTypewriter);
+  document.addEventListener('astro:after-swap', initTypewriter);
 </script>
