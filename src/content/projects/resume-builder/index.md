@@ -2,7 +2,7 @@
 title: "简历生成器"
 description: "多模板在线简历工具 — 实时预览、一键导出 PDF/HTML、中英双语、8 种字体。"
 date: "2025-06-20"
-demoURL: "https://www.jayzzhang.online/resume-builder/"
+demoURL: "https://www.jayzzhang.online/apps/resume-builder/"
 repoURL: "https://github.com/Jay-Z-zhang"
 ---
 
