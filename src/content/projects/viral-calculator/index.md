@@ -6,6 +6,8 @@ demoURL: "https://www.jayzzhang.online/viral-calculator/"
 repoURL: "https://github.com/Jay-Z-zhang"
 ---
 
+![裂变漏斗计算器](/images/viral-calculator.svg)
+
 一个帮你在活动设计阶段就能预估效果的在线计算器。
 
 ## 功能亮点
