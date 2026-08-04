@@ -163,10 +163,6 @@ article {
   @apply prose-code:text-accent;
 }
 
-.light article {
-  @apply prose-invert:prose-headings:text-foreground;
-}
-
 article a {
   @apply underline underline-offset-[3px];
   @apply decoration-primary/30;
