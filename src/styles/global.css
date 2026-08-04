@@ -1,0 +1,234 @@
+@import 'tailwindcss';
+
+@plugin '@tailwindcss/typography';
+
+@theme {
+  --color-background: #0b0f1a;
+  --color-foreground: #f1f5f9;
+  --color-primary: #22c55e;
+  --color-primary-fg: #000000;
+  --color-secondary: #131928;
+  --color-secondary-fg: #94a3b8;
+  --color-muted-fg: #64748b;
+  --color-accent: #4ade80;
+  --color-border: #1e293b;
+
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+}
+
+/* ── Base ── */
+@layer base {
+  *,
+  ::after,
+  ::before {
+    border-color: var(--color-border);
+  }
+
+  html {
+    overflow-y: auto;
+    color-scheme: dark;
+    scroll-behavior: smooth;
+    scroll-padding-top: 100px;
+  }
+
+  html,
+  body {
+    @apply size-full;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    @apply antialiased flex flex-col;
+  }
+
+  header {
+    @apply fixed left-0 right-0 top-0 z-50 py-4 transition-all duration-300;
+    background: transparent;
+  }
+
+  header.has-bg {
+    background: rgba(11, 15, 26, 0.88) !important;
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  main {
+    @apply flex-1;
+  }
+
+  main.has-nav-padding {
+    @apply pt-24;
+  }
+
+  footer {
+    @apply py-8 border-t text-center;
+    border-color: var(--color-border);
+  }
+}
+
+/* ── Fluid background (hero) ── */
+.fluid-bg {
+  background:
+    radial-gradient(ellipse 65% 60% at 80% 15%, rgba(34, 197, 94, 0.07) 0%, transparent 55%),
+    radial-gradient(ellipse 45% 40% at 10% 85%, rgba(74, 222, 128, 0.04) 0%, transparent 45%),
+    var(--color-background);
+}
+
+/* ── Glow border ── */
+.glow-border {
+  border: 1px solid rgba(34, 197, 94, 0.25);
+  box-shadow: 0 0 28px rgba(34, 197, 94, 0.07);
+}
+
+/* ── Typewriter cursor ── */
+.typewriter-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1.3em;
+  background-color: var(--color-accent);
+  margin-left: 3px;
+  vertical-align: middle;
+  animation: cursor-blink 1s step-end infinite;
+}
+
+@keyframes cursor-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* ── Scroll reveal ── */
+.scroll-section {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.scroll-section.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.animate {
+  @apply -translate-y-3 opacity-0;
+  @apply transition-all duration-300 ease-out;
+}
+
+.animate.show {
+  @apply translate-y-0 opacity-100;
+}
+
+/* ── Article prose (dark theme) ── */
+article {
+  @apply prose prose-neutral max-w-full prose-invert;
+  @apply prose-headings:font-semibold prose-headings:text-white;
+  @apply prose-a:text-primary prose-a:no-underline;
+  @apply prose-strong:text-foreground;
+  @apply prose-code:text-accent;
+}
+
+article a {
+  @apply underline underline-offset-[3px];
+  @apply decoration-primary/30;
+  @apply transition-colors duration-300 ease-in-out;
+}
+
+article a:hover {
+  @apply decoration-primary/50;
+}
+
+/* ── Code blocks ── */
+pre {
+  @apply border border-border;
+  background-color: var(--color-secondary) !important;
+}
+
+:root {
+  --astro-code-foreground: #fafafa;
+  --astro-code-background: #131928;
+  --astro-code-token-comment: #64748b;
+  --astro-code-token-keyword: #22c55e;
+  --astro-code-token-string: #4ade80;
+  --astro-code-token-function: #86efac;
+  --astro-code-token-constant: #bbf7d0;
+  --astro-code-token-parameter: #4e8fdf;
+  --astro-code-token-string-expression: #ae42a0;
+  --astro-code-token-punctuation: #94a3b8;
+  --astro-code-token-link: #4ade80;
+}
+
+/* ── Gallery image hover ── */
+.gallery-img-wrap {
+  overflow: hidden;
+}
+
+.gallery-img-wrap img {
+  transition: transform 0.5s ease;
+}
+
+.gallery-img-wrap:hover img {
+  transform: scale(1.05);
+}
+
+/* ── Project detail accordion ── */
+.detail-panel {
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  transition: max-height 0.5s ease, opacity 0.4s ease;
+}
+
+.detail-panel.open {
+  max-height: 500px;
+  opacity: 1;
+}
+
+.chevron {
+  transition: transform 0.3s ease;
+}
+
+.chevron.up {
+  transform: rotate(180deg);
+}
+
+/* ── Back to top ── */
+html #back-to-top {
+  @apply pointer-events-none opacity-0;
+}
+
+html.scrolled #back-to-top {
+  @apply pointer-events-auto opacity-100;
+}
+
+/* ── Copy code button ── */
+.copy-code {
+  @apply absolute right-3 top-3 grid size-9 place-content-center rounded-sm border border-border duration-300 ease-in-out;
+  background-color: var(--color-secondary);
+}
+
+.copy-code:hover {
+  @apply transition-colors;
+  background-color: #1a2236;
+}
+
+.copy-code:active {
+  @apply scale-90 transition-transform;
+}
+
+/* ── Reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+  .scroll-section {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .typewriter-cursor {
+    animation: none;
+  }
+  .gallery-img-wrap img {
+    transition: none;
+  }
+}

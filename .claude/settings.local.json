@@ -1,0 +1,33 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 *)",
+      "Bash(pip3 install *)",
+      "WebFetch(domain:www.youtube.com)",
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "mcp__feishu-mcp__fetch-doc",
+      "Read(//Users/jayzzhang/Downloads/**)",
+      "Bash(python3 -c ' *)",
+      "mcp__feishu-mcp__update-doc",
+      "WebFetch(domain:www.kayak.com)",
+      "WebFetch(domain:www.expedia.com)",
+      "Bash(touch ~/.claude/settings.json)",
+      "Bash(touch ~/.claude/projects/test)",
+      "Bash(rm ~/.claude/projects/test)",
+      "Bash(curl -s --connect-timeout 3 https://www.feishu.cn)",
+      "mcp__feishu-mcp__list-docs",
+      "WebFetch(domain:datawhalechina.github.io)",
+      "WebFetch(domain:mingjie-pan-portfolio.lovable.app)",
+      "mcp__Claude_Preview__preview_start",
+      "Skill(dataviz)",
+      "Skill(dataviz:*)",
+      "Bash(swift -e ' *)",
+      "Bash(node -e ' *)",
+      "WebFetch(domain:www.jayzzhang.online)"
+    ]
+  },
+  "enabledMcpjsonServers": [
+    "xiaobang-mcp"
+  ]
+}

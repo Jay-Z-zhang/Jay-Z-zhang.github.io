@@ -1,0 +1,16 @@
+---
+type Props = {
+  href: string;
+};
+
+const { href } = Astro.props;
+---
+
+<a
+  href={href}
+  class="not-prose group relative flex w-fit flex-nowrap rounded-sm border border-border bg-secondary/20 py-1.5 pl-7 pr-3 text-muted-fg transition-colors duration-300 ease-in-out hover:border-primary/30 hover:text-primary"
+>
+  <div class="text-sm">
+    <slot />
+  </div>
+</a>

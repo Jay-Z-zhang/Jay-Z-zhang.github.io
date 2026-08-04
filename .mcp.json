@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "xiaobang-mcp": {
+      "type": "sse",
+      "url": "https://xiaobang-mcp-function.faas.ctripcorp.com/mcp",
+      "headers": {
+        "x-bbzai-mcp-token": "ada_0e80ff69f2e63de35ba8f960374976582ebbccfcf4b2a123be35fff85ec19b80",
+        "X-Knowledge-Id": "kb-1773726799902-k6de6t"
+      }
+    }
+  }
+}

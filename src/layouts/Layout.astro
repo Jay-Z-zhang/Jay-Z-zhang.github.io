@@ -1,0 +1,38 @@
+---
+import Head from "@components/Head.astro";
+import Header from "@components/Header.astro";
+import Footer from "@components/Footer.astro";
+import Pagefind from "@components/PageFind.astro";
+import { SITE } from "@consts";
+
+type Props = {
+  title: string;
+  description: string;
+  noNavPadding?: boolean;
+};
+
+const { title, description, noNavPadding = false } = Astro.props;
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <Head title={`${title} | ${SITE.TITLE}`} description={description} />
+  </head>
+  <body>
+    <noscript>
+      <style>
+        .animate, .scroll-section {
+          opacity: 1;
+          transform: none;
+        }
+      </style>
+    </noscript>
+    <Header hasHero={noNavPadding} />
+    <main class:list={[!noNavPadding && "has-nav-padding"]}>
+      <slot />
+    </main>
+    <Footer />
+    <Pagefind />
+  </body>
+</html>

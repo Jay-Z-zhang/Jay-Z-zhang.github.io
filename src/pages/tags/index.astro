@@ -1,0 +1,35 @@
+---
+import { getCollection } from "astro:content";
+import Layout from "@layouts/Layout.astro";
+import Container from "@components/Container.astro";
+import BackToPrevious from "@components/BackToPrevious.astro";
+
+const posts = await getCollection("blog", ({ data }) => !data.draft);
+const tags = [...new Set(posts.flatMap((post) => post.data.tags || []))].sort();
+---
+
+<Layout title="标签" description="文章标签列表">
+  <Container>
+    <div class="mb-6">
+      <BackToPrevious href="/">← 返回首页</BackToPrevious>
+    </div>
+    <div class="space-y-10">
+      <h1 class="text-3xl font-bold text-foreground">标签</h1>
+      <div class="flex flex-wrap gap-2">
+        {
+          tags.map((tag) => (
+            <a
+              href={`/tags/${tag}`}
+              class="rounded-sm border border-border bg-secondary/20 px-2 py-1 text-sm text-muted-fg transition-colors duration-300 ease-in-out hover:border-primary/30 hover:text-primary"
+            >
+              {tag}{" "}
+              <span class="text-sm text-muted-fg">
+                ({posts.filter((post) => post.data.tags?.includes(tag)).length})
+              </span>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </Container>
+</Layout>
