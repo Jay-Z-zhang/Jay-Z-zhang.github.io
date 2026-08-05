@@ -30,12 +30,12 @@ const projects: CollectionEntry<"projects">[] = (
     <div class="absolute bottom-20 right-1/4 w-80 h-80 bg-accent/3 rounded-full blur-[100px] pointer-events-none"></div>
 
     <!-- 全屏二进制粒子画布 -->
-    <div class="relative z-10 w-full max-w-5xl mx-auto px-6">
+    <div class="relative z-10 w-full">
       <BinaryName />
     </div>
 
     <!-- 文案 + CTA 居中叠加在画布下方 -->
-    <div class="relative z-10 text-center space-y-5 -mt-4 mb-8">
+    <div class="relative z-10 text-center space-y-5 -mt-12 mb-8">
       <div class="h-8 flex items-center justify-center">
         <span class="text-lg md:text-xl text-accent font-medium" id="typewriter"></span>
         <span class="typewriter-cursor"></span>
@@ -60,7 +60,7 @@ const projects: CollectionEntry<"projects">[] = (
   </section>
 
   <!-- ─────────── PROJECTS ─────────── -->
-  <section id="projects" class="py-24">
+  <section id="projects" class="py-20">
     <div class="max-w-6xl mx-auto px-6">
       <div class="text-center mb-16">
         <h2 class="text-3xl md:text-4xl font-bold text-foreground mb-3">项目作品</h2>
@@ -105,7 +105,7 @@ const projects: CollectionEntry<"projects">[] = (
   </section>
 
   <!-- ─────────── BLOG ─────────── -->
-  <section id="blog" class="py-24 relative">
+  <section id="blog" class="py-20 relative">
     <div class="absolute inset-0 bg-gradient-to-b from-background via-secondary/5 to-background pointer-events-none"></div>
     <div class="max-w-6xl mx-auto px-6 relative z-10">
       <div class="text-center mb-16">
@@ -128,7 +128,7 @@ const projects: CollectionEntry<"projects">[] = (
   </section>
 
   <!-- ─────────── GALLERY ─────────── -->
-  <section id="about" class="py-24 relative">
+  <section id="about" class="py-20 relative">
     <div class="max-w-6xl mx-auto px-6">
       <div class="text-center mb-16">
         <h2 class="text-3xl md:text-4xl font-bold text-foreground mb-3">In Case You Wanna Know More</h2>

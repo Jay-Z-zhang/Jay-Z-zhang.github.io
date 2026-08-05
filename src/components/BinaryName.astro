@@ -1,4 +1,4 @@
-<canvas id="binary-canvas" class="w-full h-auto" style="max-height: 420px;"></canvas>
+<canvas id="binary-canvas" class="w-full h-auto" style="max-height: 500px;"></canvas>
 
 <script is:inline>
 (function() {
@@ -17,9 +17,10 @@
       const isWide = window.innerWidth >= 768;
       const renderedW = canvas.offsetWidth || (isWide ? 960 : 480);
       const W = isWide ? renderedW : 480;
-      const H = isWide ? Math.round(W * 0.35) : 240;
+      const H = isWide ? Math.round(W * 0.3) : 240;
       canvas.width = W * dpr;
       canvas.height = H * dpr;
+      canvas.style.width = W + 'px';
       canvas.style.height = H + 'px';
       ctx.scale(dpr, dpr);
 
@@ -57,7 +58,7 @@
 
       let pixels1 = [], pixels2 = [];
       if (isWide) {
-        const fontSize = Math.min(150, W * 0.13);
+        const fontSize = Math.min(135, W * 0.115);
         pixels1 = getTextPixels('JAYZ ZHANG', W / 2, H / 2, fontSize);
       } else {
         pixels1 = getTextPixels('JAYZ', W / 2, H * 0.38, 80);
