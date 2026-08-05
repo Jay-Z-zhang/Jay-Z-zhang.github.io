@@ -3,6 +3,7 @@ import Layout from "@layouts/Layout.astro";
 import { SITE, HOME } from "@consts";
 import ArrowCard from "@components/ArrowCard.astro";
 import Link from "@components/Link.astro";
+import BinaryName from "@components/BinaryName.astro";
 import { getCollection } from "astro:content";
 import type { CollectionEntry } from "astro:content";
 
@@ -47,13 +48,9 @@ const projects: CollectionEntry<"projects">[] = (
         </div>
       </div>
 
-      <!-- 头像 -->
+      <!-- 二进制名字艺术 -->
       <div class="flex justify-center md:justify-start order-1 md:order-2">
-        <img
-          src="https://placehold.co/320x384/131928/4ade80?text=Jayz"
-          alt="Jayz Zhang"
-          class="w-72 h-80 md:w-80 md:h-96 rounded-2xl object-cover glow-border"
-        >
+        <BinaryName />
       </div>
 
     </div>

@@ -1,0 +1,153 @@
+<canvas id="binary-canvas" class="w-full max-w-md h-auto" style="max-height: 280px;"></canvas>
+
+<script is:inline>
+(function() {
+  const canvas = document.getElementById('binary-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+
+  const W = 480, H = 220;
+  canvas.width = W * dpr;
+  canvas.height = H * dpr;
+  canvas.style.width = W + 'px';
+  canvas.style.height = H + 'px';
+  ctx.scale(dpr, dpr);
+
+  const chars = '01';
+  const particles = [];
+  const spacing = 7;
+  const fontSize = 7;
+  let mouseX = -999, mouseY = -999;
+  const pushRadius = 40;
+  const pushForce = 3;
+  const springForce = 0.08;
+  const friction = 0.85;
+
+  function drawText(text, x, y, size, weight) {
+    ctx.font = weight + ' ' + size + 'px "JetBrains Mono", "Courier New", monospace';
+    ctx.fillStyle = '#fff';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(text, x, y);
+  }
+
+  // Render text to offscreen canvas to get pixel positions
+  function getTextPixels(text, cx, cy, size, weight) {
+    const offscreen = document.createElement('canvas');
+    offscreen.width = W;
+    offscreen.height = H;
+    const octx = offscreen.getContext('2d');
+    octx.font = weight + ' ' + size + 'px "JetBrains Mono", "Courier New", monospace';
+    octx.fillStyle = '#fff';
+    octx.textAlign = 'center';
+    octx.textBaseline = 'middle';
+    octx.fillText(text, cx, cy);
+    const imageData = octx.getImageData(0, 0, W, H);
+    const pixels = [];
+    for (let y = 0; y < H; y += spacing) {
+      for (let x = 0; x < W; x += spacing) {
+        const idx = (y * W + x) * 4;
+        if (imageData.data[idx + 3] > 128) {
+          pixels.push({ x, y });
+        }
+      }
+    }
+    return pixels;
+  }
+
+  // Create particles from text
+  const text1Pixels = getTextPixels('JAYZ', W / 2, H * 0.38, 80, '900');
+  const text2Pixels = getTextPixels('ZHANG', W / 2, H * 0.75, 56, '700');
+
+  function createParticle(px, py, isTitle) {
+    return {
+      x: px,
+      y: py,
+      originX: px,
+      originY: py,
+      vx: 0,
+      vy: 0,
+      char: chars[Math.floor(Math.random() * 2)],
+      alpha: 0.5 + Math.random() * 0.5,
+      size: fontSize - 1 + Math.random() * 2,
+    };
+  }
+
+  text1Pixels.forEach(p => particles.push(createParticle(p.x, p.y, true)));
+  text2Pixels.forEach(p => particles.push(createParticle(p.x, p.y, false)));
+
+  // Mouse tracking
+  canvas.addEventListener('mousemove', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = W / rect.width;
+    const scaleY = H / rect.height;
+    mouseX = (e.clientX - rect.left) * scaleX;
+    mouseY = (e.clientY - rect.top) * scaleY;
+  });
+
+  canvas.addEventListener('mouseleave', () => {
+    mouseX = -999;
+    mouseY = -999;
+  });
+
+  // Touch support
+  canvas.addEventListener('touchmove', (e) => {
+    e.preventDefault();
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = W / rect.width;
+    const scaleY = H / rect.height;
+    mouseX = (e.touches[0].clientX - rect.left) * scaleX;
+    mouseY = (e.touches[0].clientY - rect.top) * scaleY;
+  }, { passive: false });
+
+  canvas.addEventListener('touchend', () => {
+    mouseX = -999;
+    mouseY = -999;
+  });
+
+  function animate() {
+    ctx.clearRect(0, 0, W, H);
+
+    for (let i = 0; i < particles.length; i++) {
+      const p = particles[i];
+
+      // Mouse repulsion
+      const dx = p.x - mouseX;
+      const dy = p.y - mouseY;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < pushRadius && dist > 0) {
+        const force = (pushRadius - dist) / pushRadius * pushForce;
+        p.vx += (dx / dist) * force;
+        p.vy += (dy / dist) * force;
+      }
+
+      // Spring back to origin
+      p.vx += (p.originX - p.x) * springForce;
+      p.vy += (p.originY - p.y) * springForce;
+
+      // Friction
+      p.vx *= friction;
+      p.vy *= friction;
+
+      // Update position
+      p.x += p.vx;
+      p.y += p.vy;
+
+      // Randomly change char
+      if (Math.random() < 0.005) {
+        p.char = chars[Math.floor(Math.random() * 2)];
+      }
+
+      // Draw
+      ctx.font = p.size + 'px "JetBrains Mono", "Courier New", monospace';
+      ctx.fillStyle = 'rgba(74, 222, 128, ' + p.alpha + ')';
+      ctx.fillText(p.char, p.x, p.y);
+    }
+
+    requestAnimationFrame(animate);
+  }
+
+  animate();
+})();
+</script>
