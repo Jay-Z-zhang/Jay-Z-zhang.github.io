@@ -22,3 +22,12 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# unrelated files / embedded repos
+agent-skills-learning/
+backup/
+my-blog/
+myproject/
+full-product-knowledge-base.html
+index.html
+viral-calculator.html

@@ -1,42 +1,53 @@
 <div class="giscus rounded-xl border border-border bg-secondary/20 p-4"></div>
 
-<script
-  is:inline
-  data-astro-rerun
-  src="https://giscus.app/client.js"
-  data-repo="Jay-Z-zhang/Jay-Z-zhang.github.io"
-  data-repo-id="R_kgDOL_6l9Q"
-  data-category="Announcements"
-  data-category-id="DIC_kwDOL_6l9c4Cfk55"
-  data-mapping="pathname"
-  data-strict="1"
-  data-reactions-enabled="1"
-  data-emit-metadata="0"
-  data-input-position="top"
-  data-theme="preferred_color_scheme"
-  data-lang="zh-CN"
-  data-loading="lazy"
-  crossorigin="anonymous"
-  async></script>
-
 <script is:inline>
-  // Giscus 跟随主题切换
+  function getGiscusTheme() {
+    const saved = localStorage.getItem('theme');
+    if (saved) return saved === 'light' ? 'light' : 'dark';
+    return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+  }
+
+  function initGiscus() {
+    const script = document.createElement('script');
+    script.src = 'https://giscus.app/client.js';
+    script.setAttribute('data-repo', 'Jay-Z-zhang/Jay-Z-zhang.github.io');
+    script.setAttribute('data-repo-id', 'R_kgDOL_6l9Q');
+    script.setAttribute('data-category', 'Announcements');
+    script.setAttribute('data-category-id', 'DIC_kwDOL_6l9c4Cfk55');
+    script.setAttribute('data-mapping', 'pathname');
+    script.setAttribute('data-strict', '1');
+    script.setAttribute('data-reactions-enabled', '1');
+    script.setAttribute('data-emit-metadata', '0');
+    script.setAttribute('data-input-position', 'top');
+    script.setAttribute('data-theme', getGiscusTheme());
+    script.setAttribute('data-lang', 'zh-CN');
+    script.setAttribute('data-loading', 'lazy');
+    script.setAttribute('crossorigin', 'anonymous');
+    script.async = true;
+    document.querySelector('.giscus')?.appendChild(script);
+  }
+
   function updateGiscusTheme() {
     const iframe = document.querySelector('iframe.giscus-frame');
     if (!iframe) return;
-    const isLight = document.documentElement.classList.contains('light');
+    const theme = getGiscusTheme();
     iframe.contentWindow.postMessage({
-      giscus: { setConfig: { theme: isLight ? 'light' : 'dark' } }
+      giscus: { setConfig: { theme } }
     }, 'https://giscus.app');
   }
 
+  // Init
+  initGiscus();
+
+  // Listen for theme toggle
   document.addEventListener('click', (e) => {
     if (e.target.closest('#theme-toggle')) {
-      setTimeout(updateGiscusTheme, 300);
+      setTimeout(updateGiscusTheme, 400);
     }
   });
 
+  // Astro client-side navigation
   document.addEventListener('astro:after-swap', () => {
-    setTimeout(updateGiscusTheme, 500);
+    initGiscus();
   });
 </script>
