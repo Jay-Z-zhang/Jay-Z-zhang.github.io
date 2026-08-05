@@ -1,4 +1,7 @@
 @import 'tailwindcss';
+@import '@fontsource/geist-mono/400.css';
+@import '@fontsource/geist-mono/700.css';
+@import '@fontsource/geist-mono/900.css';
 
 @plugin '@tailwindcss/typography';
 
@@ -278,6 +281,25 @@ html.scrolled #back-to-top {
   @apply text-primary border-primary/30;
 }
 
+/* ── Scroll guide breathing animation ── */
+.scroll-guide {
+  animation: guide-fade 2.5s ease-in-out infinite;
+}
+
+.scroll-arrow {
+  animation: arrow-bounce 2.5s ease-in-out infinite;
+}
+
+@keyframes guide-fade {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.8; }
+}
+
+@keyframes arrow-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(4px); }
+}
+
 /* ── Reduced motion ── */
 @media (prefers-reduced-motion: reduce) {
   .scroll-section {
@@ -290,5 +312,10 @@ html.scrolled #back-to-top {
   }
   .gallery-img-wrap img {
     transition: none;
+  }
+  .scroll-guide,
+  .scroll-arrow {
+    animation: none;
+    opacity: 0.5;
   }
 }

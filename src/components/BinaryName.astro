@@ -1,153 +1,194 @@
-<canvas id="binary-canvas" class="w-full h-auto" style="max-height: 360px;"></canvas>
+<canvas id="binary-canvas" class="w-full h-auto" style="max-height: 420px;"></canvas>
 
 <script is:inline>
 (function() {
-  const canvas = document.getElementById('binary-canvas');
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  const dpr = window.devicePixelRatio || 1;
+  function init() {
+    const canvas = document.getElementById('binary-canvas');
+    if (!canvas) return;
 
-  const W = 480, H = 220;
-  canvas.width = W * dpr;
-  canvas.height = H * dpr;
-  canvas.style.width = W + 'px';
-  canvas.style.height = H + 'px';
-  ctx.scale(dpr, dpr);
+    // Wait for layout + fonts
+    Promise.all([
+      document.fonts.ready,
+      new Promise(r => requestAnimationFrame(r))
+    ]).then(() => {
+      const ctx = canvas.getContext('2d');
+      const dpr = window.devicePixelRatio || 1;
 
-  const chars = '01';
-  const particles = [];
-  const spacing = 7;
-  const fontSize = 7;
-  let mouseX = -999, mouseY = -999;
-  const pushRadius = 40;
-  const pushForce = 3;
-  const springForce = 0.08;
-  const friction = 0.85;
+      const isWide = window.innerWidth >= 768;
+      const renderedW = canvas.offsetWidth || (isWide ? 960 : 480);
+      const W = isWide ? renderedW : 480;
+      const H = isWide ? Math.round(W * 0.35) : 240;
+      canvas.width = W * dpr;
+      canvas.height = H * dpr;
+      canvas.style.height = H + 'px';
+      ctx.scale(dpr, dpr);
 
-  function drawText(text, x, y, size, weight) {
-    ctx.font = weight + ' ' + size + 'px "JetBrains Mono", "Courier New", monospace';
-    ctx.fillStyle = '#fff';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(text, x, y);
-  }
+      const chars = '01';
+      const particles = [];
+      const spacing = isWide ? 5 : 6;
+      const pushRadius = isWide ? 65 : 40;
+      const pushForce = 3;
+      const springForce = 0.08;
+      const friction = 0.85;
 
-  // Render text to offscreen canvas to get pixel positions
-  function getTextPixels(text, cx, cy, size, weight) {
-    const offscreen = document.createElement('canvas');
-    offscreen.width = W;
-    offscreen.height = H;
-    const octx = offscreen.getContext('2d');
-    octx.font = weight + ' ' + size + 'px "JetBrains Mono", "Courier New", monospace';
-    octx.fillStyle = '#fff';
-    octx.textAlign = 'center';
-    octx.textBaseline = 'middle';
-    octx.fillText(text, cx, cy);
-    const imageData = octx.getImageData(0, 0, W, H);
-    const pixels = [];
-    for (let y = 0; y < H; y += spacing) {
-      for (let x = 0; x < W; x += spacing) {
-        const idx = (y * W + x) * 4;
-        if (imageData.data[idx + 3] > 128) {
-          pixels.push({ x, y });
+      function getTextPixels(text, cx, cy, size, weight) {
+        const offscreen = document.createElement('canvas');
+        offscreen.width = W;
+        offscreen.height = H;
+        const octx = offscreen.getContext('2d');
+        octx.font = size + 'px "Russo One", sans-serif';
+        octx.fillStyle = '#fff';
+        octx.textAlign = 'center';
+        octx.textBaseline = 'middle';
+        octx.fillText(text, cx, cy);
+        const imageData = octx.getImageData(0, 0, W, H);
+        const pixels = [];
+        for (let y = 0; y < H; y += spacing) {
+          for (let x = 0; x < W; x += spacing) {
+            const idx = (y * W + x) * 4;
+            if (imageData.data[idx + 3] > 128) {
+              pixels.push({ x, y });
+            }
+          }
         }
-      }
-    }
-    return pixels;
-  }
-
-  // Create particles from text
-  const text1Pixels = getTextPixels('JAYZ', W / 2, H * 0.38, 80, '900');
-  const text2Pixels = getTextPixels('ZHANG', W / 2, H * 0.75, 56, '700');
-
-  function createParticle(px, py, isTitle) {
-    return {
-      x: px,
-      y: py,
-      originX: px,
-      originY: py,
-      vx: 0,
-      vy: 0,
-      char: chars[Math.floor(Math.random() * 2)],
-      alpha: 0.5 + Math.random() * 0.5,
-      size: fontSize - 1 + Math.random() * 2,
-    };
-  }
-
-  text1Pixels.forEach(p => particles.push(createParticle(p.x, p.y, true)));
-  text2Pixels.forEach(p => particles.push(createParticle(p.x, p.y, false)));
-
-  // Mouse tracking
-  canvas.addEventListener('mousemove', (e) => {
-    const rect = canvas.getBoundingClientRect();
-    const scaleX = W / rect.width;
-    const scaleY = H / rect.height;
-    mouseX = (e.clientX - rect.left) * scaleX;
-    mouseY = (e.clientY - rect.top) * scaleY;
-  });
-
-  canvas.addEventListener('mouseleave', () => {
-    mouseX = -999;
-    mouseY = -999;
-  });
-
-  // Touch support
-  canvas.addEventListener('touchmove', (e) => {
-    e.preventDefault();
-    const rect = canvas.getBoundingClientRect();
-    const scaleX = W / rect.width;
-    const scaleY = H / rect.height;
-    mouseX = (e.touches[0].clientX - rect.left) * scaleX;
-    mouseY = (e.touches[0].clientY - rect.top) * scaleY;
-  }, { passive: false });
-
-  canvas.addEventListener('touchend', () => {
-    mouseX = -999;
-    mouseY = -999;
-  });
-
-  function animate() {
-    ctx.clearRect(0, 0, W, H);
-
-    for (let i = 0; i < particles.length; i++) {
-      const p = particles[i];
-
-      // Mouse repulsion
-      const dx = p.x - mouseX;
-      const dy = p.y - mouseY;
-      const dist = Math.sqrt(dx * dx + dy * dy);
-      if (dist < pushRadius && dist > 0) {
-        const force = (pushRadius - dist) / pushRadius * pushForce;
-        p.vx += (dx / dist) * force;
-        p.vy += (dy / dist) * force;
+        return pixels;
       }
 
-      // Spring back to origin
-      p.vx += (p.originX - p.x) * springForce;
-      p.vy += (p.originY - p.y) * springForce;
-
-      // Friction
-      p.vx *= friction;
-      p.vy *= friction;
-
-      // Update position
-      p.x += p.vx;
-      p.y += p.vy;
-
-      // Randomly change char
-      if (Math.random() < 0.005) {
-        p.char = chars[Math.floor(Math.random() * 2)];
+      let pixels1 = [], pixels2 = [];
+      if (isWide) {
+        const fontSize = Math.min(180, W * 0.16);
+        pixels1 = getTextPixels('JAYZ ZHANG', W / 2, H / 2, fontSize);
+      } else {
+        pixels1 = getTextPixels('JAYZ', W / 2, H * 0.38, 80);
+        pixels2 = getTextPixels('ZHANG', W / 2, H * 0.72, 60);
       }
 
-      // Draw
-      ctx.font = p.size + 'px "JetBrains Mono", "Courier New", monospace';
-      ctx.fillStyle = 'rgba(74, 222, 128, ' + p.alpha + ')';
-      ctx.fillText(p.char, p.x, p.y);
-    }
+      pixels1.forEach(function(px) {
+        particles.push({
+          x: px.x, y: px.y,
+          originX: px.x, originY: px.y,
+          vx: 0, vy: 0,
+          char: chars[Math.floor(Math.random() * 2)],
+          baseAlpha: 0.3 + Math.random() * 0.7,
+          alpha: 0,
+          flicker: Math.random() < 0.08,
+        });
+      });
+      pixels2.forEach(function(px) {
+        particles.push({
+          x: px.x, y: px.y,
+          originX: px.x, originY: px.y,
+          vx: 0, vy: 0,
+          char: chars[Math.floor(Math.random() * 2)],
+          baseAlpha: 0.3 + Math.random() * 0.7,
+          alpha: 0,
+          flicker: Math.random() < 0.08,
+        });
+      });
 
-    requestAnimationFrame(animate);
+      // 赛博朋克噪点粒子 — 在画布中随机漂浮
+      var noiseCount = isWide ? 30 : 10;
+      var noiseParticles = [];
+      for (var n = 0; n < noiseCount; n++) {
+        noiseParticles.push({
+          x: Math.random() * W,
+          y: Math.random() * H,
+          vx: (Math.random() - 0.5) * 0.3,
+          vy: (Math.random() - 0.5) * 0.3,
+          char: chars[Math.floor(Math.random() * 2)],
+          alpha: 0.1 + Math.random() * 0.25,
+          life: Math.floor(Math.random() * 200),
+        });
+      }
+
+      const pSize = isWide ? 4 : 7;
+
+      canvas.addEventListener('mousemove', function(e) {
+        var rect = canvas.getBoundingClientRect();
+        mouseX = (e.clientX - rect.left) * (W / rect.width);
+        mouseY = (e.clientY - rect.top) * (H / rect.height);
+      });
+      canvas.addEventListener('mouseleave', function() { mouseX = -999; mouseY = -999; });
+      canvas.addEventListener('touchmove', function(e) {
+        e.preventDefault();
+        var rect = canvas.getBoundingClientRect();
+        mouseX = (e.touches[0].clientX - rect.left) * (W / rect.width);
+        mouseY = (e.touches[0].clientY - rect.top) * (H / rect.height);
+      }, { passive: false });
+      canvas.addEventListener('touchend', function() { mouseX = -999; mouseY = -999; });
+
+      var mouseX = -999, mouseY = -999;
+      // 主题感知颜色
+      var isLight = document.documentElement.classList.contains('light');
+      var charColor = isLight ? '#15803d' : '#4ade80';
+
+      function animate() {
+        ctx.clearRect(0, 0, W, H);
+
+        for (var i = 0; i < particles.length; i++) {
+          var p = particles[i];
+          var dx = p.x - mouseX;
+          var dy = p.y - mouseY;
+          var dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < pushRadius && dist > 0) {
+            var force = (pushRadius - dist) / pushRadius * pushForce;
+            p.vx += (dx / dist) * force;
+            p.vy += (dy / dist) * force;
+          }
+          p.vx += (p.originX - p.x) * springForce;
+          p.vy += (p.originY - p.y) * springForce;
+          p.vx *= friction;
+          p.vy *= friction;
+          p.x += p.vx;
+          p.y += p.vy;
+          if (Math.random() < 0.005) {
+            p.char = chars[Math.floor(Math.random() * 2)];
+          }
+          // 明暗变化：闪烁粒子随机跳亮/暗，其余粒子微扰动
+          if (p.flicker && Math.random() < 0.03) {
+            p.alpha = Math.random() < 0.5 ? 0.1 : 1;
+          } else {
+            p.alpha = p.baseAlpha + (Math.random() - 0.5) * 0.15;
+          }
+          ctx.globalAlpha = p.alpha;
+          ctx.fillStyle = charColor;
+          ctx.font = pSize + 'px "Russo One", sans-serif';
+          ctx.fillText(p.char, Math.round(p.x), Math.round(p.y));
+        }
+
+        // 噪点粒子 — 缓慢漂移 + 闪烁
+        for (var j = 0; j < noiseParticles.length; j++) {
+          var np = noiseParticles[j];
+          np.x += np.vx;
+          np.y += np.vy;
+          np.life++;
+          if (np.x < 0 || np.x > W || np.y < 0 || np.y > H || np.life > 150 + Math.random() * 200) {
+            np.x = Math.random() * W;
+            np.y = Math.random() * H;
+            np.vx = (Math.random() - 0.5) * 0.3;
+            np.vy = (Math.random() - 0.5) * 0.3;
+            np.life = 0;
+            np.char = chars[Math.floor(Math.random() * 2)];
+          }
+          np.alpha = np.life < 20 ? np.life / 20 * 0.2 : np.life > 130 ? (150 - np.life) / 20 * 0.2 : 0.15 + Math.sin(np.life * 0.1) * 0.1;
+          ctx.globalAlpha = Math.max(0, np.alpha);
+          ctx.fillStyle = charColor;
+          ctx.font = (pSize * 0.8) + 'px "Russo One", sans-serif';
+          ctx.fillText(np.char, Math.round(np.x), Math.round(np.y));
+        }
+
+        ctx.globalAlpha = 1;
+        requestAnimationFrame(animate);
+      }
+
+      animate();
+    });
   }
 
-  animate();
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
 })();
 </script>

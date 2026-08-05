@@ -2,10 +2,10 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "meta-backend",
-      "runtimeExecutable": "python3",
-      "runtimeArgs": ["-m", "http.server", "7788", "--directory", "/Users/jayzzhang/projects/myproject"],
-      "port": 7788
+      "name": "astro-dev",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--", "--port", "4444"],
+      "port": 4444
     }
   ]
 }

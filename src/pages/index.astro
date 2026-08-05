@@ -48,6 +48,15 @@ const projects: CollectionEntry<"projects">[] = (
         </a>
       </div>
     </div>
+    <!-- 下滑引导箭头 -->
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 scroll-guide">
+      <a href="#projects" class="flex flex-col items-center gap-1 text-muted-fg hover:text-primary transition-colors duration-300">
+        <span class="text-xs tracking-widest uppercase opacity-60">Scroll</span>
+        <svg class="scroll-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+      </a>
+    </div>
   </section>
 
   <!-- ─────────── PROJECTS ─────────── -->
