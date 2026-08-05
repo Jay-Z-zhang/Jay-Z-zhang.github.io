@@ -51,7 +51,13 @@ const post = Astro.props;
 const { Content, headings } = await render(post);
 ---
 
-<Layout title={post.data.title} description={post.data.description}>
+<Layout
+  title={post.data.title}
+  description={post.data.description}
+  type="article"
+  publishedDate={post.data.date.toISOString()}
+  author="Jayz Zhang"
+>
   <Container>
     <div class="flex items-center gap-3 mb-6">
       <BackToPrevious href="/blog">返回博客</BackToPrevious>

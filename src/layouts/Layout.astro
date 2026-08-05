@@ -9,15 +9,34 @@ type Props = {
   title: string;
   description: string;
   noNavPadding?: boolean;
+  type?: "website" | "article";
+  publishedDate?: string;
+  modifiedDate?: string;
+  author?: string;
 };
 
-const { title, description, noNavPadding = false } = Astro.props;
+const {
+  title,
+  description,
+  noNavPadding = false,
+  type = "website",
+  publishedDate,
+  modifiedDate,
+  author,
+} = Astro.props;
 ---
 
 <!doctype html>
 <html lang="zh-CN">
   <head>
-    <Head title={`${title} | ${SITE.TITLE}`} description={description} />
+    <Head
+      title={`${title} | ${SITE.TITLE}`}
+      description={description}
+      type={type}
+      publishedDate={publishedDate}
+      modifiedDate={modifiedDate}
+      author={author}
+    />
   </head>
   <body>
     <noscript>

@@ -22,7 +22,13 @@ const project = Astro.props;
 const { Content, headings } = await render(project);
 ---
 
-<Layout title={project.data.title} description={project.data.description}>
+<Layout
+  title={project.data.title}
+  description={project.data.description}
+  type="article"
+  publishedDate={project.data.date.toISOString()}
+  author="Jayz Zhang"
+>
   <Container>
     <div class="flex items-center gap-3 mb-6">
       <BackToPrevious href="/projects">返回作品</BackToPrevious>
