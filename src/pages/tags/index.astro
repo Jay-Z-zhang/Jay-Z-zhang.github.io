@@ -10,8 +10,8 @@ const tags = [...new Set(posts.flatMap((post) => post.data.tags || []))].sort();
 
 <Layout title="标签" description="文章标签列表">
   <Container>
-    <div class="mb-6">
-      <BackToPrevious href="/">← 返回首页</BackToPrevious>
+    <div class="flex items-center gap-3 mb-8">
+      <BackToPrevious href="/">返回首页</BackToPrevious>
     </div>
     <div class="space-y-10">
       <h1 class="text-3xl font-bold text-foreground">标签</h1>

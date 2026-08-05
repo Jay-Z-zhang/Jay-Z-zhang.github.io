@@ -53,8 +53,8 @@ const { Content, headings } = await render(post);
 
 <Layout title={post.data.title} description={post.data.description}>
   <Container>
-    <div class="mb-6">
-      <BackToPrevious href="/blog">← 返回博客</BackToPrevious>
+    <div class="flex items-center gap-3 mb-6">
+      <BackToPrevious href="/blog">返回博客</BackToPrevious>
     </div>
     <div class="my-10 space-y-1">
       <div class="flex items-center gap-1.5 text-muted-fg">

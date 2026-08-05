@@ -28,12 +28,12 @@ const years = Object.keys(posts).sort((a, b) => parseInt(b) - parseInt(a));
 
 <Layout title={BLOG.TITLE} description={BLOG.DESCRIPTION}>
   <Container>
-    <div class="mb-6">
-      <BackToPrevious href="/">← 返回首页</BackToPrevious>
+    <div class="flex items-center gap-3 mb-8">
+      <BackToPrevious href="/">返回首页</BackToPrevious>
     </div>
     <aside data-pagefind-ignore>
       <div class="space-y-10">
-        <h1 class="text-3xl font-bold text-foreground mb-8">{BLOG.TITLE}</h1>
+        <h1 class="text-3xl font-bold text-foreground">{BLOG.TITLE}</h1>
         <div class="space-y-4">
           {
             years.map((year) => (

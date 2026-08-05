@@ -32,7 +32,9 @@ const sortedPosts = posts.sort(
 <Layout title={`标签: ${id}`} description={`标签为 ${id} 的文章`}>
   <Container>
     <div class="space-y-10" data-pagefind-ignore>
-      <BackToPrevious href="/tags">← 所有标签</BackToPrevious>
+      <div class="flex items-center gap-3 mb-8">
+        <BackToPrevious href="/tags">所有标签</BackToPrevious>
+      </div>
       <h1 class="text-2xl font-semibold text-foreground">
         标签: <span class="text-primary">{id}</span>
       </h1>
