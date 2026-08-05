@@ -70,9 +70,7 @@ const projects: CollectionEntry<"projects">[] = (
       <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
         {projects.map((project) => (
           <a
-            href={project.data.demoURL || `/projects/${project.id}`}
-            target={project.data.demoURL ? "_blank" : undefined}
-            rel={project.data.demoURL ? "noopener noreferrer" : undefined}
+            href={`/${project.id}/`}
             class="block rounded-xl border border-border bg-secondary/20 overflow-hidden glow-border hover:border-primary/30 transition-all duration-300 group"
           >
             <!-- 项目配图 -->
