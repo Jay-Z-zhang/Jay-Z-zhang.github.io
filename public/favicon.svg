@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- Dark rounded background -->
+  <rect width="512" height="512" rx="112" fill="#0f172a"/>
+
+  <!-- JZ monogram in white -->
+  <g fill="#f1f5f9">
+    <!-- Z shape: top horizontal bar + diagonal + bottom horizontal bar -->
+    <path d="
+      M 380 100
+      L 380 155
+      L 175 370
+      C 160 385, 148 400, 148 412
+      L 148 420
+      L 380 420
+      C 400 420, 412 408, 412 390
+      L 412 380
+      L 195 380
+      C 200 370, 210 360, 220 350
+      L 410 155
+      L 410 100
+      Z
+    "/>
+    <!-- J shape: vertical stroke curving to the left at bottom -->
+    <path d="
+      M 310 130
+      L 310 340
+      C 310 390, 280 420, 230 420
+      C 190 420, 165 395, 165 360
+      C 165 340, 175 325, 190 325
+      C 200 325, 210 332, 210 345
+      C 210 365, 225 375, 245 375
+      C 270 375, 285 360, 285 335
+      L 285 130
+      Z
+    "/>
+  </g>
+
+  <!-- Subtle shadow/depth on Z -->
+  <path d="
+    M 380 100
+    L 380 155
+    L 175 370
+    C 160 385, 148 400, 148 412
+    L 152 416
+    C 152 402, 164 387, 179 372
+    L 384 157
+    L 384 100
+    Z
+  " fill="#cbd5e1" opacity="0.15"/>
+</svg>

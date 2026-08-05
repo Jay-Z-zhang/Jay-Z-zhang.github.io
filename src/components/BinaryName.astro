@@ -36,7 +36,8 @@
         offscreen.width = W;
         offscreen.height = H;
         const octx = offscreen.getContext('2d');
-        octx.font = size + 'px "Russo One", sans-serif';
+        // 使用系统粗体字栈
+        octx.font = '900 ' + size + 'px "Arial Black", "Helvetica Neue", "Impact", sans-serif';
         octx.fillStyle = '#fff';
         octx.textAlign = 'center';
         octx.textBaseline = 'middle';
@@ -56,7 +57,7 @@
 
       let pixels1 = [], pixels2 = [];
       if (isWide) {
-        const fontSize = Math.min(180, W * 0.16);
+        const fontSize = Math.min(150, W * 0.13);
         pixels1 = getTextPixels('JAYZ ZHANG', W / 2, H / 2, fontSize);
       } else {
         pixels1 = getTextPixels('JAYZ', W / 2, H * 0.38, 80);
@@ -101,7 +102,7 @@
         });
       }
 
-      const pSize = isWide ? 4 : 7;
+      const pSize = isWide ? 6 : 9;
 
       canvas.addEventListener('mousemove', function(e) {
         var rect = canvas.getBoundingClientRect();
@@ -116,6 +117,8 @@
         mouseY = (e.touches[0].clientY - rect.top) * (H / rect.height);
       }, { passive: false });
       canvas.addEventListener('touchend', function() { mouseX = -999; mouseY = -999; });
+      // 禁止右键菜单
+      canvas.addEventListener('contextmenu', function(e) { e.preventDefault(); });
 
       var mouseX = -999, mouseY = -999;
       // 主题感知颜色

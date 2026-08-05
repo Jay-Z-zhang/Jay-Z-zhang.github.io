@@ -6,10 +6,24 @@
   <title>裂变活动效果计算器</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
+    /* ── Dark Theme (Default) ── */
     :root {
       --bg:#0b0f1a; --surface:#131928; --border:#1e293b;
       --green:#22c55e; --green-dim:rgba(34,197,94,.1);
       --yellow:#fbbf24; --red:#f87171; --muted:#64748b; --text:#f1f5f9;
+      --tooltip-bg:#1e293b; --tooltip-border:#334155; --tooltip-text:#94a3b8;
+      --ad-bg:rgba(96,165,250,.05); --ad-border:rgba(96,165,250,.15); --ad-text:#60a5fa;
+      --card-shadow:rgba(0,0,0,.35); --panel-gradient:linear-gradient(135deg,#131928 0%,#0f1520 100%);
+    }
+
+    /* ── Light Theme ─ */
+    .light {
+      --bg:#f8fafc; --surface:#ffffff; --border:#e2e8f0;
+      --green:#16a34a; --green-dim:rgba(22,163,74,.08);
+      --yellow:#d97706; --red:#dc2626; --muted:#64748b; --text:#0f172a;
+      --tooltip-bg:#ffffff; --tooltip-border:#e2e8f0; --tooltip-text:#475569;
+      --ad-bg:rgba(59,130,246,.05); --ad-border:rgba(59,130,246,.15); --ad-text:#2563eb;
+      --card-shadow:rgba(0,0,0,.08); --panel-gradient:linear-gradient(135deg,#ffffff 0%,#f8fafc 100%);
     }
 
     /* ── Base ── */
@@ -65,10 +79,10 @@
     }
     input[type=range]::-webkit-slider-runnable-track{
       height:3px;border-radius:2px;
-      background:linear-gradient(to right,var(--green) var(--p,0%),#1e293b var(--p,0%));
+      background:linear-gradient(to right,var(--green) var(--p,0%),var(--border) var(--p,0%));
     }
     .num-in{
-      background:rgba(15,21,35,.9);border:1px solid var(--border);
+      background:var(--surface);border:1px solid var(--border);
       color:var(--text);border-radius:8px;padding:5px 9px;
       width:82px;font-size:13px;font-variant-numeric:tabular-nums;
       text-align:right;outline:none;
@@ -77,7 +91,9 @@
     .num-in:focus{
       border-color:var(--green);
       box-shadow:0 0 0 3px rgba(34,197,94,.12);
-      background:rgba(20,30,50,.95);
+    }
+    .light .num-in:focus{
+      background:var(--bg);
     }
     .num-in::-webkit-inner-spin-button{opacity:.5;}
 
@@ -89,6 +105,14 @@
       display:flex;align-items:center;padding:0 8px;
       font-size:11px;font-weight:700;white-space:nowrap;overflow:hidden;min-width:32px;
     }
+    .funnel-fg{background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.3);color:#22c55e;}
+    .funnel-fm{background:rgba(74,222,128,.12);border:1px solid rgba(74,222,128,.3);color:#4ade80;}
+    .funnel-fy{background:rgba(251,191,36,.12);border:1px solid rgba(251,191,36,.3);color:#d97706;}
+    .funnel-fr{background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.3);color:#dc2626;}
+    .light .funnel-fg{background:rgba(34,197,94,.1);color:#16a34a;}
+    .light .funnel-fm{background:rgba(74,222,128,.1);color:#16a34a;}
+    .light .funnel-fy{background:rgba(217,119,6,.1);color:#b45309;}
+    .light .funnel-fr{background:rgba(220,38,38,.1);color:#dc2626;}
     .funnel-label{font-size:11px;color:var(--muted);line-height:1.3;text-align:right;padding-right:4px;}
     .funnel-right{display:flex;flex-direction:column;align-items:flex-start;min-width:64px;}
     .funnel-val{font-size:12px;font-weight:700;color:var(--text);font-variant-numeric:tabular-nums;line-height:1.2;}
@@ -148,7 +172,7 @@
 
     /* ── Tooltip ── */
     .tip-wrap{position:relative;display:inline-flex;cursor:help;}
-    .tip-wrap .tip{visibility:hidden;opacity:0;background:#1e293b;color:#94a3b8;font-size:12px;line-height:1.5;border:1px solid #334155;border-radius:8px;padding:8px 12px;position:absolute;bottom:130%;left:50%;transform:translateX(-50%);width:210px;z-index:50;transition:opacity .2s;pointer-events:none;white-space:normal;}
+    .tip-wrap .tip{visibility:hidden;opacity:0;background:var(--tooltip-bg);color:var(--tooltip-text);font-size:12px;line-height:1.5;border:1px solid var(--tooltip-border);border-radius:8px;padding:8px 12px;position:absolute;bottom:130%;left:50%;transform:translateX(-50%);width:210px;z-index:50;transition:opacity .2s;pointer-events:none;white-space:normal;}
     .tip-wrap:hover .tip{visibility:visible;opacity:1;}
 
     /* ── Advice items ── */
@@ -170,18 +194,18 @@
 
     /* ── Panel upgrade ── */
     .panel{
-      background:linear-gradient(135deg,#131928 0%,#0f1520 100%);
+      background:var(--panel-gradient);
       border:1px solid var(--border);border-radius:18px;padding:22px;
       transition:box-shadow .3s,border-color .3s;
     }
     .panel:hover{
-      box-shadow:0 0 0 1px rgba(34,197,94,.12),0 12px 40px rgba(0,0,0,.35);
+      box-shadow:0 0 0 1px rgba(34,197,94,.12),0 12px 40px var(--card-shadow);
       border-color:rgba(34,197,94,.12);
     }
 
     /* ── Metric card glow on hover ── */
     .mcard{
-      background:linear-gradient(135deg,#0d1220 0%,#0b0f1a 100%);
+      background:var(--surface);
       border:1px solid var(--border);border-radius:14px;padding:16px;
       transition:border-color .25s,transform .2s,box-shadow .25s;cursor:default;
       position:relative;overflow:hidden;
@@ -191,7 +215,7 @@
       background:radial-gradient(circle at 80% 20%,rgba(34,197,94,.04),transparent 60%);
       pointer-events:none;
     }
-    .mcard:hover{border-color:rgba(34,197,94,.3);transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,0,0,.4),0 0 0 1px rgba(34,197,94,.12);}
+    .mcard:hover{border-color:rgba(34,197,94,.3);transform:translateY(-2px);box-shadow:0 8px 28px var(--card-shadow),0 0 0 1px rgba(34,197,94,.12);}
 
     /* ── Animations ── */
     @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
@@ -220,10 +244,17 @@
 
   <!-- Header -->
   <div class="mb-7 fu">
-    <div class="flex items-center gap-3 mb-1">
-      <div style="width:36px;height:36px;border-radius:10px;background:var(--green-dim);border:1px solid rgba(34,197,94,.3);display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--green);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
-      <h1 class="text-2xl font-bold tracking-tight">裂变活动效果计算器</h1>
-      <span style="font-size:11px;padding:2px 8px;border-radius:20px;background:rgba(34,197,94,.1);color:var(--green);border:1px solid rgba(34,197,94,.2);font-weight:600;">v2</span>
+    <div class="flex items-center justify-between mb-1">
+      <div class="flex items-center gap-3">
+        <div class="header-icon" style="width:36px;height:36px;border-radius:10px;background:var(--green-dim);border:1px solid rgba(34,197,94,.3);display:flex;align-items:center;justify-content:center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+        <h1 class="text-2xl font-bold tracking-tight">裂变活动效果计算器</h1>
+        <span style="font-size:11px;padding:2px 8px;border-radius:20px;background:var(--green-dim);color:var(--green);border:1px solid rgba(34,197,94,.2);font-weight:600;">v2</span>
+      </div>
+      <!-- Theme Toggle -->
+      <button id="themeToggle" class="flex items-center justify-center w-9 h-9 rounded-lg border border-border bg-surface hover:bg-border/30 transition-colors" aria-label="切换主题">
+        <svg id="sunIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+        <svg id="moonIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
     </div>
     <p class="text-sm ml-12" style="color:var(--muted)">App S&R 完整漏斗 · 广告投放效率对比 · 实时 Dashboard</p>
   </div>
@@ -327,7 +358,7 @@
           <div>
             <div class="k-ring-wrap">
               <svg width="80" height="80" viewBox="0 0 80 80">
-                <circle cx="40" cy="40" r="32" fill="none" stroke="#1e293b" stroke-width="6"/>
+                <circle cx="40" cy="40" r="32" fill="none" stroke="var(--border)" stroke-width="6"/>
                 <circle id="kRingCircle" cx="40" cy="40" r="32" fill="none" stroke="#22c55e" stroke-width="6"
                   stroke-dasharray="201" stroke-dashoffset="201" stroke-linecap="round"
                   style="transition:stroke-dashoffset .6s cubic-bezier(.4,0,.2,1),stroke .3s;filter:drop-shadow(0 0 4px rgba(34,197,94,.5))"/>
@@ -366,8 +397,8 @@
           <div class="param-header"><label class="text-sm">广告总花费</label><div class="param-val-box"><input type="number" class="num-in" id="adSpend" value="30000" min="0" max="10000000" step="1000" oninput="calc()"><span class="param-unit">元</span></div></div>
           <div class="slider-wrap"><input type="range" id="adSpend_r" min="0" max="500000" step="1000" value="30000" oninput="sv('adSpend','adSpend_r');calc()"></div>
         </div>
-        <div style="background:rgba(96,165,250,.05);border:1px solid rgba(96,165,250,.15);border-radius:12px;padding:14px;margin-top:4px;">
-          <div class="text-xs mb-3 font-medium" style="color:#60a5fa;">覆盖计算值（可选）</div>
+        <div style="background:var(--ad-bg);border:1px solid var(--ad-border);border-radius:12px;padding:14px;margin-top:4px;">
+          <div class="text-xs mb-3 font-medium" style="color:var(--ad-text);">覆盖计算值（可选）</div>
           <div class="flex gap-3">
             <div class="flex-1"><div class="text-xs mb-1" style="color:var(--muted)">广告 CAC（元）</div><input type="number" class="num-in" id="adCacOverride" placeholder="自动" min="0" oninput="calc()" style="width:100%"></div>
             <div class="flex-1"><div class="text-xs mb-1" style="color:var(--muted)">广告 ROI</div><input type="number" class="num-in" id="adRoiOverride" placeholder="自动" min="0" step="0.01" oninput="calc()" style="width:100%"></div>
@@ -409,7 +440,7 @@
     </div>
 
     <div class="panel">
-      <div class="section-label mb-4">🔬<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18h8"/><path d="M3 22h18"/><path d="M14 22a7 7 0 1 0 0-14h-1"/><path d="M9 14h2"/><path d="M9 12a2 2 0 0 1-2-2V6h6v4a2 2 0 0 1-2 2Z"/><path d="M12 6V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v3"/></svg> 关键杠杆（按影响力排序）</div>
+      <div class="section-label mb-4"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18h8"/><path d="M3 22h18"/><path d="M14 22a7 7 0 1 0 0-14h-1"/><path d="M9 14h2"/><path d="M9 12a2 2 0 0 1-2-2V6h6v4a2 2 0 0 1-2 2Z"/><path d="M12 6V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v3"/></svg> 关键杠杆（按影响力排序）</div>
       <div id="levers" class="space-y-3"></div>
     </div>
   </div>
@@ -467,7 +498,8 @@ function renderFunnel(cId,layers){
   const mx=layers[0].uv;
   el.innerHTML=layers.map((l,i)=>{
     const w=mx>0?Math.max((l.uv/mx)*100,5):5;
-    const col=rateCol(l.rate??100);
+    const r=l.rate??100;
+    const colClass=r>=50?'fg':r>=25?'fm':r>=10?'fy':'fr';
     const rateStr=l.rate!=null
       ?`<span class="funnel-rate">↓ ${fmtR(l.rate)}</span>`:'';
     const arrow=i>0?`<div class="funnel-arrow">↓</div>`:'';
@@ -475,7 +507,7 @@ function renderFunnel(cId,layers){
     return`${arrow}<div class="funnel-row">
       <div class="funnel-label">${l.label}</div>
       <div style="overflow:hidden;min-width:0;">
-        <div class="funnel-bar" style="width:${w}%;background:${col}18;border:1px solid ${col}35;color:${col};text-shadow:0 0 8px ${col}80">
+        <div class="funnel-bar funnel-${colClass}" style="width:${w}%">
           ${uvStr}
         </div>
       </div>
@@ -627,7 +659,7 @@ function calc(){
     <thead><tr style="border-bottom:1px solid var(--border)">
       <th class="text-left py-2 pr-4 font-medium" style="color:var(--muted);width:120px">指标</th>
       <th class="text-right py-2 px-4 font-semibold" style="color:var(--green)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></svg> 裂变</th>
-      <th class="text-right py-2 px-4 font-semibold" style="color:#60a5fa">📢 广告</th>
+      <th class="text-right py-2 px-4 font-semibold" style="color:#60a5fa"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg> 广告</th>
       <th class="text-right py-2 pl-4 font-medium" style="color:var(--muted)">优势方</th>
     </tr></thead>
     <tbody>${cRows.map(r=>{
@@ -698,7 +730,7 @@ function calc(){
 
   if(budgetCap<newPaid) advs.push({type:'info',text:`预算是瓶颈：自然可跑 <strong>${fmt(newPaid)}</strong> 新客，预算仅覆盖 <strong>${fmt(budgetCap)}</strong> 人。建议分阶段放量或增加预算。`});
 
-  document.getElementById('advice').innerHTML=advs.map(a=>`<div class="advice-item ${a.type}"><span style="flex-shrink:0">${{good:'✅',warn:'⚠️',bad:'❌',info:'💡'}[a.type]}</span><span style="color:var(--text)">${a.text}</span></div>`).join('');
+  document.getElementById('advice').innerHTML=advs.map(a=>`<div class="advice-item ${a.type}"><span style="flex-shrink:0">${{good:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>',warn:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>',bad:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>',info:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>'}[a.type]}</span><span style="color:var(--text)">${a.text}</span></div>`).join('');
 
   // Levers
   const lv=[
@@ -720,6 +752,37 @@ function calc(){
       </div>
     </div>`).join('');
 }
+
+// ── Theme Toggle ──
+(function(){
+  const root = document.documentElement;
+  const toggle = document.getElementById('themeToggle');
+  const sunIcon = document.getElementById('sunIcon');
+  const moonIcon = document.getElementById('moonIcon');
+
+  function setTheme(theme) {
+    if (theme === 'light') {
+      root.classList.add('light');
+      sunIcon.style.display = 'none';
+      moonIcon.style.display = 'block';
+    } else {
+      root.classList.remove('light');
+      sunIcon.style.display = 'block';
+      moonIcon.style.display = 'none';
+    }
+    localStorage.setItem('vc-theme', theme);
+  }
+
+  // Init theme
+  const saved = localStorage.getItem('vc-theme');
+  if (saved) { setTheme(saved); }
+  else if (window.matchMedia('(prefers-color-scheme: light)').matches) { setTheme('light'); }
+  else { setTheme('dark'); }
+
+  toggle.addEventListener('click', () => {
+    setTheme(root.classList.contains('light') ? 'dark' : 'light');
+  });
+})();
 
 // Init
 document.querySelectorAll('input[type=range]').forEach(r=>updateTrack(r));

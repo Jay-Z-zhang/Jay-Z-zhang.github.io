@@ -3,12 +3,24 @@ import { SITE } from "@consts";
 ---
 
 <footer class="animate">
-  <div class="max-w-6xl mx-auto px-6 text-center">
-    <p class="text-sm text-muted-fg">
-      &copy; {new Date().getFullYear()} {SITE.TITLE} | Built with 💚 |
-      <a href="https://github.com/Jay-Z-zhang" target="_blank" rel="noopener noreferrer" class="text-primary hover:text-accent transition-colors underline underline-offset-[3px] decoration-primary/30">
-        GitHub
-      </a>
-    </p>
+  <div class="max-w-6xl mx-auto px-6 flex items-center justify-between text-sm text-muted-fg">
+    <p>Copyright &copy; {new Date().getFullYear()} {SITE.TITLE}. All rights reserved.</p>
+    <button
+      id="back-to-top"
+      class="ml-4 rounded border border-border bg-secondary/20 px-3 py-1 text-sm text-muted-fg transition-colors duration-200 hover:border-primary/30 hover:text-primary"
+    >
+      ↑ 返回顶部
+    </button>
   </div>
 </footer>
+
+<script is:inline>
+  document.addEventListener('DOMContentLoaded', () => {
+    const btn = document.getElementById('back-to-top');
+    if (btn) {
+      btn.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    }
+  });
+</script>
