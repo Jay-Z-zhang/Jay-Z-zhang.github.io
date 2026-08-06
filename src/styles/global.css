@@ -183,12 +183,29 @@ article a:hover {
 
 /* ── Code blocks ── */
 pre {
-  @apply border border-border;
+  @apply border border-border overflow-x-auto;
   background-color: var(--color-secondary) !important;
 }
 
 .light pre {
   background-color: #f1f5f9 !important;
+}
+
+/* ── Mobile responsive ── */
+@media (max-width: 768px) {
+  article {
+    @apply prose-sm;
+  }
+
+  /* Article header adjustments */
+  .my-10 {
+    @apply my-6;
+  }
+
+  /* Share buttons horizontal on mobile */
+  .share-buttons {
+    @apply flex-wrap;
+  }
 }
 
 :root {
