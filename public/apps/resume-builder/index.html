@@ -428,9 +428,16 @@ select option{background:#181b23;}
   <div class="sb-section-body" style="display:none;">
     <!-- API Key -->
     <div class="field">
-      <label>DeepSeek API Key</label>
-      <input type="password" id="aiApiKey" placeholder="sk-..." value="">
+      <label>DeepSeek API Key <span style="color:#4b5563;font-size:10px;">（使用 Worker 代理可留空）</span></label>
+      <input type="password" id="aiApiKey" placeholder="sk-... 或留空使用 Worker 代理" value="">
       <div class="hint">你的 API Key 仅保存在本地浏览器，不会上传服务器</div>
+    </div>
+
+    <!-- Worker URL -->
+    <div class="field">
+      <label>Worker 代理地址 <span style="color:#4b5563;font-size:10px;">（可选）</span></label>
+      <input type="text" id="aiWorkerUrl" placeholder="https://deepseek-proxy.xxx.workers.dev" value="">
+      <div class="hint">填入 Cloudflare Worker URL 后无需 API Key，更安全</div>
     </div>
 
     <!-- 简历内容 -->
@@ -1331,14 +1338,15 @@ window.fillFromResume = function() {
 // 发送 AI 请求
 window.sendAIRequest = function() {
   var apiKey = document.getElementById('aiApiKey').value.trim();
+  var workerUrl = document.getElementById('aiWorkerUrl').value.trim();
   var resumeText = document.getElementById('aiResumeText').value.trim();
   var jobDesc = document.getElementById('aiJobDesc').value.trim();
   var resultDiv = document.getElementById('aiResult');
   var resultContent = document.getElementById('aiResultContent');
   var loadingDiv = document.getElementById('aiLoading');
 
-  if (!apiKey) { alert('请先填写 DeepSeek API Key'); return; }
   if (!resumeText) { alert('请先填写或从简历填充内容'); return; }
+  if (!apiKey && !workerUrl) { alert('请填写 API Key 或 Worker 代理地址'); return; }
 
   // 构建分析维度
   var dims = [];
@@ -1359,25 +1367,54 @@ window.sendAIRequest = function() {
   resultDiv.style.display = 'none';
   loadingDiv.style.display = 'block';
 
-  // 保存 API Key 到 localStorage
-  try { localStorage.setItem('deepseek_api_key', apiKey); } catch(e) {}
+  // 保存配置到 localStorage
+  try {
+    if (apiKey) localStorage.setItem('deepseek_api_key', apiKey);
+    if (workerUrl) localStorage.setItem('deepseek_worker_url', workerUrl);
+  } catch(e) {}
 
-  fetch('https://api.deepseek.com/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + apiKey
-    },
-    body: JSON.stringify({
-      model: 'deepseek-chat',
-      messages: [
-        { role: 'system', content: '你是资深简历顾问，擅长用 STAR 法则优化简历、提升 ATS 通过率。回答要具体、可操作、分点列出。' },
-        { role: 'user', content: prompt }
-      ],
-      max_tokens: 2000,
-      temperature: 0.7
-    })
-  })
+  // 构建请求
+  var fetchOptions;
+  var targetUrl;
+
+  if (workerUrl) {
+    // Worker 代理模式：key 在服务端，前端不传
+    targetUrl = workerUrl.replace(/\/$/, '');
+    fetchOptions = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'deepseek-chat',
+        messages: [
+          { role: 'system', content: '你是资深简历顾问，擅长用 STAR 法则优化简历、提升 ATS 通过率。回答要具体、可操作、分点列出。' },
+          { role: 'user', content: prompt }
+        ],
+        max_tokens: 2000,
+        temperature: 0.7
+      })
+    };
+  } else {
+    // 直接调用模式：前端传 key
+    targetUrl = 'https://api.deepseek.com/chat/completions';
+    fetchOptions = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + apiKey
+      },
+      body: JSON.stringify({
+        model: 'deepseek-chat',
+        messages: [
+          { role: 'system', content: '你是资深简历顾问，擅长用 STAR 法则优化简历、提升 ATS 通过率。回答要具体、可操作、分点列出。' },
+          { role: 'user', content: prompt }
+        ],
+        max_tokens: 2000,
+        temperature: 0.7
+      })
+    };
+  }
+
+  fetch(targetUrl, fetchOptions)
   .then(function(res) {
     if (!res.ok) throw new Error('API 请求失败：' + res.status);
     return res.json();
@@ -1391,15 +1428,17 @@ window.sendAIRequest = function() {
   .catch(function(err) {
     loadingDiv.style.display = 'none';
     resultDiv.style.display = 'block';
-    resultContent.textContent = '请求失败：' + err.message + '\n\n请检查：\n1. API Key 是否正确\n2. DeepSeek 账户余额是否充足\n3. 网络连接是否正常';
+    resultContent.textContent = '请求失败：' + err.message + '\n\n请检查：\n1. API Key 或 Worker 地址是否正确\n2. DeepSeek 账户余额是否充足\n3. 网络连接是否正常';
   });
 };
 
-// 页面加载时恢复 API Key
+// 页面加载时恢复 API Key 和 Worker URL
 (function() {
   try {
-    var saved = localStorage.getItem('deepseek_api_key');
-    if (saved) document.getElementById('aiApiKey').value = saved;
+    var savedKey = localStorage.getItem('deepseek_api_key');
+    var savedWorker = localStorage.getItem('deepseek_worker_url');
+    if (savedKey) document.getElementById('aiApiKey').value = savedKey;
+    if (savedWorker) document.getElementById('aiWorkerUrl').value = savedWorker;
   } catch(e) {}
 })();
 })();</script>
