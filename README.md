@@ -49,7 +49,7 @@
 | 项目 | 说明 |
 |------|------|
 | [裂变漏斗计算器](https://www.jayzzhang.online/apps/viral-calculator/) | 增长 PM 必备，实时估算 K 因子 / CAC / ROI |
-| [简历修改器](https://www.jayzzhang.online/resume-builder/) | 多模板在线简历工具，实时预览 + PDF 导出 |
+| [简历修改器](https://www.jayzzhang.online/resume-builder/) | 多模板在线简历工具，AI 分析 + PDF 导出 + 中英双语 |
 
 ## 文章列表
 

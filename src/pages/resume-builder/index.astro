@@ -4,7 +4,7 @@ import Container from "@components/Container.astro";
 import BackToPrevious from "@components/BackToPrevious.astro";
 ---
 
-<Layout title="简历生成器" description="多模板在线简历工具 — 实时预览、一键导出 PDF/HTML、中英双语、8 种字体">
+<Layout title="简历生成器" description="多模板在线简历工具 — 实时预览、一键导出 PDF/HTML、中英双语、AI 简历修改建议">
   <Container>
     <div class="flex items-center gap-3 mb-8 pt-8">
       <BackToPrevious href="/projects">返回作品</BackToPrevious>
@@ -26,7 +26,7 @@ import BackToPrevious from "@components/BackToPrevious.astro";
 
         <h1 class="text-4xl md:text-5xl font-bold text-foreground leading-tight tracking-tight mb-4">
           简历生成器
-          <span class="block text-lg md:text-xl font-normal text-muted-fg mt-3 tracking-normal">多模板 · 实时预览 · 一键导出 · 中英双语</span>
+          <span class="block text-lg md:text-xl font-normal text-muted-fg mt-3 tracking-normal">多模板 · 实时预览 · AI 修改建议 · 一键导出</span>
         </h1>
 
         <p class="text-base md:text-lg text-muted-fg leading-relaxed max-w-2xl">
@@ -71,6 +71,14 @@ import BackToPrevious from "@components/BackToPrevious.astro";
           </div>
           <h3 class="text-sm font-semibold text-foreground">8 种字体 + 10 种主题色</h3>
           <p class="text-xs text-muted-fg leading-relaxed">思源黑体、Inter、DM Sans 等，字号颜色逐层微调</p>
+        </div>
+
+        <div class="rounded-xl border border-border bg-gradient-to-b from-secondary/30 to-transparent p-6 space-y-4 group hover:border-primary/20 hover:shadow-lg transition-all duration-300">
+          <div class="w-10 h-10 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+          </div>
+          <h3 class="text-sm font-semibold text-foreground">AI 简历修改建议</h3>
+          <p class="text-xs text-muted-fg leading-relaxed">基于 DeepSeek，从文案质量、ATS 关键词、语法拼写、岗位匹配四个维度给出修改建议</p>
         </div>
 
         <div class="rounded-xl border border-border bg-gradient-to-b from-secondary/30 to-transparent p-6 space-y-4 group hover:border-primary/20 hover:shadow-lg transition-all duration-300">
