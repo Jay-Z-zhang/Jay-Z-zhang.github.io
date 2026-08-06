@@ -6,6 +6,7 @@ tags:
   - AI
   - Agent
   - 效率
+image: "/og/04-ai-workflow.png"
 ---
 
 2025 年，AI 不再是「辅助工具」，而是「工作伙伴」。这篇文章分享我如何用 AI Agent 重构自己的 PM 工作流。

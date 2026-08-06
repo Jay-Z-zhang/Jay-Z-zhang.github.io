@@ -13,6 +13,7 @@ type Props = {
   publishedDate?: string;
   modifiedDate?: string;
   author?: string;
+  image?: string;
 };
 
 const {
@@ -23,6 +24,7 @@ const {
   publishedDate,
   modifiedDate,
   author,
+  image,
 } = Astro.props;
 ---
 
@@ -36,6 +38,7 @@ const {
       publishedDate={publishedDate}
       modifiedDate={modifiedDate}
       author={author}
+      image={image}
     />
   </head>
   <body>

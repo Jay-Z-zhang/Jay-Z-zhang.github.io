@@ -4,6 +4,7 @@ description: "增长 PM 必备工具 — 快速估算裂变活动 ROI、K 因子
 date: "2025-06-28"
 demoURL: "https://www.jayzzhang.online/apps/viral-calculator/"
 repoURL: "https://github.com/Jay-Z-zhang"
+image: "/og/viral-calculator.png"
 ---
 
 ![裂变漏斗计算器](/images/viral-calculator.svg)

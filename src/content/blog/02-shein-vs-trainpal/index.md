@@ -6,6 +6,7 @@ tags:
   - 竞品分析
   - 增长
   - LTV
+image: "/og/02-shein-vs-trainpal.png"
 ---
 
 SHEIN 和 TrainPal 看起来是完全不同的业务——一个是快时尚电商，一个是火车票预订。但在增长底层逻辑上，有大量可互鉴的方法论。

@@ -4,6 +4,7 @@ description: "多模板在线简历工具 — 实时预览、一键导出 PDF/HT
 date: "2025-06-20"
 demoURL: "https://www.jayzzhang.online/apps/resume-builder/"
 repoURL: "https://github.com/Jay-Z-zhang"
+image: "/og/resume-builder.png"
 ---
 
 一个功能完整的在线简历生成工具，左侧编辑、右侧实时预览，支持多种模板、字体和中英双语切换。

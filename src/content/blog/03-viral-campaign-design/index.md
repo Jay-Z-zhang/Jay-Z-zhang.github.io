@@ -6,6 +6,7 @@ tags:
   - 工具
   - 裂变
   - 产品
+image: "/og/03-viral-campaign-design.png"
 ---
 
 做裂变活动之前，最怕的是：活动上线了才发现 ROI 算不过来。
