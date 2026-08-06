@@ -445,80 +445,9 @@ select option{background:#181b23;}
   </div>
 </div>
 
-<!-- ════ AI 修改建议 ════ -->
-<div class="sb-section">
-  <div class="sb-section-head" onclick="toggleSection(this)"><h3><svg class="sb-icon" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg><span>AI 修改建议</span></h3><span class="chevron">▼</span></div>
-  <div class="sb-section-body" style="display:none;">
-    <!-- API Key -->
-    <div class="field">
-      <label>DeepSeek API Key <span style="color:#4b5563;font-size:10px;">（使用 Worker 代理可留空）</span></label>
-      <input type="password" id="aiApiKey" placeholder="sk-... 或留空使用 Worker 代理" value="">
-      <div class="hint">你的 API Key 仅保存在本地浏览器，不会上传服务器</div>
-    </div>
-
-    <!-- Worker URL -->
-    <div class="field">
-      <label>Worker 代理地址 <span style="color:#4b5563;font-size:10px;">（可选）</span></label>
-      <input type="text" id="aiWorkerUrl" placeholder="https://deepseek-proxy.xxx.workers.dev" value="https://deepseek-proxy.jayzzhang.workers.dev">
-      <div class="hint">填入 Cloudflare Worker URL 后无需 API Key，更安全</div>
-    </div>
-
-    <!-- 简历内容 -->
-    <div class="field">
-      <label>简历内容</label>
-      <textarea id="aiResumeText" rows="6" placeholder="粘贴你的简历内容..."></textarea>
-      <button class="btn btn-ghost" style="width:100%;margin-top:6px;" onclick="fillFromResume()">从当前简历填充</button>
-    </div>
-
-    <!-- 目标岗位 (可选) -->
-    <div class="field">
-      <label>目标岗位 JD（可选）</label>
-      <textarea id="aiJobDesc" rows="3" placeholder="粘贴职位描述，AI 会针对性优化..."></textarea>
-    </div>
-
-    <!-- 分析维度 -->
-    <div class="field">
-      <label>分析维度</label>
-      <div style="display:flex;flex-direction:column;gap:6px;margin-top:4px;">
-        <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--app-text);cursor:pointer;">
-          <input type="checkbox" id="dimQuality" checked style="width:auto;">
-          <span>文案质量优化（STAR 法则、量化成果）</span>
-        </label>
-        <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--app-text);cursor:pointer;">
-          <input type="checkbox" id="dimATS" checked style="width:auto;">
-          <span>ATS 关键词匹配</span>
-        </label>
-        <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--app-text);cursor:pointer;">
-          <input type="checkbox" id="dimGrammar" checked style="width:auto;">
-          <span>语法/拼写检查</span>
-        </label>
-        <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--app-text);cursor:pointer;">
-          <input type="checkbox" id="dimTargeted" checked style="width:auto;">
-          <span>岗位针对性建议</span>
-        </label>
-      </div>
-    </div>
-
-    <!-- 发送按钮 -->
-    <button class="btn btn-primary" style="width:100%;margin-top:8px;" onclick="sendAIRequest()">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block;vertical-align:-2px;margin-right:4px;"><path d="M22 2L11 13"/><path d="M22 2L15 22l-4-9-9-4 20-7z"/></svg>
-      获取 AI 建议
-    </button>
-
-    <!-- 结果展示 -->
-    <div id="aiResult" style="margin-top:12px;display:none;">
-      <div style="font-size:11px;font-weight:600;color:var(--app-muted);margin-bottom:8px;">分析结果</div>
-      <div id="aiResultContent" style="background:rgba(15,17,23,.6);border:1px solid var(--app-border);border-radius:8px;padding:12px;font-size:12px;line-height:1.7;color:var(--app-text);max-height:400px;overflow-y:auto;white-space:pre-wrap;"></div>
-    </div>
-
-    <!-- 加载状态 -->
-    <div id="aiLoading" style="display:none;margin-top:12px;text-align:center;padding:16px;">
-      <div style="display:inline-block;width:20px;height:20px;border:2px solid var(--app-border);border-top-color:var(--app-accent);border-radius:50%;animation:spin .8s linear infinite;"></div>
-      <div style="font-size:11px;color:var(--app-muted);margin-top:8px;">AI 正在分析你的简历...</div>
-    </div>
-  </div>
-</div>
-
+<!-- AI 配置（隐藏字段，供右上角 AI 润色对话框使用） -->
+<input type="hidden" id="aiApiKey" value="">
+<input type="hidden" id="aiWorkerUrl" value="https://deepseek-proxy.jayzzhang.workers.dev">
 </div><!-- end sidebar -->
 
 <!-- ════ RIGHT PREVIEW ════ -->
@@ -1434,7 +1363,7 @@ window.runAIPolish = function() {
   });
 
   if (!dims.length) { alert('请至少选择一个润色维度'); return; }
-  if (!apiKey && !workerUrl) { alert('请先在左侧「AI 修改建议」中填写 API Key 或 Worker 地址'); return; }
+  if (!apiKey && !workerUrl) { alert('请确保 Worker 代理地址已配置'); return; }
 
   var resumeText = [];
   var nameEl = document.getElementById('name');
@@ -1553,44 +1482,6 @@ document.addEventListener('keydown', function(e) {
 });
 
 /* ════ AI 修改建议（左侧栏） ════ */
-// 从当前简历数据填充文本框
-window.fillFromResume = function() {
-  var parts = [];
-  if (S.name) parts.push('姓名：' + S.name);
-  if (S.email) parts.push('邮箱：' + S.email);
-  if (S.phone) parts.push('电话：' + S.phone);
-  if (S.summary) parts.push('【自我评价】\n' + S.summary);
-  S.workEntries.forEach(function(e, i) {
-    var w = '【工作经历 ' + (i+1) + '】\n' + (e.company||'') + ' | ' + (e.role||'') + ' | ' + (e.period||'');
-    if (e.desc) w += '\n' + e.desc;
-    parts.push(w);
-  });
-  S.eduEntries.forEach(function(e, i) {
-    var ed = '【教育经历 ' + (i+1) + '】\n' + (e.school||'') + ' | ' + (e.degree||'') + ' | ' + (e.period||'');
-    if (e.gpa) ed += ' | GPA: ' + e.gpa;
-    parts.push(ed);
-  });
-  S.projectEntries.forEach(function(e, i) {
-    var p = '【项目经历 ' + (i+1) + '】\n' + (e.name||'') + (e.link ? ' | ' + e.link : '');
-    if (e.desc) p += '\n' + e.desc;
-    parts.push(p);
-  });
-  document.getElementById('aiResumeText').value = parts.join('\n\n');
-};
-
-// 发送 AI 请求
-window.sendAIRequest = function() {
-  var apiKey = document.getElementById('aiApiKey').value.trim();
-  var workerUrl = document.getElementById('aiWorkerUrl').value.trim();
-  var resumeText = document.getElementById('aiResumeText').value.trim();
-  var jobDesc = document.getElementById('aiJobDesc').value.trim();
-  var resultDiv = document.getElementById('aiResult');
-  var resultContent = document.getElementById('aiResultContent');
-  var loadingDiv = document.getElementById('aiLoading');
-
-  if (!resumeText) { alert('请先填写或从简历填充内容'); return; }
-  if (!apiKey && !workerUrl) { alert('请填写 API Key 或 Worker 代理地址'); return; }
-
   // 构建分析维度
   var dims = [];
   if (document.getElementById('dimQuality').checked) dims.push('1. 文案质量优化：用 STAR 法则重写经历描述，确保每段经历都有量化成果（数据/百分比），动词开头，去掉废话和空泛描述');
