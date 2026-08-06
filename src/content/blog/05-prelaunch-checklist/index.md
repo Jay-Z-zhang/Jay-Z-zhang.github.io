@@ -9,6 +9,8 @@ tags:
 image: "/og/05-prelaunch-checklist.png"
 ---
 
+![上线前五大维度自查](/images/blog/05-checklist.png)
+
 ## 为什么需要这份清单？
 
 我见过太多团队上线后才发现：

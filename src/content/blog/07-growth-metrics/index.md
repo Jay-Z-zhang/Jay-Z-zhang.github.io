@@ -9,6 +9,8 @@ tags:
 image: "/og/07-growth-metrics.png"
 ---
 
+![增长指标分层模型](/images/blog/07-metrics-pyramid.png)
+
 ## 从一个真实场景说起
 
 某创业公司的周会上：

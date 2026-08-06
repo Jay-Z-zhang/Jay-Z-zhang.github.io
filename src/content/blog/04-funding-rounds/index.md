@@ -9,6 +9,8 @@ tags:
 image: "/og/04-funding-rounds.png"
 ---
 
+![创业融资路线图](/images/blog/04-funding-stairs.png)
+
 ## 从一个真实问题说起
 
 经常有创业者问我：

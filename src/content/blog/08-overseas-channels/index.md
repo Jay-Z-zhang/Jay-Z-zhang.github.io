@@ -9,6 +9,8 @@ tags:
 image: "/og/08-overseas-channels.png"
 ---
 
+![渠道组合策略](/images/blog/08-channel-strategy.png)
+
 ## 为什么需要多渠道布局？
 
 单一渠道的风险：
@@ -76,9 +78,9 @@ image: "/og/08-overseas-channels.png"
 - 回复评论，建立社区关系
 
 **避坑：**
-- ❌ 不要批量发帖
+- ✗ 不要批量发帖
 -  不要用营销号语气
-- ❌ 不要一注册就推广
+- ✗ 不要一注册就推广
 
 ---
 
@@ -144,7 +146,7 @@ image: "/og/08-overseas-channels.png"
 
 **什么样的内容能上首页？**
 
-✅ **受欢迎：**
+✓ **受欢迎：**
 - 技术深度文章
 - 有趣的产品
 - 行业分析

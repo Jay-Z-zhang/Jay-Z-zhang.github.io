@@ -9,6 +9,8 @@ tags:
 image: "/og/06-ltv-cac.png"
 ---
 
+![LTV/CAC 单位经济模型](/images/blog/06-ltv-cac.png)
+
 ## 从一个血淋淋的案例说起
 
 2019 年，一家生鲜电商公司拿到了 B 轮 2 亿融资。

@@ -9,6 +9,8 @@ tags:
 image: "/og/01-convertible-bonds.png"
 ---
 
+![可转债 vs 可转换优先股对比](/images/blog/01-bonds-vs-stock.png)
+
 ## 先讲个真实故事
 
 2015 年，一家做企业 SaaS 的创业公司拿到了两笔钱：
