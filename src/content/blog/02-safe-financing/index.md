@@ -155,9 +155,9 @@ SAFE 投资人按 $0.8/股转换 → 同样金额多拿 25% 股份
 
 | 维度 | SAFE | 可转债 |
 |------|------|--------|
-| **到期日** | ✗ 没有 | ✓ 有（通常 18-24 个月） |
-| **利息** | ✗ 没有 | ✓ 有（通常 5-8%） |
-| **还款义务** | ✗ 没有 | ✓ 到期必须还本付息 |
+| **到期日** | <svg style="display:inline-block;vertical-align:-2px" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> 没有 | <svg style="display:inline-block;vertical-align:-2px" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> 有（通常 18-24 个月） |
+| **利息** | <svg style="display:inline-block;vertical-align:-2px" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> 没有 | <svg style="display:inline-block;vertical-align:-2px" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> 有（通常 5-8%） |
+| **还款义务** | <svg style="display:inline-block;vertical-align:-2px" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> 没有 | <svg style="display:inline-block;vertical-align:-2px" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> 到期必须还本付息 |
 | **破产清算顺序** | 排在债权人之后 | 本身就是债权人，优先级更高 |
 | **风险** | 如果公司永不融资，投资人可能血本无归 | 即使不融资，到期也要还钱 |
 

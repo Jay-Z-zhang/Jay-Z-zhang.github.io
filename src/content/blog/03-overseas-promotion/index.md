@@ -101,10 +101,10 @@ image: "/og/03-overseas-promotion.png"
 > 结果：500+ upvotes，产品当天注册量从 10 人暴涨到 300 人。
 
 **Reddit 运营禁忌：**
-- ✗ 直接发广告
-- ✗ 批量发帖（多个 subreddit 发同样内容）
-- ✗ 用营销号语气（「震惊！这款产品让你效率提升 10 倍！」）
-- ✗ 一注册就推广
+- <svg style="display:inline-block;vertical-align:-2px;margin-right:4px" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> 直接发广告
+- <svg style="display:inline-block;vertical-align:-2px;margin-right:4px" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> 批量发帖（多个 subreddit 发同样内容）
+- <svg style="display:inline-block;vertical-align:-2px;margin-right:4px" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> 用营销号语气（「震惊！这款产品让你效率提升 10 倍！」）
+- <svg style="display:inline-block;vertical-align:-2px;margin-right:4px" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> 一注册就推广
 
 ---
 
@@ -285,7 +285,7 @@ image: "/og/03-overseas-promotion.png"
 
 **什么样的内容能上首页？**
 
-✓ **受欢迎的内容：**
+<svg style="display:inline-block;vertical-align:-2px;margin-right:4px" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> **受欢迎的内容：**
 - 技术深度文章（「我是如何用 Rust 重写 XXX 的」）
 - 有趣的产品（「我做了一个能用 AI 写代码的工具」）
 - 行业分析（「2025 年 SaaS 定价趋势」）

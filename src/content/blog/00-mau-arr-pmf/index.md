@@ -108,7 +108,7 @@ MRR（Monthly Recurring Revenue）= 所有活跃订阅合同的月度收入总�
 | **退款** | 已冲销 | 用户退款要扣除 |
 | **非订阅收入** | 不符合「经常性」 | 单次购买、广告收入 |
 
-### 五种「劣质 ARR 增长」——一定要警惕
+### <svg style="display:inline-block;vertical-align:-2px;margin-right:4px" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> 五种「劣质 ARR 增长」——一定要警惕
 
 这是很多创始人容易踩的坑。ARR 数字好看，不代表业务健康。
 
@@ -209,7 +209,7 @@ MRR（Monthly Recurring Revenue）= 所有活跃订阅合同的月度收入总�
 - K 因子（每个用户带来的新用户数）> 0.5
 - 自然流量占比 > 30%
 
-### PMF 的五种幻觉——别被自己骗了
+### <svg style="display:inline-block;vertical-align:-2px;margin-right:4px" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> PMF 的五种幻觉——别被自己骗了
 
 这是最关键的部分。很多创始人以为找到了 PMF，其实是幻觉。
 
