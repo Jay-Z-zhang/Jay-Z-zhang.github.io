@@ -1,0 +1,822 @@
+<!DOCTYPE html><html lang="zh-CN"> <head><!-- Global Metadata --><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><meta name="generator" content="Astro v5.13.9"><!-- Canonical URL --><link rel="canonical" href="https://www.jayzzhang.online/blog/03-overseas-promotion/"><!-- Primary Meta Tags --><title>海外社媒推广指南：7 大平台搭建出海流量矩阵 | Jayz Zhang</title><meta name="title" content="海外社媒推广指南：7 大平台搭建出海流量矩阵 | Jayz Zhang"><meta name="description" content="Reddit、Twitter、Facebook、Indie Hackers、ProductHunt、Hacker News……出海创业者必须了解的 7 大流量池。"><meta name="author" content="Jayz Zhang"><meta name="robots" content="index, follow, max-image-preview:large"><meta name="googlebot" content="index, follow"><!-- Open Graph / Facebook --><meta property="og:type" content="article"><meta property="og:url" content="https://www.jayzzhang.online/blog/03-overseas-promotion/"><meta property="og:title" content="海外社媒推广指南：7 大平台搭建出海流量矩阵 | Jayz Zhang"><meta property="og:description" content="Reddit、Twitter、Facebook、Indie Hackers、ProductHunt、Hacker News……出海创业者必须了解的 7 大流量池。"><meta property="og:image" content="https://www.jayzzhang.online/og/03-overseas-promotion.png"><meta property="og:site_name" content="Jayz Zhang"><meta property="og:locale" content="zh_CN"><meta property="article:published_time" content="2025-08-09T00:00:00.000Z"><meta property="article:author" content="https://www.jayzzhang.online"><!-- Twitter --><meta property="twitter:card" content="summary_large_image"><meta property="twitter:url" content="https://www.jayzzhang.online/blog/03-overseas-promotion/"><meta property="twitter:title" content="海外社媒推广指南：7 大平台搭建出海流量矩阵 | Jayz Zhang"><meta property="twitter:description" content="Reddit、Twitter、Facebook、Indie Hackers、ProductHunt、Hacker News……出海创业者必须了解的 7 大流量池。"><meta property="twitter:image" content="https://www.jayzzhang.online/og/03-overseas-promotion.png"><meta property="twitter:creator" content="@jayzzhang"><!-- JSON-LD Structured Data --><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","name":"海外社媒推广指南：7 大平台搭建出海流量矩阵 | Jayz Zhang","description":"Reddit、Twitter、Facebook、Indie Hackers、ProductHunt、Hacker News……出海创业者必须了解的 7 大流量池。","url":"https://www.jayzzhang.online/blog/03-overseas-promotion/","author":{"@type":"Person","name":"Jayz Zhang","url":"https://www.jayzzhang.online"},"publisher":{"@type":"Person","name":"Jayz Zhang","url":"https://www.jayzzhang.online"},"datePublished":"2025-08-09T00:00:00.000Z","image":"https://www.jayzzhang.online/og/03-overseas-promotion.png"}</script><!-- Performance: Preconnect --><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="preconnect" href="https://giscus.app"><!-- PageFind --><link href="/pagefind/pagefind-ui.css" rel="stylesheet"><script src="/pagefind/pagefind-ui.js"></script><script>
+  document.addEventListener("DOMContentLoaded", () => {
+    animate();
+    addCopyCodeButtons();
+
+    const backToPrev = document.getElementById("back-to-prev");
+    backToPrev?.addEventListener("click", () => window.history.back());
+
+    // Consolidated scroll handler (replaces 3 separate listeners)
+    initScrollHandlers();
+  });
+
+  // Astro client-side navigation: re-run animations on page swap
+  document.addEventListener("astro:after-swap", () => {
+    animate();
+    addCopyCodeButtons();
+  });
+
+  function animate() {
+    const animateElements = document.querySelectorAll(".animate");
+    if (!animateElements.length) return;
+
+    // 立即显示所有 .animate 元素（简单可靠，不依赖 IntersectionObserver）
+    animateElements.forEach((el) => {
+      el.classList.add("show");
+    });
+  }
+
+  function addCopyCodeButtons() {
+    let copyButtonLabel = "📋";
+    let codeBlocks = Array.from(document.querySelectorAll("pre"));
+
+    async function copyCode(codeBlock, copyButton) {
+      const codeText = codeBlock.innerText;
+      const buttonText = copyButton.innerText;
+      const textToCopy = codeText.replace(buttonText, "");
+
+      await navigator.clipboard.writeText(textToCopy);
+      copyButton.innerText = "✅";
+
+      setTimeout(() => {
+        copyButton.innerText = copyButtonLabel;
+      }, 2000);
+    }
+
+    for (let codeBlock of codeBlocks) {
+      const wrapper = document.createElement("div");
+      wrapper.style.position = "relative";
+
+      const copyButton = document.createElement("button");
+      copyButton.innerText = copyButtonLabel;
+      copyButton.classList = "copy-code";
+
+      codeBlock.setAttribute("tabindex", "0");
+      codeBlock.appendChild(copyButton);
+
+      codeBlock.parentNode.insertBefore(wrapper, codeBlock);
+      wrapper.appendChild(codeBlock);
+
+      copyButton?.addEventListener("click", async () => {
+        await copyCode(codeBlock, copyButton);
+      });
+    }
+  }
+
+  function initScrollHandlers() {
+    const progressBar = document.getElementById('reading-progress');
+    const nav = document.getElementById('nav');
+    const backToTopBtn = document.getElementById('back-to-top');
+    const isHome = window.location.pathname === '/' || window.location.pathname === '';
+    let ticking = false;
+
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          const scrollY = window.scrollY;
+
+          // 1. Reading progress bar
+          if (progressBar) {
+            const total = document.documentElement.scrollHeight - window.innerHeight;
+            const progress = total > 0 ? scrollY / total : 0;
+            progressBar.style.transform = `scaleX(${progress})`;
+          }
+
+          // 2. Nav background
+          if (nav) {
+            if (isHome) {
+              nav.classList.toggle('has-bg', scrollY > 20);
+            } else {
+              nav.classList.add('has-bg');
+            }
+          }
+
+          // 3. Back to top visibility
+          if (backToTopBtn) {
+            if (scrollY > 300) {
+              document.documentElement.classList.add('scrolled');
+            } else {
+              document.documentElement.classList.remove('scrolled');
+            }
+          }
+
+          ticking = false;
+        });
+        ticking = true;
+      }
+    }, { passive: true });
+
+    // Back to top click
+    backToTopBtn?.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+</script><link rel="stylesheet" href="/_astro/_id_.DX0r1tvC.css">
+<style>.animate-modal-in[data-astro-cid-zllr3mxm]{animation:modalIn .2s ease-out}@keyframes modalIn{0%{opacity:0;transform:scale(.95) translateY(8px)}to{opacity:1;transform:scale(1) translateY(0)}}
+</style></head> <body> <!-- Reading Progress Bar --> <div id="reading-progress" class="fixed top-0 left-0 h-1 bg-primary z-[60] origin-left scale-x-0 transition-transform duration-100"></div> <noscript> <style>
+        .animate, .scroll-section {
+          opacity: 1;
+          transform: none;
+        }
+      </style> </noscript> <header id="nav" class="fixed top-0 left-0 right-0 z-50 py-4 transition-all duration-300 has-bg"> <div class="max-w-6xl mx-auto px-6 flex items-center justify-between"> <a href="/" class="text-lg font-bold text-primary"> Jayz Zhang </a> <div class="flex items-center gap-5"> <a href="/" class="text-sm font-medium text-muted-fg hover:text-primary transition-colors" rel="prefetch">首页</a> <a href="/blog" class="text-sm font-medium text-muted-fg hover:text-primary transition-colors" rel="prefetch">博客</a> <a href="/projects" class="text-sm font-medium text-muted-fg hover:text-primary transition-colors" rel="prefetch">作品</a> <a href="https://github.com/Jay-Z-zhang" target="_blank" rel="noopener noreferrer" class="flex items-center gap-1.5 text-sm font-medium text-muted-fg hover:text-primary transition-colors" aria-label="GitHub"> <svg height="16" width="16" viewBox="0 0 16 16" fill="currentColor"> <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path> </svg>
+GitHub
+</a> <!-- Theme Toggle --> <button id="theme-toggle" class="theme-toggle" aria-label="切换主题"> <svg id="theme-icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><circle cx="12" cy="12" r="5"></circle><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path></svg> <svg id="theme-icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg> </button> <button id="magnifying-glass" aria-label="Search" class="flex items-center rounded-sm border border-border bg-secondary px-2 py-1 text-xs text-muted-fg transition-colors duration-300 ease-in-out hover:text-primary"> <svg height="14" stroke-linejoin="round" viewBox="0 0 16 16" width="14" style="color: currentcolor;"> <path fill-rule="evenodd" clip-rule="evenodd" d="M3.5 7C3.5 5.067 5.067 3.5 7 3.5C8.933 3.5 10.5 5.067 10.5 7C10.5 7.88461 10.1718 8.69256 9.63058 9.30876L9.30876 9.63058C8.69256 10.1718 7.88461 10.5 7 10.5C5.067 10.5 3.5 8.933 3.5 7ZM9.96544 11.0261C9.13578 11.6382 8.11014 12 7 12C4.23858 12 2 9.76142 2 7C2 4.23858 4.23858 2 7 2C9.76142 2 12 4.23858 12 7C12 8.11014 11.6382 9.13578 11.0261 9.96544L14.0303 12.9697L14.5607 13.5L13.5 14.5607L12.9697 14.0303L9.96544 11.0261Z" fill="currentColor"></path> </svg> </button> </div> </div> </header> <script>
+  const nav = document.getElementById('nav');
+
+  function isHomepage() {
+    return window.location.pathname === '/' || window.location.pathname === '';
+  }
+
+  // Theme toggle
+  const themeToggle = document.getElementById('theme-toggle');
+  const sunIcon = document.getElementById('theme-icon-sun');
+  const moonIcon = document.getElementById('theme-icon-moon');
+
+  function setTheme(theme) {
+    if (theme === 'light') {
+      document.documentElement.classList.add('light');
+      if (sunIcon) sunIcon.style.display = 'none';
+      if (moonIcon) moonIcon.style.display = 'block';
+    } else {
+      document.documentElement.classList.remove('light');
+      if (sunIcon) sunIcon.style.display = 'block';
+      if (moonIcon) moonIcon.style.display = 'none';
+    }
+    localStorage.setItem('theme', theme);
+  }
+
+  // Init theme
+  const saved = localStorage.getItem('theme');
+  if (saved) { setTheme(saved); }
+  else if (window.matchMedia('(prefers-color-scheme: light)').matches) { setTheme('light'); }
+
+  themeToggle?.addEventListener('click', () => {
+    setTheme(document.documentElement.classList.contains('light') ? 'dark' : 'light');
+  });
+
+  // Nav background
+  if (isHomepage()) {
+    nav.classList.remove('has-bg');
+  } else {
+    nav.classList.add('has-bg');
+  }
+</script> <main class="has-nav-padding">  <div class="mx-auto max-w-6xl px-6"> <div class="flex items-center gap-3 mb-6"> <a href="/blog" class="group inline-flex items-center gap-1.5 text-sm text-muted-fg transition-colors duration-200 hover:text-primary"> <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="transition-transform duration-200 group-hover:-translate-x-0.5"> <polyline points="15 18 9 12 15 6"></polyline> </svg> <span>返回博客</span> </a> </div> <div class="my-10 space-y-1"> <div class="flex items-center gap-1.5 text-muted-fg"> <div class="font-base text-sm"> <time datetime="2025-08-09T00:00:00.000Z"> 2025年8月09日 </time> </div>
+&bull;
+<div class="font-base text-sm"> 4 min read </div> </div> <h1 class="text-3xl font-semibold text-foreground"> 海外社媒推广指南：7 大平台搭建出海流量矩阵 </h1> <div class="flex gap-2 pt-2"> <a href="/tags/出海" class="rounded-sm border border-border bg-secondary px-2 py-1 text-sm text-muted-fg transition-colors duration-300 ease-in-out hover:border-primary/30 hover:text-primary"> 出海 </a><a href="/tags/营销" class="rounded-sm border border-border bg-secondary px-2 py-1 text-sm text-muted-fg transition-colors duration-300 ease-in-out hover:border-primary/30 hover:text-primary"> 营销 </a><a href="/tags/社交媒体" class="rounded-sm border border-border bg-secondary px-2 py-1 text-sm text-muted-fg transition-colors duration-300 ease-in-out hover:border-primary/30 hover:text-primary"> 社交媒体 </a> </div> </div> <details open class="group rounded-lg border border-border bg-secondary/20"> <summary class="cursor-pointer rounded-t-lg px-3 py-1.5 font-medium text-muted-fg transition-colors hover:text-primary">目录</summary> <nav> <ul class="py-3"> <li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#为什么要做海外社媒" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 为什么要做海外社媒？ </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#第一梯队基础设施必须做" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 第一梯队：基础设施（必须做） </a> <ul class="translate-x-3"> <li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#1-gmail--google-账号" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 1. Gmail / Google 账号 </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#2-reddit" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 2. Reddit </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#3-twitter--x" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 3. Twitter / X </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#4-facebook" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 4. Facebook </a>  </li> </ul> </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#第二梯队精准流量池选择-1-2-个深耕" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 第二梯队：精准流量池（选择 1-2 个深耕） </a> <ul class="translate-x-3"> <li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#5-indie-hackers" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 5. Indie Hackers </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#6-producthunt" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 6. ProductHunt </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#7-hacker-news" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 7. Hacker News </a>  </li> </ul> </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#核心运营逻辑" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 核心运营逻辑 </a> <ul class="translate-x-3"> <li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#1-快速迭代" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 1. 快速迭代 </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#2-协作分工" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 2. 协作分工 </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#3-最大化-seo" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 3. 最大化 SEO </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#4-付费加速" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 4. 付费加速 </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#5-保持灵活" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 5. 保持灵活 </a>  </li> </ul> </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#渠道选择决策树" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 渠道选择决策树 </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#行动清单" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 行动清单 </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#延伸推荐" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 延伸推荐 </a>  </li> </ul> </nav> </details><article class="animate"> <p><img src="/images/blog/03-social-matrix.png" alt="海外社媒流量矩阵"></p>
+<h2 id="为什么要做海外社媒">为什么要做海外社媒？</h2>
+<p>如果你做了一个面向全球市场的产品（SaaS、App、工具），<strong>海外社媒就是你的免费获客渠道</strong>。</p>
+<p>但很多人犯了一个错误：用做抖音、小红书的思路去做海外社媒。</p>
+<p><strong>结果：</strong></p>
+<ul>
+<li>在 Reddit 发广告 → 被封号</li>
+<li>在 Twitter 发营销软文 → 0 互动</li>
+<li>在 ProductHunt 自卖自夸 → 被 downvote</li>
+</ul>
+<p><strong>海外平台的玩法、用户习惯、内容风格和国内完全不同。</strong> 选错平台 = 浪费时间，用错方法 = 适得其反。</p>
+<p><strong>这篇文章帮你：</strong></p>
+<ol>
+<li>理解 7 大平台各自的定位和用户画像</li>
+<li>知道每个平台应该怎么运营</li>
+<li>避免常见的新手坑</li>
+</ol>
+<hr>
+<h2 id="第一梯队基础设施必须做">第一梯队：基础设施（必须做）</h2>
+<h3 id="1-gmail--google-账号">1. Gmail / Google 账号</h3>
+<p><strong>为什么把它排在第一位？</strong></p>
+<p>因为几乎所有海外平台都需要 Google 账号注册。它是你的「数字身份证」。</p>
+<p><strong>很多创始人犯的错误：</strong> 用个人邮箱注册所有平台账号。</p>
+<p><strong>后果：</strong></p>
+<ul>
+<li>个人邮箱和密码管理混乱</li>
+<li>某个平台被封 → 影响其他平台</li>
+<li>离职或交接时很麻烦</li>
+</ul>
+<p><strong>正确做法：</strong></p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>步骤</th><th>操作</th></tr></thead><tbody><tr><td>1</td><td>注册专用 Google 账号（如 <code>yourbrand.official@gmail.com</code>）</td></tr><tr><td>2</td><td>开启两步验证</td></tr><tr><td>3</td><td>设置专业的头像和名字</td></tr><tr><td>4</td><td>用这个账号注册所有社媒平台</td></tr></tbody></table>
+<hr>
+<h3 id="2-reddit">2. Reddit</h3>
+<p><strong>一句话定位：</strong> 全球最大的论坛集合，深度讨论的圣地。</p>
+<p><strong>为什么 Reddit 重要？</strong></p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>价值</th><th>说明</th></tr></thead><tbody><tr><td><strong>流量潜力</strong></td><td>热门帖子可带来数万 UV</td></tr><tr><td><strong>SEO 价值</strong></td><td>Google 优先索引 Reddit 内容</td></tr><tr><td><strong>用户质量</strong></td><td>技术爱好者、早期采用者、深度思考者</td></tr><tr><td><strong>长尾效应</strong></td><td>好帖子几年后还能带来流量</td></tr></tbody></table>
+<p><strong>Reddit 的核心规则：</strong></p>
+<blockquote>
+<p><strong>Reddit 用户极度反感营销。直接发广告 = 封号。</strong></p>
+</blockquote>
+<p><strong>正确运营策略：</strong></p>
+<p><strong>第 1 个月：只贡献价值</strong></p>
+<ul>
+<li>找到你的 niche subreddit（如 r/SaaS、r/startups、r/webdev）</li>
+<li>回答问题、分享经验</li>
+<li>不要发任何产品链接</li>
+</ul>
+<p><strong>第 2 个月：自然引入</strong></p>
+<ul>
+<li>分享你的「build in public」历程</li>
+<li>用「我在做一个 XXX，想听听大家意见」的方式引入</li>
+</ul>
+<p><strong>第 3 个月：稳定输出</strong></p>
+<ul>
+<li>每周 1-2 篇深度帖子</li>
+<li>回复评论，建立社区关系</li>
+</ul>
+<p><strong>真实案例：</strong></p>
+<blockquote>
+<p>一个独立开发者在 r/webdev 分享「我如何用 Next.js 做了一个 XXX」。</p>
+<p>帖子结构：</p>
+<ul>
+<li>为什么做这个产品（痛点）</li>
+<li>技术栈选择（Next.js + Supabase）</li>
+<li>遇到的挑战和解决方案</li>
+<li>产品链接（放在最后，不突兀）</li>
+</ul>
+<p>结果：500+ upvotes，产品当天注册量从 10 人暴涨到 300 人。</p>
+</blockquote>
+<p><strong>Reddit 运营禁忌：</strong></p>
+<ul>
+<li><svg style="display:inline-block;vertical-align:-2px;margin-right:4px" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg> 直接发广告</li>
+<li><svg style="display:inline-block;vertical-align:-2px;margin-right:4px" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg> 批量发帖（多个 subreddit 发同样内容）</li>
+<li><svg style="display:inline-block;vertical-align:-2px;margin-right:4px" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg> 用营销号语气（「震惊！这款产品让你效率提升 10 倍！」）</li>
+<li><svg style="display:inline-block;vertical-align:-2px;margin-right:4px" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg> 一注册就推广</li>
+</ul>
+<hr>
+<h3 id="3-twitter--x">3. Twitter / X</h3>
+<p><strong>一句话定位：</strong> 实时信息 + 算法推荐，创业者的聚集地。</p>
+<p><strong>为什么 Twitter 重要？</strong></p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>价值</th><th>说明</th></tr></thead><tbody><tr><td><strong>用户画像</strong></td><td>创业者、投资人、开发者、KOL</td></tr><tr><td><strong>内容风格</strong></td><td>短平快、观点鲜明、互动性强</td></tr><tr><td><strong>网络效应</strong></td><td>回复大 V 可以蹭流量</td></tr><tr><td><strong>build in public</strong></td><td>分享创业历程的最佳平台</td></tr></tbody></table>
+<p><strong>Twitter 内容公式：</strong></p>
+<pre class="astro-code css-variables" style="background-color:var(--astro-code-background);color:var(--astro-code-foreground); overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>观点 + 数据/案例 + 互动问题</span></span></code></pre>
+<p><strong>示例：</strong></p>
+<blockquote>
+<p>「大多数 SaaS 创始人犯的错误：花 80% 时间做产品，20% 时间做营销。</p>
+<p>我的经验正好相反：30% 产品，70% 营销。</p>
+<p>结果是：MRR 从 $0 到 $5K 只用了 4 个月。</p>
+<p>你们觉得这个比例合理吗？」</p>
+</blockquote>
+<p><strong>为什么这个公式有效？</strong></p>
+<ul>
+<li><strong>观点</strong>：引发争议和讨论</li>
+<li><strong>数据</strong>：增加可信度</li>
+<li><strong>互动问题</strong>：引导评论，提高算法权重</li>
+</ul>
+<p><strong>发布节奏：</strong></p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>频率</th><th>内容</th></tr></thead><tbody><tr><td><strong>每天 3-5 条推文</strong></td><td>短观点、行业观察、互动问题</td></tr><tr><td><strong>每周 1-2 个 Thread</strong></td><td>长内容、经验分享、教程</td></tr><tr><td><strong>每天回复 10+ 个大 V</strong></td><td>蹭流量、建立关系</td></tr></tbody></table>
+<p><strong>增长技巧：</strong></p>
+<ol>
+<li>
+<p><strong>蹭流量</strong></p>
+<ul>
+<li>回复大 V 推文（尤其是刚发的，前 30 分钟回复最有效）</li>
+<li>引用热门推文</li>
+<li>参与热门话题（用 hashtag）</li>
+</ul>
+</li>
+<li>
+<p><strong>用 Thread 讲故事</strong></p>
+<ul>
+<li>「我是如何用 3 个月做到 $10K MRR 的」</li>
+<li>分 10 条推文，每条讲一个步骤</li>
+<li>最后一条放产品链接</li>
+</ul>
+</li>
+<li>
+<p><strong>参与 #buildinpublic</strong></p>
+<ul>
+<li>分享你的收入数据（真实数字最有吸引力）</li>
+<li>分享你的增长历程（包括失败和挫折）</li>
+<li>吸引同行关注和互动</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="4-facebook">4. Facebook</h3>
+<p><strong>一句话定位：</strong> 品牌长期建设 + 社群运营。</p>
+<p><strong>为什么 Facebook 还重要？</strong></p>
+<p>虽然 Facebook 的 organic reach（自然触达）持续下降，但它仍然是：</p>
+<ul>
+<li><strong>28 亿月活用户</strong>——最大的社交平台</li>
+<li><strong>Facebook Group</strong>——engagement 是 Page 的 10 倍</li>
+<li><strong>广告系统</strong>——最精准的投放平台</li>
+</ul>
+<p><strong>核心策略：Facebook Group > Facebook Page</strong></p>
+<p><strong>为什么？</strong></p>
+<ul>
+<li>Page 的 organic reach 已经 &#x3C; 5%（你发 100 条内容，只有 5 个人看到）</li>
+<li>Group 的 engagement 是 Page 的 10 倍（成员主动参与讨论）</li>
+</ul>
+<p><strong>运营步骤：</strong></p>
+<ol>
+<li>
+<p><strong>创建一个和你的产品相关的 Group</strong></p>
+<ul>
+<li>例如：你做项目管理工具 → 创建「远程团队协作最佳实践」Group</li>
+</ul>
+</li>
+<li>
+<p><strong>邀请早期用户加入</strong></p>
+<ul>
+<li>邮件邀请、产品内邀请、社媒宣传</li>
+</ul>
+</li>
+<li>
+<p><strong>每天分享有价值的内容</strong></p>
+<ul>
+<li>行业观察、最佳实践、用户案例</li>
+<li>不是广告！</li>
+</ul>
+</li>
+<li>
+<p><strong>鼓励用户提问和讨论</strong></p>
+<ul>
+<li>每周发起一个话题讨论</li>
+<li>回答用户问题</li>
+<li>让用户之间互相交流</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="第二梯队精准流量池选择-1-2-个深耕">第二梯队：精准流量池（选择 1-2 个深耕）</h2>
+<h3 id="5-indie-hackers">5. Indie Hackers</h3>
+<p><strong>一句话定位：</strong> 独立开发者社区，SaaS 创始人的聚集地。</p>
+<p><strong>为什么 Indie Hackers 重要？</strong></p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>价值</th><th>说明</th></tr></thead><tbody><tr><td><strong>用户画像</strong></td><td>独立开发者、SaaS 创始人</td></tr><tr><td><strong>转化价值</strong></td><td>极高（用户本身就是目标客户）</td></tr><tr><td><strong>收入透明</strong></td><td>大家公开分享 MRR，互相学习</td></tr></tbody></table>
+<p><strong>运营策略：先建立信任，再推广产品</strong></p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>阶段</th><th>时间</th><th>行动</th></tr></thead><tbody><tr><td><strong>建立信任</strong></td><td>第 1 个月</td><td>只回答问题、分享经验</td></tr><tr><td><strong>分享历程</strong></td><td>第 2 个月</td><td>开始分享你的 build in public 历程</td></tr><tr><td><strong>自然引入</strong></td><td>第 3 个月</td><td>自然引入产品链接</td></tr></tbody></table>
+<p><strong>Indie Hackers 最火的内容类型：</strong></p>
+<ul>
+<li>收入公开（「我的 MRR 从 $0 到 $10K 的历程」）</li>
+<li>失败复盘（「我关掉了做了 2 年的 SaaS，学到这些」）</li>
+<li>技术分享（「我是如何用 Next.js 搭建 SaaS 的」）</li>
+</ul>
+<hr>
+<h3 id="6-producthunt">6. ProductHunt</h3>
+<p><strong>一句话定位：</strong> 新产品发布平台，早期采用者的聚集地。</p>
+<p><strong>为什么 ProductHunt 重要？</strong></p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>价值</th><th>说明</th></tr></thead><tbody><tr><td><strong>流量潜力</strong></td><td>热门产品可带来数千 UV</td></tr><tr><td><strong>转化价值</strong></td><td>高（用户有尝试新产品的意愿）</td></tr><tr><td><strong>PR 价值</strong></td><td>ProductHunt 排名第一 = 行业认可</td></tr></tbody></table>
+<p><strong>发布策略（完整流程）：</strong></p>
+<p><strong>发布前 1 周：</strong></p>
+<ul class="contains-task-list">
+<li class="task-list-item"><input type="checkbox" disabled> 完善产品页面（截图、视频、GIF、描述）</li>
+<li class="task-list-item"><input type="checkbox" disabled> 准备 launch 邮件列表（至少 100 人）</li>
+<li class="task-list-item"><input type="checkbox" disabled> 联系 5-10 个 Hunter（有影响力的人帮你发布）</li>
+</ul>
+<p><strong>发布当天：</strong></p>
+<ul class="contains-task-list">
+<li class="task-list-item"><input type="checkbox" disabled> 美东时间 00:01 发布（抢占当日榜首）</li>
+<li class="task-list-item"><input type="checkbox" disabled> 回复每一条评论</li>
+<li class="task-list-item"><input type="checkbox" disabled> 在 Twitter/Reddit 同步宣传</li>
+<li class="task-list-item"><input type="checkbox" disabled> 鼓励用户投票和评论</li>
+</ul>
+<p><strong>发布后：</strong></p>
+<ul class="contains-task-list">
+<li class="task-list-item"><input type="checkbox" disabled> 感谢所有投票和评论的人</li>
+<li class="task-list-item"><input type="checkbox" disabled> 分析流量和转化数据</li>
+<li class="task-list-item"><input type="checkbox" disabled> 收集用户反馈，快速迭代</li>
+</ul>
+<p><strong>ProductHunt 成功的关键：</strong></p>
+<ul>
+<li><strong>提前预热</strong>：发布前 1 周开始宣传</li>
+<li><strong>Hunter 很重要</strong>：有影响力的 Hunter 可以带来更多初始投票</li>
+<li><strong>回复每一条评论</strong>：算法会根据互动量推荐</li>
+</ul>
+<hr>
+<h3 id="7-hacker-news">7. Hacker News</h3>
+<p><strong>一句话定位：</strong> 技术极客聚集地，流量大但要求高。</p>
+<p><strong>为什么 Hacker News 重要？</strong></p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>价值</th><th>说明</th></tr></thead><tbody><tr><td><strong>流量潜力</strong></td><td>首页可带来数万 UV</td></tr><tr><td><strong>用户质量</strong></td><td>开发者、技术创业者、投资人</td></tr><tr><td><strong>SEO 价值</strong></td><td>高权重，Google 优先索引</td></tr></tbody></table>
+<p><strong>什么样的内容能上首页？</strong></p>
+<p><svg style="display:inline-block;vertical-align:-2px;margin-right:4px" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> <strong>受欢迎的内容：</strong></p>
+<ul>
+<li>技术深度文章（「我是如何用 Rust 重写 XXX 的」）</li>
+<li>有趣的产品（「我做了一个能用 AI 写代码的工具」）</li>
+<li>行业分析（「2025 年 SaaS 定价趋势」）</li>
+</ul>
+<p><strong>不受欢迎的内容：</strong></p>
+<ul>
+<li>营销软文</li>
+<li>夸大其词</li>
+<li>没有技术深度的内容</li>
+</ul>
+<p><strong>提交技巧：</strong></p>
+<ul>
+<li>标题要简洁、有信息量（不要「震惊！」）</li>
+<li>描述要客观，不要自夸</li>
+<li>选择合适的时间提交（美东时间上午 9-11 点）</li>
+</ul>
+<hr>
+<h2 id="核心运营逻辑">核心运营逻辑</h2>
+<h3 id="1-快速迭代">1. 快速迭代</h3>
+<blockquote>
+<p>先做一个能用的版本，用真实用户反馈来优化，而不是在办公室里「闭门造车」。</p>
+</blockquote>
+<p><strong>具体做法：</strong></p>
+<ul>
+<li>每周发布一个版本</li>
+<li>收集用户反馈</li>
+<li>优先解决用户最关心的问题</li>
+</ul>
+<h3 id="2-协作分工">2. 协作分工</h3>
+<blockquote>
+<p>技术 + 营销的组合最高效。一个人写代码，一个人做内容，速度翻倍。</p>
+</blockquote>
+<p><strong>具体做法：</strong></p>
+<ul>
+<li>技术负责人：产品开发、bug 修复</li>
+<li>营销负责人：内容创作、社媒运营、用户沟通</li>
+</ul>
+<h3 id="3-最大化-seo">3. 最大化 SEO</h3>
+<blockquote>
+<p>找到带来流量的关键词，围绕它做多个 landing page，吃透长尾流量。</p>
+</blockquote>
+<p><strong>具体做法：</strong></p>
+<ul>
+<li>用 Ahrefs/SEMrush 找关键词</li>
+<li>每个关键词做一个 landing page</li>
+<li>内容要深度（2000 字以上）</li>
+</ul>
+<h3 id="4-付费加速">4. 付费加速</h3>
+<blockquote>
+<p>一旦验证了盈利模型，尽早投广告，抢占关键渠道，建立竞争壁垒。</p>
+</blockquote>
+<p><strong>具体做法：</strong></p>
+<ul>
+<li>Google Ads：搜索广告（高意图用户）</li>
+<li>Facebook Ads：展示广告（品牌曝光）</li>
+<li>Twitter Ads：推广推文（增加互动）</li>
+</ul>
+<h3 id="5-保持灵活">5. 保持灵活</h3>
+<blockquote>
+<p>如果主渠道遇到政策变化或流量下降，要有备用方案随时切换。</p>
+</blockquote>
+<p><strong>具体做法：</strong></p>
+<ul>
+<li>不要只依赖一个渠道</li>
+<li>至少维护 2-3 个渠道</li>
+<li>定期测试新渠道</li>
+</ul>
+<hr>
+<h2 id="渠道选择决策树">渠道选择决策树</h2>
+<pre class="astro-code css-variables" style="background-color:var(--astro-code-background);color:var(--astro-code-foreground); overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>你的目标用户是谁？</span></span>
+<span class="line"><span>│</span></span>
+<span class="line"><span>── 开发者 → Hacker News + Indie Hackers + Reddit</span></span>
+<span class="line"><span>│</span></span>
+<span class="line"><span>── 创业者 → Twitter + ProductHunt + LinkedIn</span></span>
+<span class="line"><span>│</span></span>
+<span class="line"><span>── 大众用户 → Facebook + Instagram + TikTok</span></span>
+<span class="line"><span>│</span></span>
+<span class="line"><span>── 专业人士 → LinkedIn + Medium + Substack</span></span></code></pre>
+<hr>
+<h2 id="行动清单">行动清单</h2>
+<ul class="contains-task-list">
+<li class="task-list-item"><input type="checkbox" disabled> 注册 7 大平台账号（用专用 Google 账号）</li>
+<li class="task-list-item"><input type="checkbox" disabled> 选择 2-3 个主平台深耕</li>
+<li class="task-list-item"><input type="checkbox" disabled> 制定 30 天内容计划</li>
+<li class="task-list-item"><input type="checkbox" disabled> 每天花 30 分钟互动和发帖</li>
+<li class="task-list-item"><input type="checkbox" disabled> 每周分析数据，优化策略</li>
+</ul>
+<blockquote>
+<p><strong>记住：开始行动比完美计划更重要。先注册账号，发第一条内容，让用户需求驱动你成长。</strong></p>
+</blockquote>
+<hr>
+<h2 id="延伸推荐">延伸推荐</h2>
+<ul>
+<li><a href="/blog/08-overseas-channels/">海外推广渠道全攻略</a> — 每个渠道的实战细节</li>
+<li><a href="/blog/06-ltv-cac/">LTV/CAC > 3？</a> — 获客成本怎么算才准确</li>
+<li><a href="/blog/07-growth-metrics/">增长指标体系搭建</a> — 怎么衡量社媒推广的效果</li>
+</ul> <div class="mt-8"> <div class="share-buttons flex items-center gap-2 pt-4" data-astro-cid-zllr3mxm> <span class="text-sm text-muted-fg mr-1" data-astro-cid-zllr3mxm>分享</span> <!-- Twitter/X --> <a href="https://twitter.com/intent/tweet?text=%E6%B5%B7%E5%A4%96%E7%A4%BE%E5%AA%92%E6%8E%A8%E5%B9%BF%E6%8C%87%E5%8D%97%EF%BC%9A7%20%E5%A4%A7%E5%B9%B3%E5%8F%B0%E6%90%AD%E5%BB%BA%E5%87%BA%E6%B5%B7%E6%B5%81%E9%87%8F%E7%9F%A9%E9%98%B5&url=https%3A%2F%2Fwww.jayzzhang.online%2Fblog%2F03-overseas-promotion%2F" target="_blank" rel="noopener noreferrer" class="share-btn flex items-center justify-center w-8 h-8 rounded-lg border border-border text-muted-fg hover:text-primary hover:border-primary/30 transition-colors duration-200" aria-label="分享到 X" data-astro-cid-zllr3mxm> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-astro-cid-zllr3mxm> <path d="M4 4l11.733 16h4.267l-11.733 -16z" data-astro-cid-zllr3mxm></path><path d="M4 20l6.768 -6.768m2.46 -2.46l6.772 -6.772" data-astro-cid-zllr3mxm></path> </svg> </a> <!-- Facebook --> <a href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fwww.jayzzhang.online%2Fblog%2F03-overseas-promotion%2F" target="_blank" rel="noopener noreferrer" class="share-btn flex items-center justify-center w-8 h-8 rounded-lg border border-border text-muted-fg hover:text-primary hover:border-primary/30 transition-colors duration-200" aria-label="分享到 Facebook" data-astro-cid-zllr3mxm> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-astro-cid-zllr3mxm> <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" data-astro-cid-zllr3mxm></path> </svg> </a> <!-- LinkedIn --> <a href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fwww.jayzzhang.online%2Fblog%2F03-overseas-promotion%2F" target="_blank" rel="noopener noreferrer" class="share-btn flex items-center justify-center w-8 h-8 rounded-lg border border-border text-muted-fg hover:text-primary hover:border-primary/30 transition-colors duration-200" aria-label="分享到 LinkedIn" data-astro-cid-zllr3mxm> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-astro-cid-zllr3mxm> <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" data-astro-cid-zllr3mxm></path><rect width="4" height="12" x="2" y="9" data-astro-cid-zllr3mxm></rect><circle cx="4" cy="4" r="2" data-astro-cid-zllr3mxm></circle> </svg> </a> <!-- WhatsApp --> <a href="https://wa.me/?text=%E6%B5%B7%E5%A4%96%E7%A4%BE%E5%AA%92%E6%8E%A8%E5%B9%BF%E6%8C%87%E5%8D%97%EF%BC%9A7%20%E5%A4%A7%E5%B9%B3%E5%8F%B0%E6%90%AD%E5%BB%BA%E5%87%BA%E6%B5%B7%E6%B5%81%E9%87%8F%E7%9F%A9%E9%98%B5%20https%3A%2F%2Fwww.jayzzhang.online%2Fblog%2F03-overseas-promotion%2F" target="_blank" rel="noopener noreferrer" class="share-btn flex items-center justify-center w-8 h-8 rounded-lg border border-border text-muted-fg hover:text-primary hover:border-primary/30 transition-colors duration-200" aria-label="分享到 WhatsApp" data-astro-cid-zllr3mxm> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-astro-cid-zllr3mxm> <path d="M3 21l1.65-3.8a9 9 0 1 1 3.4 2.9L3 21" data-astro-cid-zllr3mxm></path><path d="M9 10a.5.5 0 0 0 1 0V9a.5.5 0 0 0-1 0v1a5 5 0 0 0 5 5h1a.5.5 0 0 0 0-1h-1a.5.5 0 0 0 0 1" data-astro-cid-zllr3mxm></path> </svg> </a> <!-- Weibo --> <a href="https://service.weibo.com/share/share.php?url=https%3A%2F%2Fwww.jayzzhang.online%2Fblog%2F03-overseas-promotion%2F&title=%E6%B5%B7%E5%A4%96%E7%A4%BE%E5%AA%92%E6%8E%A8%E5%B9%BF%E6%8C%87%E5%8D%97%EF%BC%9A7%20%E5%A4%A7%E5%B9%B3%E5%8F%B0%E6%90%AD%E5%BB%BA%E5%87%BA%E6%B5%B7%E6%B5%81%E9%87%8F%E7%9F%A9%E9%98%B5" target="_blank" rel="noopener noreferrer" class="share-btn flex items-center justify-center w-8 h-8 rounded-lg border border-border text-muted-fg hover:text-primary hover:border-primary/30 transition-colors duration-200" aria-label="分享到微博" data-astro-cid-zllr3mxm> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-astro-cid-zllr3mxm> <path d="M10.098 20.323c-3.977.391-7.414-1.406-7.672-4.02-.259-2.609 2.759-5.047 6.74-5.441 3.979-.394 7.413 1.404 7.671 4.018.259 2.6-2.759 5.049-6.739 5.443z" data-astro-cid-zllr3mxm></path> <circle cx="9.05" cy="17.219" r="1.2" data-astro-cid-zllr3mxm></circle> <path d="M17.66 11.649c-.346-.105-.578-.18-.405-.635.384-1.013.423-1.894.008-2.522-.776-1.17-2.902-1.109-5.341-.033" data-astro-cid-zllr3mxm></path> </svg> </a> <!-- WeChat - Modal Trigger --> <button id="wechat-share-btn" class="share-btn flex items-center justify-center w-8 h-8 rounded-lg border border-border text-muted-fg hover:text-primary hover:border-primary/30 transition-colors duration-200" aria-label="分享到微信" data-astro-cid-zllr3mxm> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-astro-cid-zllr3mxm> <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" data-astro-cid-zllr3mxm></path> </svg> </button> <!-- Copy Link --> <button id="copy-link-btn" class="share-btn flex items-center justify-center w-8 h-8 rounded-lg border border-border text-muted-fg hover:text-primary hover:border-primary/30 transition-colors duration-200" aria-label="复制链接" data-astro-cid-zllr3mxm> <svg class="icon-link" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-astro-cid-zllr3mxm> <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" data-astro-cid-zllr3mxm></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" data-astro-cid-zllr3mxm></path> </svg> <svg class="icon-check hidden" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-astro-cid-zllr3mxm> <polyline points="20 6 9 17 4 12" data-astro-cid-zllr3mxm></polyline> </svg> </button> </div> <!-- WeChat QR Modal --> <div id="wechat-modal" class="fixed inset-0 z-[100] hidden items-center justify-center" data-astro-cid-zllr3mxm> <div class="modal-backdrop absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="closeWechatModal()" data-astro-cid-zllr3mxm></div> <div class="modal-content relative z-10 flex flex-col items-center p-6 rounded-2xl border border-border bg-background shadow-2xl animate-modal-in" data-astro-cid-zllr3mxm> <button class="absolute top-3 right-3 text-muted-fg hover:text-foreground transition-colors" onclick="closeWechatModal()" data-astro-cid-zllr3mxm> <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-astro-cid-zllr3mxm> <line x1="18" y1="6" x2="6" y2="18" data-astro-cid-zllr3mxm></line><line x1="6" y1="6" x2="18" y2="18" data-astro-cid-zllr3mxm></line> </svg> </button> <img id="wechat-qr-img" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https%3A%2F%2Fwww.jayzzhang.online%2Fblog%2F03-overseas-promotion%2F&bgcolor=0b0f1a&color=4ade80&qzone=1" alt="微信扫码分享" width="200" height="200" class="rounded-xl" data-astro-cid-zllr3mxm> <p class="text-sm text-foreground mt-4 font-medium" data-astro-cid-zllr3mxm>微信扫码分享</p> <p class="text-xs text-muted-fg mt-1" data-astro-cid-zllr3mxm>打开微信扫描二维码</p> </div> </div> <script>
+  // Copy link
+  document.getElementById('copy-link-btn')?.addEventListener('click', function() {
+    navigator.clipboard.writeText('{url}').then(() => {
+      this.querySelector('.icon-link').classList.add('hidden');
+      this.querySelector('.icon-check').classList.remove('hidden');
+      setTimeout(() => {
+        this.querySelector('.icon-link').classList.remove('hidden');
+        this.querySelector('.icon-check').classList.add('hidden');
+      }, 2000);
+    });
+  });
+
+  // WeChat modal
+  const modal = document.getElementById('wechat-modal');
+  document.getElementById('wechat-share-btn')?.addEventListener('click', () => {
+    modal?.classList.remove('hidden');
+    modal?.classList.add('flex');
+  });
+
+  function closeWechatModal() {
+    modal?.classList.add('hidden');
+    modal?.classList.remove('flex');
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeWechatModal();
+  });
+</script>  </div> <div class="mt-16 pt-8 border-t border-border"> <div class="grid grid-cols-2 gap-3 sm:gap-6"> <a href="/blog/04-funding-rounds" rel="prefetch" class="group relative flex flex-nowrap rounded-lg border border-border bg-secondary/20 px-4 py-4 pl-10 text-muted-fg no-underline transition-colors duration-300 ease-in-out hover:border-primary/30 hover:text-primary"> <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="absolute left-2.5 top-1/2 size-4 -translate-y-1/2 fill-none stroke-current stroke-2 pointer-events-none"> <polyline points="15 18 9 12 15 6"></polyline> </svg> <div class="flex flex-col"> <span class="text-xs text-muted-fg mb-1">上一篇</span> <div class="text-sm leading-snug">天使轮·A 轮·B 轮·C 轮：一文搞懂创业融资全流程</div> </div> </a> <a href="/blog/02-safe-financing" rel="prefetch" class="group relative flex grow flex-row-reverse flex-nowrap rounded-lg border border-border bg-secondary/20 px-4 py-4 pr-10 text-muted-fg no-underline transition-colors duration-300 ease-in-out hover:border-primary/30 hover:text-primary"> <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="absolute right-2.5 top-1/2 size-4 -translate-y-1/2 fill-none stroke-current stroke-2 pointer-events-none"> <polyline points="9 18 15 12 9 6"></polyline> </svg> <div class="flex flex-col text-right"> <span class="text-xs text-muted-fg mb-1">下一篇</span> <div class="text-sm leading-snug">SAFE 融资工具详解：Y Combinator 的新型融资方案</div> </div> </a> </div> <div class="mt-16 pt-8 border-t border-border"><h3 class="text-xl font-semibold text-foreground mb-6">相关文章</h3><div class="grid md:grid-cols-3 gap-6"><a href="/blog/08-overseas-channels/" class="group block rounded-xl border border-border overflow-hidden hover:border-primary/30 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/5"><div class="aspect-[16/9] bg-secondary overflow-hidden"><img src="/og/08-overseas-channels.png" alt="海外推广渠道全攻略：Reddit·Twitter·ProductHunt 实战" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"></div><div class="p-4 space-y-2"><h4 class="text-sm font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2">海外推广渠道全攻略：Reddit·Twitter·ProductHunt 实战</h4><div class="flex items-center gap-2 text-xs text-muted-fg"><time datetime="2025-11-19T00:00:00.000Z"> 2025年11月19日 </time></div></div></a></div></div> </div> <div class="mt-12"> <div class="giscus mt-12"></div> <script>
+  function getGiscusTheme() {
+    const saved = localStorage.getItem('theme');
+    if (saved) return saved === 'light' ? 'light' : 'dark';
+    return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+  }
+
+  function loadGiscusScript() {
+    if (document.querySelector('.giscus script[src]')) return;
+    const script = document.createElement('script');
+    script.src = 'https://giscus.app/client.js';
+    script.setAttribute('data-repo', 'Jay-Z-zhang/Jay-Z-zhang.github.io');
+    script.setAttribute('data-repo-id', 'R_kgDOTgKuOA');
+    script.setAttribute('data-category', 'Announcements');
+    script.setAttribute('data-category-id', 'DIC_kwDOTgKuOM4DCxNB');
+    script.setAttribute('data-mapping', 'pathname');
+    script.setAttribute('data-strict', '1');
+    script.setAttribute('data-reactions-enabled', '1');
+    script.setAttribute('data-emit-metadata', '0');
+    script.setAttribute('data-input-position', 'bottom');
+    script.setAttribute('data-theme', getGiscusTheme());
+    script.setAttribute('data-lang', 'zh-CN');
+    script.setAttribute('crossorigin', 'anonymous');
+    script.async = true;
+    document.querySelector('.giscus')?.appendChild(script);
+  }
+
+  function updateGiscusTheme() {
+    const iframe = document.querySelector('iframe.giscus-frame');
+    if (!iframe) return;
+    const theme = getGiscusTheme();
+    iframe.contentWindow.postMessage({
+      giscus: { setConfig: { theme } }
+    }, 'https://giscus.app');
+  }
+
+  // Lazy load: only init when scrolled near comments
+  function lazyInitGiscus() {
+    const giscusEl = document.querySelector('.giscus');
+    if (!giscusEl) return;
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          loadGiscusScript();
+          observer.disconnect();
+        }
+      });
+    }, { rootMargin: '200px' });
+    observer.observe(giscusEl);
+  }
+
+  // Init lazy load
+  lazyInitGiscus();
+
+  // Listen for theme toggle
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('#theme-toggle')) {
+      setTimeout(updateGiscusTheme, 400);
+    }
+  });
+
+  // Astro client-side navigation
+  document.addEventListener('astro:after-swap', () => {
+    lazyInitGiscus();
+  });
+</script> </div> </article> </div>  </main> <footer class="animate"> <div class="max-w-6xl mx-auto px-6 flex items-center justify-between text-sm text-muted-fg"> <p>Copyright &copy; 2026 Jayz Zhang. All rights reserved.</p> <button id="back-to-top" class="group inline-flex items-center gap-1.5 text-sm text-muted-fg transition-colors duration-200 hover:text-primary"> <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="transition-transform duration-200 group-hover:-translate-y-0.5"> <polyline points="18 15 12 9 6 15"></polyline> </svg> <span>返回顶部</span> </button> </div> </footer> <aside data-pagefind-ignore> <div id="backdrop" class="invisible fixed left-0 top-0 z-50 flex h-screen w-full justify-center p-6" style="background: rgba(0,0,0,0.5); backdrop-filter: blur(8px);" data-astro-transition-persist="astro-3snakcvo-1"> <div id="pagefind-container" class="m-0 flex h-fit max-h-[80%] w-full max-w-(--breakpoint-sm) flex-col overflow-auto rounded-xl border border-border bg-secondary p-2 px-4 py-3 shadow-lg"> <div id="search" class="pagefind-ui pagefind-init" data-pagefind-ui data-bundle-path="/pagefind/" data-ui-options="{&#34;showImages&#34;:false,&#34;excerptLength&#34;:15,&#34;resetStyles&#34;:false}"></div> <script type="module" src="/_astro/Search.astro_astro_type_script_index_0_lang.DSe1Ey-Z.js"></script> <div class="mr-2 pb-1 pt-4 text-right text-xs text-muted-fg">
+按 <kbd class="rounded border border-border bg-background px-1.5 py-0.5 text-xs">Esc</kbd> 关闭
+</div> </div> </div> </aside> <script>
+  const magnifyingGlass = document.getElementById("magnifying-glass");
+  const backdrop = document.getElementById("backdrop");
+
+  function openPagefind() {
+    const searchDiv = document.getElementById("search");
+    const search = searchDiv.querySelector("input");
+    setTimeout(() => {
+      search.focus();
+    }, 0);
+    backdrop?.classList.remove("invisible");
+    backdrop?.classList.add("visible");
+  }
+
+  function closePagefind() {
+    const search = document.getElementById("search");
+    search.value = "";
+    backdrop?.classList.remove("visible");
+    backdrop?.classList.add("invisible");
+  }
+
+  magnifyingGlass?.addEventListener("click", () => {
+    openPagefind();
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "/") {
+      e.preventDefault();
+      openPagefind();
+    } else if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+      e.preventDefault();
+      openPagefind();
+    }
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      closePagefind();
+    }
+  });
+
+  document.addEventListener("click", (event) => {
+    if (event.target.classList.contains("pagefind-ui__result-link")) {
+      closePagefind();
+    }
+  });
+
+  backdrop?.addEventListener("click", (event) => {
+    if (!event.target.closest("#pagefind-container")) {
+      closePagefind();
+    }
+  });
+
+  const form = document.getElementById("form");
+  form?.addEventListener("submit", (event) => {
+    event.preventDefault();
+  });
+</script>  </body></html>

@@ -1,0 +1,663 @@
+<!DOCTYPE html><html lang="zh-CN"> <head><!-- Global Metadata --><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><meta name="generator" content="Astro v5.13.9"><!-- Canonical URL --><link rel="canonical" href="https://www.jayzzhang.online/blog/01-convertible-bonds/"><!-- Primary Meta Tags --><title>可转债 vs 可转换优先股：两种融资工具的核心区别 | Jayz Zhang</title><meta name="title" content="可转债 vs 可转换优先股：两种融资工具的核心区别 | Jayz Zhang"><meta name="description" content="创业融资中最常见的两种工具，到底选哪个？从法律属性、现金流压力、股权稀释到适用场景的完整对比。"><meta name="author" content="Jayz Zhang"><meta name="robots" content="index, follow, max-image-preview:large"><meta name="googlebot" content="index, follow"><!-- Open Graph / Facebook --><meta property="og:type" content="article"><meta property="og:url" content="https://www.jayzzhang.online/blog/01-convertible-bonds/"><meta property="og:title" content="可转债 vs 可转换优先股：两种融资工具的核心区别 | Jayz Zhang"><meta property="og:description" content="创业融资中最常见的两种工具，到底选哪个？从法律属性、现金流压力、股权稀释到适用场景的完整对比。"><meta property="og:image" content="https://www.jayzzhang.online/og/01-convertible-bonds.png"><meta property="og:site_name" content="Jayz Zhang"><meta property="og:locale" content="zh_CN"><meta property="article:published_time" content="2025-07-03T00:00:00.000Z"><meta property="article:author" content="https://www.jayzzhang.online"><!-- Twitter --><meta property="twitter:card" content="summary_large_image"><meta property="twitter:url" content="https://www.jayzzhang.online/blog/01-convertible-bonds/"><meta property="twitter:title" content="可转债 vs 可转换优先股：两种融资工具的核心区别 | Jayz Zhang"><meta property="twitter:description" content="创业融资中最常见的两种工具，到底选哪个？从法律属性、现金流压力、股权稀释到适用场景的完整对比。"><meta property="twitter:image" content="https://www.jayzzhang.online/og/01-convertible-bonds.png"><meta property="twitter:creator" content="@jayzzhang"><!-- JSON-LD Structured Data --><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","name":"可转债 vs 可转换优先股：两种融资工具的核心区别 | Jayz Zhang","description":"创业融资中最常见的两种工具，到底选哪个？从法律属性、现金流压力、股权稀释到适用场景的完整对比。","url":"https://www.jayzzhang.online/blog/01-convertible-bonds/","author":{"@type":"Person","name":"Jayz Zhang","url":"https://www.jayzzhang.online"},"publisher":{"@type":"Person","name":"Jayz Zhang","url":"https://www.jayzzhang.online"},"datePublished":"2025-07-03T00:00:00.000Z","image":"https://www.jayzzhang.online/og/01-convertible-bonds.png"}</script><!-- Performance: Preconnect --><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="preconnect" href="https://giscus.app"><!-- PageFind --><link href="/pagefind/pagefind-ui.css" rel="stylesheet"><script src="/pagefind/pagefind-ui.js"></script><script>
+  document.addEventListener("DOMContentLoaded", () => {
+    animate();
+    addCopyCodeButtons();
+
+    const backToPrev = document.getElementById("back-to-prev");
+    backToPrev?.addEventListener("click", () => window.history.back());
+
+    // Consolidated scroll handler (replaces 3 separate listeners)
+    initScrollHandlers();
+  });
+
+  // Astro client-side navigation: re-run animations on page swap
+  document.addEventListener("astro:after-swap", () => {
+    animate();
+    addCopyCodeButtons();
+  });
+
+  function animate() {
+    const animateElements = document.querySelectorAll(".animate");
+    if (!animateElements.length) return;
+
+    // 立即显示所有 .animate 元素（简单可靠，不依赖 IntersectionObserver）
+    animateElements.forEach((el) => {
+      el.classList.add("show");
+    });
+  }
+
+  function addCopyCodeButtons() {
+    let copyButtonLabel = "📋";
+    let codeBlocks = Array.from(document.querySelectorAll("pre"));
+
+    async function copyCode(codeBlock, copyButton) {
+      const codeText = codeBlock.innerText;
+      const buttonText = copyButton.innerText;
+      const textToCopy = codeText.replace(buttonText, "");
+
+      await navigator.clipboard.writeText(textToCopy);
+      copyButton.innerText = "✅";
+
+      setTimeout(() => {
+        copyButton.innerText = copyButtonLabel;
+      }, 2000);
+    }
+
+    for (let codeBlock of codeBlocks) {
+      const wrapper = document.createElement("div");
+      wrapper.style.position = "relative";
+
+      const copyButton = document.createElement("button");
+      copyButton.innerText = copyButtonLabel;
+      copyButton.classList = "copy-code";
+
+      codeBlock.setAttribute("tabindex", "0");
+      codeBlock.appendChild(copyButton);
+
+      codeBlock.parentNode.insertBefore(wrapper, codeBlock);
+      wrapper.appendChild(codeBlock);
+
+      copyButton?.addEventListener("click", async () => {
+        await copyCode(codeBlock, copyButton);
+      });
+    }
+  }
+
+  function initScrollHandlers() {
+    const progressBar = document.getElementById('reading-progress');
+    const nav = document.getElementById('nav');
+    const backToTopBtn = document.getElementById('back-to-top');
+    const isHome = window.location.pathname === '/' || window.location.pathname === '';
+    let ticking = false;
+
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          const scrollY = window.scrollY;
+
+          // 1. Reading progress bar
+          if (progressBar) {
+            const total = document.documentElement.scrollHeight - window.innerHeight;
+            const progress = total > 0 ? scrollY / total : 0;
+            progressBar.style.transform = `scaleX(${progress})`;
+          }
+
+          // 2. Nav background
+          if (nav) {
+            if (isHome) {
+              nav.classList.toggle('has-bg', scrollY > 20);
+            } else {
+              nav.classList.add('has-bg');
+            }
+          }
+
+          // 3. Back to top visibility
+          if (backToTopBtn) {
+            if (scrollY > 300) {
+              document.documentElement.classList.add('scrolled');
+            } else {
+              document.documentElement.classList.remove('scrolled');
+            }
+          }
+
+          ticking = false;
+        });
+        ticking = true;
+      }
+    }, { passive: true });
+
+    // Back to top click
+    backToTopBtn?.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+</script><link rel="stylesheet" href="/_astro/_id_.DX0r1tvC.css">
+<style>.animate-modal-in[data-astro-cid-zllr3mxm]{animation:modalIn .2s ease-out}@keyframes modalIn{0%{opacity:0;transform:scale(.95) translateY(8px)}to{opacity:1;transform:scale(1) translateY(0)}}
+</style></head> <body> <!-- Reading Progress Bar --> <div id="reading-progress" class="fixed top-0 left-0 h-1 bg-primary z-[60] origin-left scale-x-0 transition-transform duration-100"></div> <noscript> <style>
+        .animate, .scroll-section {
+          opacity: 1;
+          transform: none;
+        }
+      </style> </noscript> <header id="nav" class="fixed top-0 left-0 right-0 z-50 py-4 transition-all duration-300 has-bg"> <div class="max-w-6xl mx-auto px-6 flex items-center justify-between"> <a href="/" class="text-lg font-bold text-primary"> Jayz Zhang </a> <div class="flex items-center gap-5"> <a href="/" class="text-sm font-medium text-muted-fg hover:text-primary transition-colors" rel="prefetch">首页</a> <a href="/blog" class="text-sm font-medium text-muted-fg hover:text-primary transition-colors" rel="prefetch">博客</a> <a href="/projects" class="text-sm font-medium text-muted-fg hover:text-primary transition-colors" rel="prefetch">作品</a> <a href="https://github.com/Jay-Z-zhang" target="_blank" rel="noopener noreferrer" class="flex items-center gap-1.5 text-sm font-medium text-muted-fg hover:text-primary transition-colors" aria-label="GitHub"> <svg height="16" width="16" viewBox="0 0 16 16" fill="currentColor"> <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path> </svg>
+GitHub
+</a> <!-- Theme Toggle --> <button id="theme-toggle" class="theme-toggle" aria-label="切换主题"> <svg id="theme-icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><circle cx="12" cy="12" r="5"></circle><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path></svg> <svg id="theme-icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg> </button> <button id="magnifying-glass" aria-label="Search" class="flex items-center rounded-sm border border-border bg-secondary px-2 py-1 text-xs text-muted-fg transition-colors duration-300 ease-in-out hover:text-primary"> <svg height="14" stroke-linejoin="round" viewBox="0 0 16 16" width="14" style="color: currentcolor;"> <path fill-rule="evenodd" clip-rule="evenodd" d="M3.5 7C3.5 5.067 5.067 3.5 7 3.5C8.933 3.5 10.5 5.067 10.5 7C10.5 7.88461 10.1718 8.69256 9.63058 9.30876L9.30876 9.63058C8.69256 10.1718 7.88461 10.5 7 10.5C5.067 10.5 3.5 8.933 3.5 7ZM9.96544 11.0261C9.13578 11.6382 8.11014 12 7 12C4.23858 12 2 9.76142 2 7C2 4.23858 4.23858 2 7 2C9.76142 2 12 4.23858 12 7C12 8.11014 11.6382 9.13578 11.0261 9.96544L14.0303 12.9697L14.5607 13.5L13.5 14.5607L12.9697 14.0303L9.96544 11.0261Z" fill="currentColor"></path> </svg> </button> </div> </div> </header> <script>
+  const nav = document.getElementById('nav');
+
+  function isHomepage() {
+    return window.location.pathname === '/' || window.location.pathname === '';
+  }
+
+  // Theme toggle
+  const themeToggle = document.getElementById('theme-toggle');
+  const sunIcon = document.getElementById('theme-icon-sun');
+  const moonIcon = document.getElementById('theme-icon-moon');
+
+  function setTheme(theme) {
+    if (theme === 'light') {
+      document.documentElement.classList.add('light');
+      if (sunIcon) sunIcon.style.display = 'none';
+      if (moonIcon) moonIcon.style.display = 'block';
+    } else {
+      document.documentElement.classList.remove('light');
+      if (sunIcon) sunIcon.style.display = 'block';
+      if (moonIcon) moonIcon.style.display = 'none';
+    }
+    localStorage.setItem('theme', theme);
+  }
+
+  // Init theme
+  const saved = localStorage.getItem('theme');
+  if (saved) { setTheme(saved); }
+  else if (window.matchMedia('(prefers-color-scheme: light)').matches) { setTheme('light'); }
+
+  themeToggle?.addEventListener('click', () => {
+    setTheme(document.documentElement.classList.contains('light') ? 'dark' : 'light');
+  });
+
+  // Nav background
+  if (isHomepage()) {
+    nav.classList.remove('has-bg');
+  } else {
+    nav.classList.add('has-bg');
+  }
+</script> <main class="has-nav-padding">  <div class="mx-auto max-w-6xl px-6"> <div class="flex items-center gap-3 mb-6"> <a href="/blog" class="group inline-flex items-center gap-1.5 text-sm text-muted-fg transition-colors duration-200 hover:text-primary"> <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="transition-transform duration-200 group-hover:-translate-x-0.5"> <polyline points="15 18 9 12 15 6"></polyline> </svg> <span>返回博客</span> </a> </div> <div class="my-10 space-y-1"> <div class="flex items-center gap-1.5 text-muted-fg"> <div class="font-base text-sm"> <time datetime="2025-07-03T00:00:00.000Z"> 2025年7月03日 </time> </div>
+&bull;
+<div class="font-base text-sm"> 4 min read </div> </div> <h1 class="text-3xl font-semibold text-foreground"> 可转债 vs 可转换优先股：两种融资工具的核心区别 </h1> <div class="flex gap-2 pt-2"> <a href="/tags/融资" class="rounded-sm border border-border bg-secondary px-2 py-1 text-sm text-muted-fg transition-colors duration-300 ease-in-out hover:border-primary/30 hover:text-primary"> 融资 </a><a href="/tags/创业" class="rounded-sm border border-border bg-secondary px-2 py-1 text-sm text-muted-fg transition-colors duration-300 ease-in-out hover:border-primary/30 hover:text-primary"> 创业 </a><a href="/tags/股权" class="rounded-sm border border-border bg-secondary px-2 py-1 text-sm text-muted-fg transition-colors duration-300 ease-in-out hover:border-primary/30 hover:text-primary"> 股权 </a> </div> </div> <details open class="group rounded-lg border border-border bg-secondary/20"> <summary class="cursor-pointer rounded-t-lg px-3 py-1.5 font-medium text-muted-fg transition-colors hover:text-primary">目录</summary> <nav> <ul class="py-3"> <li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#先讲个真实故事" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 先讲个真实故事 </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#为什么早期融资这么复杂" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 为什么早期融资这么复杂？ </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#可转债带股权期权的借条" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 可转债：带股权期权的借条 </a> <ul class="translate-x-3"> <li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#本质" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 本质 </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#关键参数" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 关键参数 </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#对创始人的好处" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 对创始人的好处 </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#对创始人的风险" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 对创始人的风险 </a>  </li> </ul> </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#可转换优先股带灵活条款的股权" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 可转换优先股：带灵活条款的股权 </a> <ul class="translate-x-3"> <li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#本质-1" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 本质 </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#关键参数-1" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 关键参数 </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#对创始人的好处-1" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 对创始人的好处 </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#对创始人的风险-1" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 对创始人的风险 </a>  </li> </ul> </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#核心维度对比" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 核心维度对比 </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#适用场景你应该选哪个" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 适用场景：你应该选哪个？ </a> <ul class="translate-x-3"> <li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#场景一快速增长--计划-ipo" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 场景一：快速增长 + 计划 IPO </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#场景二现金流紧张" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 场景二：现金流紧张 </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#场景三控制权敏感" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 场景三：控制权敏感 </a>  </li> </ul> </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#决策框架" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 决策框架 </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#常见坑一定要避免" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 常见坑：一定要避免 </a> <ul class="translate-x-3"> <li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#可转债的坑" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 可转债的坑 </a> <ul class="translate-x-3"> <li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#过低的转股价" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 过低的转股价 </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#过短的到期日" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 过短的到期日 </a>  </li> </ul> </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#优先股的坑" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 优先股的坑 </a> <ul class="translate-x-3"> <li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#强制赎回条款" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 强制赎回条款 </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#过高的清算优先权" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 过高的清算优先权 </a>  </li> </ul> </li> </ul> </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#一句话总结" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 一句话总结 </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#延伸推荐" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 延伸推荐 </a>  </li> </ul> </nav> </details><article class="animate"> <p><img src="/images/blog/01-bonds-vs-stock.png" alt="可转债 vs 可转换优先股对比"></p>
+<h2 id="先讲个真实故事">先讲个真实故事</h2>
+<p>2015 年，一家做企业 SaaS 的创业公司拿到了两笔钱：</p>
+<ul>
+<li><strong>A 投资人</strong>给了 500 万，用的是<strong>可转债</strong></li>
+<li><strong>B 投资人</strong>给了 500 万，用的是<strong>可转换优先股</strong></li>
+</ul>
+<p>两年后公司要 IPO 了，创始人算了一笔账：</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>投资人</th><th>投入</th><th>最终持股</th><th>创始人感受</th></tr></thead><tbody><tr><td>A（可转债）</td><td>500 万</td><td>8%</td><td>稀释少，利息可抵税</td></tr><tr><td>B（优先股）</td><td>500 万</td><td>15%</td><td>稀释多，但有投票权</td></tr></tbody></table>
+<p>同样的 500 万，<strong>最终代价差了近一倍</strong>。</p>
+<p>这就是为什么创始人必须理解这两种工具的区别——<strong>选错了，代价可能是你一半的公司</strong>。</p>
+<hr>
+<h2 id="为什么早期融资这么复杂">为什么早期融资这么复杂？</h2>
+<p>你可能想问：<strong>为什么不能直接「给钱换股份」，搞这么复杂干嘛？</strong></p>
+<p>原因是：<strong>早期公司估值不确定。</strong></p>
+<p>想象一下：</p>
+<ul>
+<li>你的公司只有一个原型，还没有收入</li>
+<li>投资人觉得你值 5000 万</li>
+<li>你觉得你值 2 亿</li>
+</ul>
+<p>这时候如果直接谈股份比例，双方都会很痛苦。</p>
+<p><strong>可转债和可转换优先股就是为了解决这个问题：</strong></p>
+<blockquote>
+<p>先给钱，等下一轮融资（有明确估值）时再决定换多少股份。</p>
+</blockquote>
+<hr>
+<h2 id="可转债带股权期权的借条">可转债：带股权期权的借条</h2>
+<h3 id="本质">本质</h3>
+<blockquote>
+<p>可转债 = 借条 + 未来可以变成股份的权利</p>
+</blockquote>
+<p><strong>过程：</strong></p>
+<ol>
+<li>投资人借钱给公司 → 公司承诺到期还本付息</li>
+<li>同时附带一个「转换期权」：在约定条件下，债可以变成股份</li>
+<li>转换前：投资人是<strong>债权人</strong>（有固定利息，破产时优先拿钱）</li>
+<li>转换后：投资人变成<strong>股东</strong>（享受公司增长收益）</li>
+</ol>
+<h3 id="关键参数">关键参数</h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>参数</th><th>说明</th><th>举例</th></tr></thead><tbody><tr><td><strong>本金</strong></td><td>借多少钱</td><td>500 万</td></tr><tr><td><strong>利率</strong></td><td>年化利息</td><td>8%</td></tr><tr><td><strong>到期日</strong></td><td>什么时候还钱</td><td>18 个月后</td></tr><tr><td><strong>转股价</strong></td><td>按什么价格换股份</td><td>下一轮估值的 8 折</td></tr></tbody></table>
+<h3 id="对创始人的好处">对创始人的好处</h3>
+<ul>
+<li><strong>转换前不稀释股权</strong>：投资人还是债权人，不是股东</li>
+<li><strong>利息可税前抵扣</strong>：降低公司税负</li>
+<li><strong>投资人无投票权</strong>：不干涉公司管理</li>
+</ul>
+<h3 id="对创始人的风险">对创始人的风险</h3>
+<ul>
+<li><strong>刚性现金流</strong>：到期必须还本付息，还不上可能触发清算</li>
+<li><strong>转股价过低</strong>：如果公司估值暴涨，投资人以极低成本拿大量股份</li>
+</ul>
+<hr>
+<h2 id="可转换优先股带灵活条款的股权">可转换优先股：带灵活条款的股权</h2>
+<h3 id="本质-1">本质</h3>
+<blockquote>
+<p>可转换优先股 = 股份 + 特殊权利</p>
+</blockquote>
+<p><strong>过程：</strong></p>
+<ol>
+<li>投资人直接购买公司股份 → 成为股东</li>
+<li>享有「优先权」：清算时先拿钱、分红时先拿钱</li>
+<li>未来可以在 IPO 等节点转换为普通股</li>
+</ol>
+<h3 id="关键参数-1">关键参数</h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>参数</th><th>说明</th><th>举例</th></tr></thead><tbody><tr><td><strong>投资金额</strong></td><td>买多少股份</td><td>500 万</td></tr><tr><td><strong>股息率</strong></td><td>每年分红比例</td><td>8%（可选）</td></tr><tr><td><strong>清算优先权</strong></td><td>破产时先拿多少</td><td>1-2 倍本金</td></tr><tr><td><strong>转换比例</strong></td><td>1 股优先股换几股普通股</td><td>通常 1:1</td></tr></tbody></table>
+<h3 id="对创始人的好处-1">对创始人的好处</h3>
+<ul>
+<li><strong>无刚性还款压力</strong>：股息是可选的，公司困难时可以暂停</li>
+<li><strong>吸引大额资金</strong>：PE/VC 更熟悉这种工具</li>
+<li><strong>投资人有耐心</strong>：长期持有，不急于退出</li>
+</ul>
+<h3 id="对创始人的风险-1">对创始人的风险</h3>
+<ul>
+<li><strong>立即稀释股权</strong>：投资时投资人就是股东</li>
+<li><strong>投资人有投票权</strong>：可能干涉公司管理</li>
+<li><strong>清算优先权</strong>：公司被收购时，投资人先拿钱，创始人可能所剩无几</li>
+</ul>
+<hr>
+<h2 id="核心维度对比">核心维度对比</h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>维度</th><th>可转债</th><th>可转换优先股</th></tr></thead><tbody><tr><td><strong>法律属性</strong></td><td>债权人，利息是固定支出</td><td>股东，分红是可选的</td></tr><tr><td><strong>现金流压力</strong></td><td>刚性——不付息可能触发违约</td><td>灵活——暂停分红不影响信用</td></tr><tr><td><strong>风险与回报</strong></td><td>低风险：固定利息 + 转换收益</td><td>高风险：回报依赖估值增长</td></tr><tr><td><strong>股权稀释</strong></td><td>转换前不稀释，转换后按转股价计算</td><td>投资时立即稀释，转换时进一步稀释</td></tr><tr><td><strong>投票权</strong></td><td>转换前无投票权</td><td>通常有投票权</td></tr><tr><td><strong>清算顺序</strong></td><td>优先于股权（债权人先拿钱）</td><td>优先于普通股，但次于债权人</td></tr></tbody></table>
+<hr>
+<h2 id="适用场景你应该选哪个">适用场景：你应该选哪个？</h2>
+<h3 id="场景一快速增长--计划-ipo">场景一：快速增长 + 计划 IPO</h3>
+<blockquote>
+<p><strong>推荐：可转债</strong></p>
+</blockquote>
+<p><strong>案例：</strong> 一家生物科技公司预期 2 年内上市。</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>指标</th><th>可转债</th><th>优先股</th></tr></thead><tbody><tr><td>总成本</td><td>利息 + 转换稀释</td><td>股息 + 更大稀释</td></tr><tr><td>现金流影响</td><td>定期付息（可控）</td><td>可选股息（灵活）</td></tr><tr><td>创始人控制权</td><td>转换前无稀释</td><td>立即稀释</td></tr></tbody></table>
+<p><strong>为什么选可转债？</strong></p>
+<ul>
+<li>公司快速增长，利息支出完全可以覆盖</li>
+<li>转换前不稀释，创始人保持控制权</li>
+<li>上市后投资人自动转换，皆大欢喜</li>
+</ul>
+<h3 id="场景二现金流紧张">场景二：现金流紧张</h3>
+<blockquote>
+<p><strong>推荐：可转换优先股</strong></p>
+</blockquote>
+<p><strong>案例：</strong> 公司面临资金困难，月现金流为负。</p>
+<ul>
+<li><strong>优先股</strong>：可以暂停分红，公司继续存活</li>
+<li><strong>可转债</strong>：必须按时付息，否则可能触发清算或破产</li>
+</ul>
+<p><strong>为什么选优先股？</strong></p>
+<ul>
+<li>现金流紧张时，灵活性是救命稻草</li>
+<li>投资人理解公司困难，愿意共渡难关</li>
+</ul>
+<h3 id="场景三控制权敏感">场景三：控制权敏感</h3>
+<blockquote>
+<p><strong>推荐：可转债</strong></p>
+</blockquote>
+<p>如果你非常在意公司控制权（比如你是技术创始人，不想被资本干涉）：</p>
+<ul>
+<li><strong>可转债</strong>：转换前投资人无投票权</li>
+<li><strong>优先股</strong>：投资人通常有董事会席位和投票权</li>
+</ul>
+<hr>
+<h2 id="决策框架">决策框架</h2>
+<pre class="astro-code css-variables" style="background-color:var(--astro-code-background);color:var(--astro-code-foreground); overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>你的公司处于什么阶段？</span></span>
+<span class="line"><span>│</span></span>
+<span class="line"><span>── 早期（估值不确定）</span></span>
+<span class="line"><span>│   ├── 现金流健康 → 可转债</span></span>
+<span class="line"><span>│   │   ├── 避免过早让渡股权</span></span>
+<span class="line"><span>│   │   ├── 利息可税前抵扣</span></span>
+<span class="line"><span>│   │   └── 投资人不干涉管理</span></span>
+<span class="line"><span>│   │</span></span>
+<span class="line"><span>│   └── 现金流紧张 → 优先股</span></span>
+<span class="line"><span>│       └── 股息灵活，可暂停</span></span>
+<span class="line"><span>│</span></span>
+<span class="line"><span>├── 增长期（需要大额资金）</span></span>
+<span class="line"><span>│   └── 优先股</span></span>
+<span class="line"><span>│       ├── 吸引耐心机构资本</span></span>
+<span class="line"><span>│       └── 缓解短期现金流压力</span></span>
+<span class="line"><span>│</span></span>
+<span class="line"><span>└── 控制权敏感</span></span>
+<span class="line"><span>    └── 可转债</span></span>
+<span class="line"><span>        └── 投资人无投票权，不干涉管理</span></span></code></pre>
+<hr>
+<h2 id="常见坑一定要避免">常见坑：一定要避免</h2>
+<h3 id="可转债的坑">可转债的坑</h3>
+<h4 id="过低的转股价">过低的转股价</h4>
+<p><strong>场景：</strong> 公司当前估值 5000 万，投资人要求转股价按 3000 万算。
+<strong>后果：</strong> 公司估值涨到 2 亿时，投资人以 3000 万估值转换 → 拿到 6.7% 股份（而不是按 2 亿估值的 2.5%）。
+<strong>解决方案：</strong> 设置合理的转换溢价（通常比当前估值高 20-30%）。</p>
+<h4 id="过短的到期日">过短的到期日</h4>
+<p><strong>场景：</strong> 可转债 12 个月到期，但公司预计 18 个月后才能融资。
+<strong>后果：</strong> 到期还不了钱 → 投资人要求清算或强制转换。
+<strong>解决方案：</strong> 到期日设为 18-24 个月，或加入「自动延期」条款。</p>
+<h3 id="优先股的坑">优先股的坑</h3>
+<h4 id="强制赎回条款">强制赎回条款</h4>
+<p><strong>场景：</strong> 协议约定「5 年内必须 IPO，否则公司按本金 + 溢价回购」。
+<strong>后果：</strong> 5 年没上市 → 公司面临巨额现金支出 → 可能直接破产。
+<strong>解决方案：</strong> 谈判时删除或放宽强制赎回条款，改为「双方协商」。</p>
+<h4 id="过高的清算优先权">过高的清算优先权</h4>
+<p><strong>场景：</strong> 投资人要求「2 倍清算优先权」。
+<strong>后果：</strong> 公司被收购卖了 1 亿，投资人先拿 2 倍本金（假设 2000 万），创始人只剩 8000 万分。
+<strong>解决方案：</strong> 坚持「1 倍清算优先权」，最多 1.5 倍。</p>
+<hr>
+<h2 id="一句话总结">一句话总结</h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>你更关心什么</th><th>选什么</th></tr></thead><tbody><tr><td>控制权 + 低稀释</td><td>可转债</td></tr><tr><td>现金流灵活性</td><td>优先股</td></tr><tr><td>快速 IPO</td><td>可转债</td></tr><tr><td>大额长期资金</td><td>优先股</td></tr></tbody></table>
+<blockquote>
+<p><strong>融资是平衡的艺术。创始人需要在现金流、控制权、稀释之间找到最适合当前阶段的平衡点。</strong></p>
+<p>建议：无论选哪种工具，都要请专业律师审核条款。省下的律师费，可能未来要花 10 倍代价弥补。</p>
+</blockquote>
+<hr>
+<h2 id="延伸推荐">延伸推荐</h2>
+<ul>
+<li><a href="/blog/02-safe-financing/">SAFE 融资工具详解</a> — YC 推出的更简单的融资方案</li>
+<li><a href="/blog/04-funding-rounds/">天使轮·A 轮·B 轮·C 轮</a> — 完整融资路线图</li>
+<li><a href="/blog/06-ltv-cac/">LTV/CAC > 3？</a> — 拿到钱后怎么花才健康</li>
+</ul> <div class="mt-8"> <div class="share-buttons flex items-center gap-2 pt-4" data-astro-cid-zllr3mxm> <span class="text-sm text-muted-fg mr-1" data-astro-cid-zllr3mxm>分享</span> <!-- Twitter/X --> <a href="https://twitter.com/intent/tweet?text=%E5%8F%AF%E8%BD%AC%E5%80%BA%20vs%20%E5%8F%AF%E8%BD%AC%E6%8D%A2%E4%BC%98%E5%85%88%E8%82%A1%EF%BC%9A%E4%B8%A4%E7%A7%8D%E8%9E%8D%E8%B5%84%E5%B7%A5%E5%85%B7%E7%9A%84%E6%A0%B8%E5%BF%83%E5%8C%BA%E5%88%AB&url=https%3A%2F%2Fwww.jayzzhang.online%2Fblog%2F01-convertible-bonds%2F" target="_blank" rel="noopener noreferrer" class="share-btn flex items-center justify-center w-8 h-8 rounded-lg border border-border text-muted-fg hover:text-primary hover:border-primary/30 transition-colors duration-200" aria-label="分享到 X" data-astro-cid-zllr3mxm> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-astro-cid-zllr3mxm> <path d="M4 4l11.733 16h4.267l-11.733 -16z" data-astro-cid-zllr3mxm></path><path d="M4 20l6.768 -6.768m2.46 -2.46l6.772 -6.772" data-astro-cid-zllr3mxm></path> </svg> </a> <!-- Facebook --> <a href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fwww.jayzzhang.online%2Fblog%2F01-convertible-bonds%2F" target="_blank" rel="noopener noreferrer" class="share-btn flex items-center justify-center w-8 h-8 rounded-lg border border-border text-muted-fg hover:text-primary hover:border-primary/30 transition-colors duration-200" aria-label="分享到 Facebook" data-astro-cid-zllr3mxm> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-astro-cid-zllr3mxm> <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" data-astro-cid-zllr3mxm></path> </svg> </a> <!-- LinkedIn --> <a href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fwww.jayzzhang.online%2Fblog%2F01-convertible-bonds%2F" target="_blank" rel="noopener noreferrer" class="share-btn flex items-center justify-center w-8 h-8 rounded-lg border border-border text-muted-fg hover:text-primary hover:border-primary/30 transition-colors duration-200" aria-label="分享到 LinkedIn" data-astro-cid-zllr3mxm> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-astro-cid-zllr3mxm> <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" data-astro-cid-zllr3mxm></path><rect width="4" height="12" x="2" y="9" data-astro-cid-zllr3mxm></rect><circle cx="4" cy="4" r="2" data-astro-cid-zllr3mxm></circle> </svg> </a> <!-- WhatsApp --> <a href="https://wa.me/?text=%E5%8F%AF%E8%BD%AC%E5%80%BA%20vs%20%E5%8F%AF%E8%BD%AC%E6%8D%A2%E4%BC%98%E5%85%88%E8%82%A1%EF%BC%9A%E4%B8%A4%E7%A7%8D%E8%9E%8D%E8%B5%84%E5%B7%A5%E5%85%B7%E7%9A%84%E6%A0%B8%E5%BF%83%E5%8C%BA%E5%88%AB%20https%3A%2F%2Fwww.jayzzhang.online%2Fblog%2F01-convertible-bonds%2F" target="_blank" rel="noopener noreferrer" class="share-btn flex items-center justify-center w-8 h-8 rounded-lg border border-border text-muted-fg hover:text-primary hover:border-primary/30 transition-colors duration-200" aria-label="分享到 WhatsApp" data-astro-cid-zllr3mxm> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-astro-cid-zllr3mxm> <path d="M3 21l1.65-3.8a9 9 0 1 1 3.4 2.9L3 21" data-astro-cid-zllr3mxm></path><path d="M9 10a.5.5 0 0 0 1 0V9a.5.5 0 0 0-1 0v1a5 5 0 0 0 5 5h1a.5.5 0 0 0 0-1h-1a.5.5 0 0 0 0 1" data-astro-cid-zllr3mxm></path> </svg> </a> <!-- Weibo --> <a href="https://service.weibo.com/share/share.php?url=https%3A%2F%2Fwww.jayzzhang.online%2Fblog%2F01-convertible-bonds%2F&title=%E5%8F%AF%E8%BD%AC%E5%80%BA%20vs%20%E5%8F%AF%E8%BD%AC%E6%8D%A2%E4%BC%98%E5%85%88%E8%82%A1%EF%BC%9A%E4%B8%A4%E7%A7%8D%E8%9E%8D%E8%B5%84%E5%B7%A5%E5%85%B7%E7%9A%84%E6%A0%B8%E5%BF%83%E5%8C%BA%E5%88%AB" target="_blank" rel="noopener noreferrer" class="share-btn flex items-center justify-center w-8 h-8 rounded-lg border border-border text-muted-fg hover:text-primary hover:border-primary/30 transition-colors duration-200" aria-label="分享到微博" data-astro-cid-zllr3mxm> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-astro-cid-zllr3mxm> <path d="M10.098 20.323c-3.977.391-7.414-1.406-7.672-4.02-.259-2.609 2.759-5.047 6.74-5.441 3.979-.394 7.413 1.404 7.671 4.018.259 2.6-2.759 5.049-6.739 5.443z" data-astro-cid-zllr3mxm></path> <circle cx="9.05" cy="17.219" r="1.2" data-astro-cid-zllr3mxm></circle> <path d="M17.66 11.649c-.346-.105-.578-.18-.405-.635.384-1.013.423-1.894.008-2.522-.776-1.17-2.902-1.109-5.341-.033" data-astro-cid-zllr3mxm></path> </svg> </a> <!-- WeChat - Modal Trigger --> <button id="wechat-share-btn" class="share-btn flex items-center justify-center w-8 h-8 rounded-lg border border-border text-muted-fg hover:text-primary hover:border-primary/30 transition-colors duration-200" aria-label="分享到微信" data-astro-cid-zllr3mxm> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-astro-cid-zllr3mxm> <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" data-astro-cid-zllr3mxm></path> </svg> </button> <!-- Copy Link --> <button id="copy-link-btn" class="share-btn flex items-center justify-center w-8 h-8 rounded-lg border border-border text-muted-fg hover:text-primary hover:border-primary/30 transition-colors duration-200" aria-label="复制链接" data-astro-cid-zllr3mxm> <svg class="icon-link" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-astro-cid-zllr3mxm> <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" data-astro-cid-zllr3mxm></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" data-astro-cid-zllr3mxm></path> </svg> <svg class="icon-check hidden" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-astro-cid-zllr3mxm> <polyline points="20 6 9 17 4 12" data-astro-cid-zllr3mxm></polyline> </svg> </button> </div> <!-- WeChat QR Modal --> <div id="wechat-modal" class="fixed inset-0 z-[100] hidden items-center justify-center" data-astro-cid-zllr3mxm> <div class="modal-backdrop absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="closeWechatModal()" data-astro-cid-zllr3mxm></div> <div class="modal-content relative z-10 flex flex-col items-center p-6 rounded-2xl border border-border bg-background shadow-2xl animate-modal-in" data-astro-cid-zllr3mxm> <button class="absolute top-3 right-3 text-muted-fg hover:text-foreground transition-colors" onclick="closeWechatModal()" data-astro-cid-zllr3mxm> <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-astro-cid-zllr3mxm> <line x1="18" y1="6" x2="6" y2="18" data-astro-cid-zllr3mxm></line><line x1="6" y1="6" x2="18" y2="18" data-astro-cid-zllr3mxm></line> </svg> </button> <img id="wechat-qr-img" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https%3A%2F%2Fwww.jayzzhang.online%2Fblog%2F01-convertible-bonds%2F&bgcolor=0b0f1a&color=4ade80&qzone=1" alt="微信扫码分享" width="200" height="200" class="rounded-xl" data-astro-cid-zllr3mxm> <p class="text-sm text-foreground mt-4 font-medium" data-astro-cid-zllr3mxm>微信扫码分享</p> <p class="text-xs text-muted-fg mt-1" data-astro-cid-zllr3mxm>打开微信扫描二维码</p> </div> </div> <script>
+  // Copy link
+  document.getElementById('copy-link-btn')?.addEventListener('click', function() {
+    navigator.clipboard.writeText('{url}').then(() => {
+      this.querySelector('.icon-link').classList.add('hidden');
+      this.querySelector('.icon-check').classList.remove('hidden');
+      setTimeout(() => {
+        this.querySelector('.icon-link').classList.remove('hidden');
+        this.querySelector('.icon-check').classList.add('hidden');
+      }, 2000);
+    });
+  });
+
+  // WeChat modal
+  const modal = document.getElementById('wechat-modal');
+  document.getElementById('wechat-share-btn')?.addEventListener('click', () => {
+    modal?.classList.remove('hidden');
+    modal?.classList.add('flex');
+  });
+
+  function closeWechatModal() {
+    modal?.classList.add('hidden');
+    modal?.classList.remove('flex');
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeWechatModal();
+  });
+</script>  </div> <div class="mt-16 pt-8 border-t border-border"> <div class="grid grid-cols-2 gap-3 sm:gap-6"> <a href="/blog/02-safe-financing" rel="prefetch" class="group relative flex flex-nowrap rounded-lg border border-border bg-secondary/20 px-4 py-4 pl-10 text-muted-fg no-underline transition-colors duration-300 ease-in-out hover:border-primary/30 hover:text-primary"> <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="absolute left-2.5 top-1/2 size-4 -translate-y-1/2 fill-none stroke-current stroke-2 pointer-events-none"> <polyline points="15 18 9 12 15 6"></polyline> </svg> <div class="flex flex-col"> <span class="text-xs text-muted-fg mb-1">上一篇</span> <div class="text-sm leading-snug">SAFE 融资工具详解：Y Combinator 的新型融资方案</div> </div> </a> <a href="/blog/00-mau-arr-pmf" rel="prefetch" class="group relative flex grow flex-row-reverse flex-nowrap rounded-lg border border-border bg-secondary/20 px-4 py-4 pr-10 text-muted-fg no-underline transition-colors duration-300 ease-in-out hover:border-primary/30 hover:text-primary"> <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="absolute right-2.5 top-1/2 size-4 -translate-y-1/2 fill-none stroke-current stroke-2 pointer-events-none"> <polyline points="9 18 15 12 9 6"></polyline> </svg> <div class="flex flex-col text-right"> <span class="text-xs text-muted-fg mb-1">下一篇</span> <div class="text-sm leading-snug">MAU、ARR、PMF：初创公司必懂的 3 个核心指标</div> </div> </a> </div> <div class="mt-16 pt-8 border-t border-border"><h3 class="text-xl font-semibold text-foreground mb-6">相关文章</h3><div class="grid md:grid-cols-3 gap-6"><a href="/blog/00-mau-arr-pmf/" class="group block rounded-xl border border-border overflow-hidden hover:border-primary/30 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/5"><div class="aspect-[16/9] bg-secondary overflow-hidden"><img src="/og/00-mau-arr-pmf.png" alt="MAU、ARR、PMF：初创公司必懂的 3 个核心指标" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"></div><div class="p-4 space-y-2"><h4 class="text-sm font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2">MAU、ARR、PMF：初创公司必懂的 3 个核心指标</h4><div class="flex items-center gap-2 text-xs text-muted-fg"><time datetime="2025-06-12T00:00:00.000Z"> 2025年6月12日 </time></div></div></a><a href="/blog/02-safe-financing/" class="group block rounded-xl border border-border overflow-hidden hover:border-primary/30 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/5"><div class="aspect-[16/9] bg-secondary overflow-hidden"><img src="/og/02-safe-financing.png" alt="SAFE 融资工具详解：Y Combinator 的新型融资方案" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"></div><div class="p-4 space-y-2"><h4 class="text-sm font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2">SAFE 融资工具详解：Y Combinator 的新型融资方案</h4><div class="flex items-center gap-2 text-xs text-muted-fg"><time datetime="2025-07-22T00:00:00.000Z"> 2025年7月22日 </time></div></div></a><a href="/blog/04-funding-rounds/" class="group block rounded-xl border border-border overflow-hidden hover:border-primary/30 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/5"><div class="aspect-[16/9] bg-secondary overflow-hidden"><img src="/og/04-funding-rounds.png" alt="天使轮·A 轮·B 轮·C 轮：一文搞懂创业融资全流程" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"></div><div class="p-4 space-y-2"><h4 class="text-sm font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2">天使轮·A 轮·B 轮·C 轮：一文搞懂创业融资全流程</h4><div class="flex items-center gap-2 text-xs text-muted-fg"><time datetime="2025-08-27T00:00:00.000Z"> 2025年8月27日 </time></div></div></a></div></div> </div> <div class="mt-12"> <div class="giscus mt-12"></div> <script>
+  function getGiscusTheme() {
+    const saved = localStorage.getItem('theme');
+    if (saved) return saved === 'light' ? 'light' : 'dark';
+    return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+  }
+
+  function loadGiscusScript() {
+    if (document.querySelector('.giscus script[src]')) return;
+    const script = document.createElement('script');
+    script.src = 'https://giscus.app/client.js';
+    script.setAttribute('data-repo', 'Jay-Z-zhang/Jay-Z-zhang.github.io');
+    script.setAttribute('data-repo-id', 'R_kgDOTgKuOA');
+    script.setAttribute('data-category', 'Announcements');
+    script.setAttribute('data-category-id', 'DIC_kwDOTgKuOM4DCxNB');
+    script.setAttribute('data-mapping', 'pathname');
+    script.setAttribute('data-strict', '1');
+    script.setAttribute('data-reactions-enabled', '1');
+    script.setAttribute('data-emit-metadata', '0');
+    script.setAttribute('data-input-position', 'bottom');
+    script.setAttribute('data-theme', getGiscusTheme());
+    script.setAttribute('data-lang', 'zh-CN');
+    script.setAttribute('crossorigin', 'anonymous');
+    script.async = true;
+    document.querySelector('.giscus')?.appendChild(script);
+  }
+
+  function updateGiscusTheme() {
+    const iframe = document.querySelector('iframe.giscus-frame');
+    if (!iframe) return;
+    const theme = getGiscusTheme();
+    iframe.contentWindow.postMessage({
+      giscus: { setConfig: { theme } }
+    }, 'https://giscus.app');
+  }
+
+  // Lazy load: only init when scrolled near comments
+  function lazyInitGiscus() {
+    const giscusEl = document.querySelector('.giscus');
+    if (!giscusEl) return;
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          loadGiscusScript();
+          observer.disconnect();
+        }
+      });
+    }, { rootMargin: '200px' });
+    observer.observe(giscusEl);
+  }
+
+  // Init lazy load
+  lazyInitGiscus();
+
+  // Listen for theme toggle
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('#theme-toggle')) {
+      setTimeout(updateGiscusTheme, 400);
+    }
+  });
+
+  // Astro client-side navigation
+  document.addEventListener('astro:after-swap', () => {
+    lazyInitGiscus();
+  });
+</script> </div> </article> </div>  </main> <footer class="animate"> <div class="max-w-6xl mx-auto px-6 flex items-center justify-between text-sm text-muted-fg"> <p>Copyright &copy; 2026 Jayz Zhang. All rights reserved.</p> <button id="back-to-top" class="group inline-flex items-center gap-1.5 text-sm text-muted-fg transition-colors duration-200 hover:text-primary"> <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="transition-transform duration-200 group-hover:-translate-y-0.5"> <polyline points="18 15 12 9 6 15"></polyline> </svg> <span>返回顶部</span> </button> </div> </footer> <aside data-pagefind-ignore> <div id="backdrop" class="invisible fixed left-0 top-0 z-50 flex h-screen w-full justify-center p-6" style="background: rgba(0,0,0,0.5); backdrop-filter: blur(8px);" data-astro-transition-persist="astro-3snakcvo-1"> <div id="pagefind-container" class="m-0 flex h-fit max-h-[80%] w-full max-w-(--breakpoint-sm) flex-col overflow-auto rounded-xl border border-border bg-secondary p-2 px-4 py-3 shadow-lg"> <div id="search" class="pagefind-ui pagefind-init" data-pagefind-ui data-bundle-path="/pagefind/" data-ui-options="{&#34;showImages&#34;:false,&#34;excerptLength&#34;:15,&#34;resetStyles&#34;:false}"></div> <script type="module" src="/_astro/Search.astro_astro_type_script_index_0_lang.DSe1Ey-Z.js"></script> <div class="mr-2 pb-1 pt-4 text-right text-xs text-muted-fg">
+按 <kbd class="rounded border border-border bg-background px-1.5 py-0.5 text-xs">Esc</kbd> 关闭
+</div> </div> </div> </aside> <script>
+  const magnifyingGlass = document.getElementById("magnifying-glass");
+  const backdrop = document.getElementById("backdrop");
+
+  function openPagefind() {
+    const searchDiv = document.getElementById("search");
+    const search = searchDiv.querySelector("input");
+    setTimeout(() => {
+      search.focus();
+    }, 0);
+    backdrop?.classList.remove("invisible");
+    backdrop?.classList.add("visible");
+  }
+
+  function closePagefind() {
+    const search = document.getElementById("search");
+    search.value = "";
+    backdrop?.classList.remove("visible");
+    backdrop?.classList.add("invisible");
+  }
+
+  magnifyingGlass?.addEventListener("click", () => {
+    openPagefind();
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "/") {
+      e.preventDefault();
+      openPagefind();
+    } else if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+      e.preventDefault();
+      openPagefind();
+    }
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      closePagefind();
+    }
+  });
+
+  document.addEventListener("click", (event) => {
+    if (event.target.classList.contains("pagefind-ui__result-link")) {
+      closePagefind();
+    }
+  });
+
+  backdrop?.addEventListener("click", (event) => {
+    if (!event.target.closest("#pagefind-container")) {
+      closePagefind();
+    }
+  });
+
+  const form = document.getElementById("form");
+  form?.addEventListener("submit", (event) => {
+    event.preventDefault();
+  });
+</script>  </body></html>

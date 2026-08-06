@@ -1,0 +1,222 @@
+<!DOCTYPE html><html lang="zh-CN"> <head><!-- Global Metadata --><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><meta name="generator" content="Astro v5.13.9"><!-- Canonical URL --><link rel="canonical" href="https://www.jayzzhang.online/tags/%E8%82%A1%E6%9D%83/"><!-- Primary Meta Tags --><title>标签: 股权 | Jayz Zhang</title><meta name="title" content="标签: 股权 | Jayz Zhang"><meta name="description" content="标签为 股权 的文章"><meta name="author" content="Jayz Zhang"><meta name="robots" content="index, follow, max-image-preview:large"><meta name="googlebot" content="index, follow"><!-- Open Graph / Facebook --><meta property="og:type" content="website"><meta property="og:url" content="https://www.jayzzhang.online/tags/%E8%82%A1%E6%9D%83/"><meta property="og:title" content="标签: 股权 | Jayz Zhang"><meta property="og:description" content="标签为 股权 的文章"><meta property="og:image" content="https://www.jayzzhang.online/og-image.png"><meta property="og:site_name" content="Jayz Zhang"><meta property="og:locale" content="zh_CN"><meta property="article:author" content="https://www.jayzzhang.online"><!-- Twitter --><meta property="twitter:card" content="summary_large_image"><meta property="twitter:url" content="https://www.jayzzhang.online/tags/%E8%82%A1%E6%9D%83/"><meta property="twitter:title" content="标签: 股权 | Jayz Zhang"><meta property="twitter:description" content="标签为 股权 的文章"><meta property="twitter:image" content="https://www.jayzzhang.online/og-image.png"><meta property="twitter:creator" content="@jayzzhang"><!-- JSON-LD Structured Data --><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"标签: 股权 | Jayz Zhang","description":"标签为 股权 的文章","url":"https://www.jayzzhang.online/tags/%E8%82%A1%E6%9D%83/","author":{"@type":"Person","name":"Jayz Zhang","url":"https://www.jayzzhang.online"},"publisher":{"@type":"Person","name":"Jayz Zhang","url":"https://www.jayzzhang.online"},"image":"https://www.jayzzhang.online/og-image.png"}</script><!-- Performance: Preconnect --><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="preconnect" href="https://giscus.app"><!-- PageFind --><link href="/pagefind/pagefind-ui.css" rel="stylesheet"><script src="/pagefind/pagefind-ui.js"></script><script>
+  document.addEventListener("DOMContentLoaded", () => {
+    animate();
+    addCopyCodeButtons();
+
+    const backToPrev = document.getElementById("back-to-prev");
+    backToPrev?.addEventListener("click", () => window.history.back());
+
+    // Consolidated scroll handler (replaces 3 separate listeners)
+    initScrollHandlers();
+  });
+
+  // Astro client-side navigation: re-run animations on page swap
+  document.addEventListener("astro:after-swap", () => {
+    animate();
+    addCopyCodeButtons();
+  });
+
+  function animate() {
+    const animateElements = document.querySelectorAll(".animate");
+    if (!animateElements.length) return;
+
+    // 立即显示所有 .animate 元素（简单可靠，不依赖 IntersectionObserver）
+    animateElements.forEach((el) => {
+      el.classList.add("show");
+    });
+  }
+
+  function addCopyCodeButtons() {
+    let copyButtonLabel = "📋";
+    let codeBlocks = Array.from(document.querySelectorAll("pre"));
+
+    async function copyCode(codeBlock, copyButton) {
+      const codeText = codeBlock.innerText;
+      const buttonText = copyButton.innerText;
+      const textToCopy = codeText.replace(buttonText, "");
+
+      await navigator.clipboard.writeText(textToCopy);
+      copyButton.innerText = "✅";
+
+      setTimeout(() => {
+        copyButton.innerText = copyButtonLabel;
+      }, 2000);
+    }
+
+    for (let codeBlock of codeBlocks) {
+      const wrapper = document.createElement("div");
+      wrapper.style.position = "relative";
+
+      const copyButton = document.createElement("button");
+      copyButton.innerText = copyButtonLabel;
+      copyButton.classList = "copy-code";
+
+      codeBlock.setAttribute("tabindex", "0");
+      codeBlock.appendChild(copyButton);
+
+      codeBlock.parentNode.insertBefore(wrapper, codeBlock);
+      wrapper.appendChild(codeBlock);
+
+      copyButton?.addEventListener("click", async () => {
+        await copyCode(codeBlock, copyButton);
+      });
+    }
+  }
+
+  function initScrollHandlers() {
+    const progressBar = document.getElementById('reading-progress');
+    const nav = document.getElementById('nav');
+    const backToTopBtn = document.getElementById('back-to-top');
+    const isHome = window.location.pathname === '/' || window.location.pathname === '';
+    let ticking = false;
+
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          const scrollY = window.scrollY;
+
+          // 1. Reading progress bar
+          if (progressBar) {
+            const total = document.documentElement.scrollHeight - window.innerHeight;
+            const progress = total > 0 ? scrollY / total : 0;
+            progressBar.style.transform = `scaleX(${progress})`;
+          }
+
+          // 2. Nav background
+          if (nav) {
+            if (isHome) {
+              nav.classList.toggle('has-bg', scrollY > 20);
+            } else {
+              nav.classList.add('has-bg');
+            }
+          }
+
+          // 3. Back to top visibility
+          if (backToTopBtn) {
+            if (scrollY > 300) {
+              document.documentElement.classList.add('scrolled');
+            } else {
+              document.documentElement.classList.remove('scrolled');
+            }
+          }
+
+          ticking = false;
+        });
+        ticking = true;
+      }
+    }, { passive: true });
+
+    // Back to top click
+    backToTopBtn?.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+</script><link rel="stylesheet" href="/_astro/_id_.DX0r1tvC.css"></head> <body> <!-- Reading Progress Bar --> <div id="reading-progress" class="fixed top-0 left-0 h-1 bg-primary z-[60] origin-left scale-x-0 transition-transform duration-100"></div> <noscript> <style>
+        .animate, .scroll-section {
+          opacity: 1;
+          transform: none;
+        }
+      </style> </noscript> <header id="nav" class="fixed top-0 left-0 right-0 z-50 py-4 transition-all duration-300 has-bg"> <div class="max-w-6xl mx-auto px-6 flex items-center justify-between"> <a href="/" class="text-lg font-bold text-primary"> Jayz Zhang </a> <div class="flex items-center gap-5"> <a href="/" class="text-sm font-medium text-muted-fg hover:text-primary transition-colors" rel="prefetch">首页</a> <a href="/blog" class="text-sm font-medium text-muted-fg hover:text-primary transition-colors" rel="prefetch">博客</a> <a href="/projects" class="text-sm font-medium text-muted-fg hover:text-primary transition-colors" rel="prefetch">作品</a> <a href="https://github.com/Jay-Z-zhang" target="_blank" rel="noopener noreferrer" class="flex items-center gap-1.5 text-sm font-medium text-muted-fg hover:text-primary transition-colors" aria-label="GitHub"> <svg height="16" width="16" viewBox="0 0 16 16" fill="currentColor"> <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path> </svg>
+GitHub
+</a> <!-- Theme Toggle --> <button id="theme-toggle" class="theme-toggle" aria-label="切换主题"> <svg id="theme-icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><circle cx="12" cy="12" r="5"></circle><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path></svg> <svg id="theme-icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg> </button> <button id="magnifying-glass" aria-label="Search" class="flex items-center rounded-sm border border-border bg-secondary px-2 py-1 text-xs text-muted-fg transition-colors duration-300 ease-in-out hover:text-primary"> <svg height="14" stroke-linejoin="round" viewBox="0 0 16 16" width="14" style="color: currentcolor;"> <path fill-rule="evenodd" clip-rule="evenodd" d="M3.5 7C3.5 5.067 5.067 3.5 7 3.5C8.933 3.5 10.5 5.067 10.5 7C10.5 7.88461 10.1718 8.69256 9.63058 9.30876L9.30876 9.63058C8.69256 10.1718 7.88461 10.5 7 10.5C5.067 10.5 3.5 8.933 3.5 7ZM9.96544 11.0261C9.13578 11.6382 8.11014 12 7 12C4.23858 12 2 9.76142 2 7C2 4.23858 4.23858 2 7 2C9.76142 2 12 4.23858 12 7C12 8.11014 11.6382 9.13578 11.0261 9.96544L14.0303 12.9697L14.5607 13.5L13.5 14.5607L12.9697 14.0303L9.96544 11.0261Z" fill="currentColor"></path> </svg> </button> </div> </div> </header> <script>
+  const nav = document.getElementById('nav');
+
+  function isHomepage() {
+    return window.location.pathname === '/' || window.location.pathname === '';
+  }
+
+  // Theme toggle
+  const themeToggle = document.getElementById('theme-toggle');
+  const sunIcon = document.getElementById('theme-icon-sun');
+  const moonIcon = document.getElementById('theme-icon-moon');
+
+  function setTheme(theme) {
+    if (theme === 'light') {
+      document.documentElement.classList.add('light');
+      if (sunIcon) sunIcon.style.display = 'none';
+      if (moonIcon) moonIcon.style.display = 'block';
+    } else {
+      document.documentElement.classList.remove('light');
+      if (sunIcon) sunIcon.style.display = 'block';
+      if (moonIcon) moonIcon.style.display = 'none';
+    }
+    localStorage.setItem('theme', theme);
+  }
+
+  // Init theme
+  const saved = localStorage.getItem('theme');
+  if (saved) { setTheme(saved); }
+  else if (window.matchMedia('(prefers-color-scheme: light)').matches) { setTheme('light'); }
+
+  themeToggle?.addEventListener('click', () => {
+    setTheme(document.documentElement.classList.contains('light') ? 'dark' : 'light');
+  });
+
+  // Nav background
+  if (isHomepage()) {
+    nav.classList.remove('has-bg');
+  } else {
+    nav.classList.add('has-bg');
+  }
+</script> <main class="has-nav-padding">  <div class="mx-auto max-w-6xl px-6"> <div class="space-y-10" data-pagefind-ignore> <div class="flex items-center gap-3 mb-8"> <a href="/tags" class="group inline-flex items-center gap-1.5 text-sm text-muted-fg transition-colors duration-200 hover:text-primary"> <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="transition-transform duration-200 group-hover:-translate-x-0.5"> <polyline points="15 18 9 12 15 6"></polyline> </svg> <span>所有标签</span> </a> </div> <h1 class="text-2xl font-semibold text-foreground">
+标签: <span class="text-primary">股权</span> </h1> <ul class="flex flex-col gap-4"> <a href="/blog/04-funding-rounds" class="not-prose group block py-4 border-b border-border/50 transition-colors duration-300 hover:border-primary/30"> <div class="flex items-start justify-between gap-4"> <div class="flex-1 min-w-0 space-y-1.5"> <h3 class="font-medium text-foreground group-hover:text-primary transition-colors truncate"> 天使轮·A 轮·B 轮·C 轮：一文搞懂创业融资全流程 </h3> <p class="text-sm text-muted-fg line-clamp-1"> 从天使轮到 IPO，每个阶段该找谁？融多少？估值怎么算？创业者必看的融资路线图。 </p> <div class="flex items-center gap-3 text-xs text-muted-fg"> <time datetime="2025-08-27T00:00:00.000Z"> 2025年8月27日 </time> <div class="flex items-center gap-1.5"> <span class="text-border">·</span> <span class="text-primary/70"> 融资 </span><span class="text-primary/70"> 创业 </span><span class="text-primary/70"> 股权 </span> </div> </div> </div> <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="size-4 flex-shrink-0 text-muted-fg/50 group-hover:text-primary/70 transition-all duration-300 group-hover:translate-x-0.5 mt-1" fill="none" stroke="currentColor" stroke-width="2"> <polyline points="9 18 15 12 9 6"></polyline> </svg> </div> </a><a href="/blog/02-safe-financing" class="not-prose group block py-4 border-b border-border/50 transition-colors duration-300 hover:border-primary/30"> <div class="flex items-start justify-between gap-4"> <div class="flex-1 min-w-0 space-y-1.5"> <h3 class="font-medium text-foreground group-hover:text-primary transition-colors truncate"> SAFE 融资工具详解：Y Combinator 的新型融资方案 </h3> <p class="text-sm text-muted-fg line-clamp-1"> 什么是 SAFE？和可转债有什么区别？估值上限和折扣率怎么谈？写给创业者的 SAFE 完全指南。 </p> <div class="flex items-center gap-3 text-xs text-muted-fg"> <time datetime="2025-07-22T00:00:00.000Z"> 2025年7月22日 </time> <div class="flex items-center gap-1.5"> <span class="text-border">·</span> <span class="text-primary/70"> 融资 </span><span class="text-primary/70"> 创业 </span><span class="text-primary/70"> 股权 </span> </div> </div> </div> <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="size-4 flex-shrink-0 text-muted-fg/50 group-hover:text-primary/70 transition-all duration-300 group-hover:translate-x-0.5 mt-1" fill="none" stroke="currentColor" stroke-width="2"> <polyline points="9 18 15 12 9 6"></polyline> </svg> </div> </a><a href="/blog/01-convertible-bonds" class="not-prose group block py-4 border-b border-border/50 transition-colors duration-300 hover:border-primary/30"> <div class="flex items-start justify-between gap-4"> <div class="flex-1 min-w-0 space-y-1.5"> <h3 class="font-medium text-foreground group-hover:text-primary transition-colors truncate"> 可转债 vs 可转换优先股：两种融资工具的核心区别 </h3> <p class="text-sm text-muted-fg line-clamp-1"> 创业融资中最常见的两种工具，到底选哪个？从法律属性、现金流压力、股权稀释到适用场景的完整对比。 </p> <div class="flex items-center gap-3 text-xs text-muted-fg"> <time datetime="2025-07-03T00:00:00.000Z"> 2025年7月03日 </time> <div class="flex items-center gap-1.5"> <span class="text-border">·</span> <span class="text-primary/70"> 融资 </span><span class="text-primary/70"> 创业 </span><span class="text-primary/70"> 股权 </span> </div> </div> </div> <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="size-4 flex-shrink-0 text-muted-fg/50 group-hover:text-primary/70 transition-all duration-300 group-hover:translate-x-0.5 mt-1" fill="none" stroke="currentColor" stroke-width="2"> <polyline points="9 18 15 12 9 6"></polyline> </svg> </div> </a> </ul> </div> </div>  </main> <footer class="animate"> <div class="max-w-6xl mx-auto px-6 flex items-center justify-between text-sm text-muted-fg"> <p>Copyright &copy; 2026 Jayz Zhang. All rights reserved.</p> <button id="back-to-top" class="group inline-flex items-center gap-1.5 text-sm text-muted-fg transition-colors duration-200 hover:text-primary"> <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="transition-transform duration-200 group-hover:-translate-y-0.5"> <polyline points="18 15 12 9 6 15"></polyline> </svg> <span>返回顶部</span> </button> </div> </footer> <aside data-pagefind-ignore> <div id="backdrop" class="invisible fixed left-0 top-0 z-50 flex h-screen w-full justify-center p-6" style="background: rgba(0,0,0,0.5); backdrop-filter: blur(8px);" data-astro-transition-persist="astro-3snakcvo-1"> <div id="pagefind-container" class="m-0 flex h-fit max-h-[80%] w-full max-w-(--breakpoint-sm) flex-col overflow-auto rounded-xl border border-border bg-secondary p-2 px-4 py-3 shadow-lg"> <div id="search" class="pagefind-ui pagefind-init" data-pagefind-ui data-bundle-path="/pagefind/" data-ui-options="{&#34;showImages&#34;:false,&#34;excerptLength&#34;:15,&#34;resetStyles&#34;:false}"></div> <script type="module" src="/_astro/Search.astro_astro_type_script_index_0_lang.DSe1Ey-Z.js"></script> <div class="mr-2 pb-1 pt-4 text-right text-xs text-muted-fg">
+按 <kbd class="rounded border border-border bg-background px-1.5 py-0.5 text-xs">Esc</kbd> 关闭
+</div> </div> </div> </aside> <script>
+  const magnifyingGlass = document.getElementById("magnifying-glass");
+  const backdrop = document.getElementById("backdrop");
+
+  function openPagefind() {
+    const searchDiv = document.getElementById("search");
+    const search = searchDiv.querySelector("input");
+    setTimeout(() => {
+      search.focus();
+    }, 0);
+    backdrop?.classList.remove("invisible");
+    backdrop?.classList.add("visible");
+  }
+
+  function closePagefind() {
+    const search = document.getElementById("search");
+    search.value = "";
+    backdrop?.classList.remove("visible");
+    backdrop?.classList.add("invisible");
+  }
+
+  magnifyingGlass?.addEventListener("click", () => {
+    openPagefind();
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "/") {
+      e.preventDefault();
+      openPagefind();
+    } else if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+      e.preventDefault();
+      openPagefind();
+    }
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      closePagefind();
+    }
+  });
+
+  document.addEventListener("click", (event) => {
+    if (event.target.classList.contains("pagefind-ui__result-link")) {
+      closePagefind();
+    }
+  });
+
+  backdrop?.addEventListener("click", (event) => {
+    if (!event.target.closest("#pagefind-container")) {
+      closePagefind();
+    }
+  });
+
+  const form = document.getElementById("form");
+  form?.addEventListener("submit", (event) => {
+    event.preventDefault();
+  });
+</script>  </body></html>

@@ -1,0 +1,629 @@
+<!DOCTYPE html><html lang="zh-CN"> <head><!-- Global Metadata --><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><meta name="generator" content="Astro v5.13.9"><!-- Canonical URL --><link rel="canonical" href="https://www.jayzzhang.online/blog/00-mau-arr-pmf/"><!-- Primary Meta Tags --><title>MAU、ARR、PMF：初创公司必懂的 3 个核心指标 | Jayz Zhang</title><meta name="title" content="MAU、ARR、PMF：初创公司必懂的 3 个核心指标 | Jayz Zhang"><meta name="description" content="MAU 怎么算？ARR 有哪些「水分」？PMF 的五种幻觉是什么？写给 0-1 岁创业者的基础指标指南。"><meta name="author" content="Jayz Zhang"><meta name="robots" content="index, follow, max-image-preview:large"><meta name="googlebot" content="index, follow"><!-- Open Graph / Facebook --><meta property="og:type" content="article"><meta property="og:url" content="https://www.jayzzhang.online/blog/00-mau-arr-pmf/"><meta property="og:title" content="MAU、ARR、PMF：初创公司必懂的 3 个核心指标 | Jayz Zhang"><meta property="og:description" content="MAU 怎么算？ARR 有哪些「水分」？PMF 的五种幻觉是什么？写给 0-1 岁创业者的基础指标指南。"><meta property="og:image" content="https://www.jayzzhang.online/og/00-mau-arr-pmf.png"><meta property="og:site_name" content="Jayz Zhang"><meta property="og:locale" content="zh_CN"><meta property="article:published_time" content="2025-06-12T00:00:00.000Z"><meta property="article:author" content="https://www.jayzzhang.online"><!-- Twitter --><meta property="twitter:card" content="summary_large_image"><meta property="twitter:url" content="https://www.jayzzhang.online/blog/00-mau-arr-pmf/"><meta property="twitter:title" content="MAU、ARR、PMF：初创公司必懂的 3 个核心指标 | Jayz Zhang"><meta property="twitter:description" content="MAU 怎么算？ARR 有哪些「水分」？PMF 的五种幻觉是什么？写给 0-1 岁创业者的基础指标指南。"><meta property="twitter:image" content="https://www.jayzzhang.online/og/00-mau-arr-pmf.png"><meta property="twitter:creator" content="@jayzzhang"><!-- JSON-LD Structured Data --><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","name":"MAU、ARR、PMF：初创公司必懂的 3 个核心指标 | Jayz Zhang","description":"MAU 怎么算？ARR 有哪些「水分」？PMF 的五种幻觉是什么？写给 0-1 岁创业者的基础指标指南。","url":"https://www.jayzzhang.online/blog/00-mau-arr-pmf/","author":{"@type":"Person","name":"Jayz Zhang","url":"https://www.jayzzhang.online"},"publisher":{"@type":"Person","name":"Jayz Zhang","url":"https://www.jayzzhang.online"},"datePublished":"2025-06-12T00:00:00.000Z","image":"https://www.jayzzhang.online/og/00-mau-arr-pmf.png"}</script><!-- Performance: Preconnect --><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="preconnect" href="https://giscus.app"><!-- PageFind --><link href="/pagefind/pagefind-ui.css" rel="stylesheet"><script src="/pagefind/pagefind-ui.js"></script><script>
+  document.addEventListener("DOMContentLoaded", () => {
+    animate();
+    addCopyCodeButtons();
+
+    const backToPrev = document.getElementById("back-to-prev");
+    backToPrev?.addEventListener("click", () => window.history.back());
+
+    // Consolidated scroll handler (replaces 3 separate listeners)
+    initScrollHandlers();
+  });
+
+  // Astro client-side navigation: re-run animations on page swap
+  document.addEventListener("astro:after-swap", () => {
+    animate();
+    addCopyCodeButtons();
+  });
+
+  function animate() {
+    const animateElements = document.querySelectorAll(".animate");
+    if (!animateElements.length) return;
+
+    // 立即显示所有 .animate 元素（简单可靠，不依赖 IntersectionObserver）
+    animateElements.forEach((el) => {
+      el.classList.add("show");
+    });
+  }
+
+  function addCopyCodeButtons() {
+    let copyButtonLabel = "📋";
+    let codeBlocks = Array.from(document.querySelectorAll("pre"));
+
+    async function copyCode(codeBlock, copyButton) {
+      const codeText = codeBlock.innerText;
+      const buttonText = copyButton.innerText;
+      const textToCopy = codeText.replace(buttonText, "");
+
+      await navigator.clipboard.writeText(textToCopy);
+      copyButton.innerText = "✅";
+
+      setTimeout(() => {
+        copyButton.innerText = copyButtonLabel;
+      }, 2000);
+    }
+
+    for (let codeBlock of codeBlocks) {
+      const wrapper = document.createElement("div");
+      wrapper.style.position = "relative";
+
+      const copyButton = document.createElement("button");
+      copyButton.innerText = copyButtonLabel;
+      copyButton.classList = "copy-code";
+
+      codeBlock.setAttribute("tabindex", "0");
+      codeBlock.appendChild(copyButton);
+
+      codeBlock.parentNode.insertBefore(wrapper, codeBlock);
+      wrapper.appendChild(codeBlock);
+
+      copyButton?.addEventListener("click", async () => {
+        await copyCode(codeBlock, copyButton);
+      });
+    }
+  }
+
+  function initScrollHandlers() {
+    const progressBar = document.getElementById('reading-progress');
+    const nav = document.getElementById('nav');
+    const backToTopBtn = document.getElementById('back-to-top');
+    const isHome = window.location.pathname === '/' || window.location.pathname === '';
+    let ticking = false;
+
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          const scrollY = window.scrollY;
+
+          // 1. Reading progress bar
+          if (progressBar) {
+            const total = document.documentElement.scrollHeight - window.innerHeight;
+            const progress = total > 0 ? scrollY / total : 0;
+            progressBar.style.transform = `scaleX(${progress})`;
+          }
+
+          // 2. Nav background
+          if (nav) {
+            if (isHome) {
+              nav.classList.toggle('has-bg', scrollY > 20);
+            } else {
+              nav.classList.add('has-bg');
+            }
+          }
+
+          // 3. Back to top visibility
+          if (backToTopBtn) {
+            if (scrollY > 300) {
+              document.documentElement.classList.add('scrolled');
+            } else {
+              document.documentElement.classList.remove('scrolled');
+            }
+          }
+
+          ticking = false;
+        });
+        ticking = true;
+      }
+    }, { passive: true });
+
+    // Back to top click
+    backToTopBtn?.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+</script><link rel="stylesheet" href="/_astro/_id_.DX0r1tvC.css">
+<style>.animate-modal-in[data-astro-cid-zllr3mxm]{animation:modalIn .2s ease-out}@keyframes modalIn{0%{opacity:0;transform:scale(.95) translateY(8px)}to{opacity:1;transform:scale(1) translateY(0)}}
+</style></head> <body> <!-- Reading Progress Bar --> <div id="reading-progress" class="fixed top-0 left-0 h-1 bg-primary z-[60] origin-left scale-x-0 transition-transform duration-100"></div> <noscript> <style>
+        .animate, .scroll-section {
+          opacity: 1;
+          transform: none;
+        }
+      </style> </noscript> <header id="nav" class="fixed top-0 left-0 right-0 z-50 py-4 transition-all duration-300 has-bg"> <div class="max-w-6xl mx-auto px-6 flex items-center justify-between"> <a href="/" class="text-lg font-bold text-primary"> Jayz Zhang </a> <div class="flex items-center gap-5"> <a href="/" class="text-sm font-medium text-muted-fg hover:text-primary transition-colors" rel="prefetch">首页</a> <a href="/blog" class="text-sm font-medium text-muted-fg hover:text-primary transition-colors" rel="prefetch">博客</a> <a href="/projects" class="text-sm font-medium text-muted-fg hover:text-primary transition-colors" rel="prefetch">作品</a> <a href="https://github.com/Jay-Z-zhang" target="_blank" rel="noopener noreferrer" class="flex items-center gap-1.5 text-sm font-medium text-muted-fg hover:text-primary transition-colors" aria-label="GitHub"> <svg height="16" width="16" viewBox="0 0 16 16" fill="currentColor"> <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path> </svg>
+GitHub
+</a> <!-- Theme Toggle --> <button id="theme-toggle" class="theme-toggle" aria-label="切换主题"> <svg id="theme-icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><circle cx="12" cy="12" r="5"></circle><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path></svg> <svg id="theme-icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg> </button> <button id="magnifying-glass" aria-label="Search" class="flex items-center rounded-sm border border-border bg-secondary px-2 py-1 text-xs text-muted-fg transition-colors duration-300 ease-in-out hover:text-primary"> <svg height="14" stroke-linejoin="round" viewBox="0 0 16 16" width="14" style="color: currentcolor;"> <path fill-rule="evenodd" clip-rule="evenodd" d="M3.5 7C3.5 5.067 5.067 3.5 7 3.5C8.933 3.5 10.5 5.067 10.5 7C10.5 7.88461 10.1718 8.69256 9.63058 9.30876L9.30876 9.63058C8.69256 10.1718 7.88461 10.5 7 10.5C5.067 10.5 3.5 8.933 3.5 7ZM9.96544 11.0261C9.13578 11.6382 8.11014 12 7 12C4.23858 12 2 9.76142 2 7C2 4.23858 4.23858 2 7 2C9.76142 2 12 4.23858 12 7C12 8.11014 11.6382 9.13578 11.0261 9.96544L14.0303 12.9697L14.5607 13.5L13.5 14.5607L12.9697 14.0303L9.96544 11.0261Z" fill="currentColor"></path> </svg> </button> </div> </div> </header> <script>
+  const nav = document.getElementById('nav');
+
+  function isHomepage() {
+    return window.location.pathname === '/' || window.location.pathname === '';
+  }
+
+  // Theme toggle
+  const themeToggle = document.getElementById('theme-toggle');
+  const sunIcon = document.getElementById('theme-icon-sun');
+  const moonIcon = document.getElementById('theme-icon-moon');
+
+  function setTheme(theme) {
+    if (theme === 'light') {
+      document.documentElement.classList.add('light');
+      if (sunIcon) sunIcon.style.display = 'none';
+      if (moonIcon) moonIcon.style.display = 'block';
+    } else {
+      document.documentElement.classList.remove('light');
+      if (sunIcon) sunIcon.style.display = 'block';
+      if (moonIcon) moonIcon.style.display = 'none';
+    }
+    localStorage.setItem('theme', theme);
+  }
+
+  // Init theme
+  const saved = localStorage.getItem('theme');
+  if (saved) { setTheme(saved); }
+  else if (window.matchMedia('(prefers-color-scheme: light)').matches) { setTheme('light'); }
+
+  themeToggle?.addEventListener('click', () => {
+    setTheme(document.documentElement.classList.contains('light') ? 'dark' : 'light');
+  });
+
+  // Nav background
+  if (isHomepage()) {
+    nav.classList.remove('has-bg');
+  } else {
+    nav.classList.add('has-bg');
+  }
+</script> <main class="has-nav-padding">  <div class="mx-auto max-w-6xl px-6"> <div class="flex items-center gap-3 mb-6"> <a href="/blog" class="group inline-flex items-center gap-1.5 text-sm text-muted-fg transition-colors duration-200 hover:text-primary"> <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="transition-transform duration-200 group-hover:-translate-x-0.5"> <polyline points="15 18 9 12 15 6"></polyline> </svg> <span>返回博客</span> </a> </div> <div class="my-10 space-y-1"> <div class="flex items-center gap-1.5 text-muted-fg"> <div class="font-base text-sm"> <time datetime="2025-06-12T00:00:00.000Z"> 2025年6月12日 </time> </div>
+&bull;
+<div class="font-base text-sm"> 4 min read </div> </div> <h1 class="text-3xl font-semibold text-foreground"> MAU、ARR、PMF：初创公司必懂的 3 个核心指标 </h1> <div class="flex gap-2 pt-2"> <a href="/tags/创业" class="rounded-sm border border-border bg-secondary px-2 py-1 text-sm text-muted-fg transition-colors duration-300 ease-in-out hover:border-primary/30 hover:text-primary"> 创业 </a><a href="/tags/指标" class="rounded-sm border border-border bg-secondary px-2 py-1 text-sm text-muted-fg transition-colors duration-300 ease-in-out hover:border-primary/30 hover:text-primary"> 指标 </a><a href="/tags/融资" class="rounded-sm border border-border bg-secondary px-2 py-1 text-sm text-muted-fg transition-colors duration-300 ease-in-out hover:border-primary/30 hover:text-primary"> 融资 </a> </div> </div> <details open class="group rounded-lg border border-border bg-secondary/20"> <summary class="cursor-pointer rounded-t-lg px-3 py-1.5 font-medium text-muted-fg transition-colors hover:text-primary">目录</summary> <nav> <ul class="py-3"> <li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#为什么这篇文章值得你读" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 为什么这篇文章值得你读？ </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#mau月活跃用户数" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> MAU（月活跃用户数） </a> <ul class="translate-x-3"> <li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#一句话定义" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 一句话定义 </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#为什么-mau-重要" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 为什么 MAU 重要？ </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#计算规则" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 计算规则 </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#具体例子" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 具体例子 </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#mau-的局限性" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> MAU 的局限性 </a>  </li> </ul> </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#arr年度经常性收入" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> ARR（年度经常性收入） </a> <ul class="translate-x-3"> <li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#一句话定义-1" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 一句话定义 </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#为什么-arr-比收入更重要" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 为什么 ARR 比收入更重要？ </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#核心公式" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 核心公式 </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#什么不算-arr" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 什么不算 ARR？ </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#-五种劣质-arr-增长一定要警惕" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]">  五种「劣质 ARR 增长」——一定要警惕 </a> <ul class="translate-x-3"> <li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#1-短期促销冲量" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 1. 短期促销冲量 </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#2-渠道补贴叠加" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 2. 渠道补贴叠加 </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#3-单一超大客户依赖" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 3. 单一超大客户依赖 </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#4-提前确认收入" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 4. 提前确认收入 </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#5-新签掩盖低续约" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 5. 新签掩盖低续约 </a>  </li> </ul> </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#判断-arr-质量的黄金标准" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 判断 ARR 质量的黄金标准 </a>  </li> </ul> </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#pmf产品市场契合度" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> PMF（产品市场契合度） </a> <ul class="translate-x-3"> <li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#一句话定义-2" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 一句话定义 </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#为什么-pmf-是一切的前提" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 为什么 PMF 是一切的前提？ </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#pmf-的三个信号" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> PMF 的三个信号 </a> <ul class="translate-x-3"> <li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#信号-1目标用户清晰" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 信号 1：目标用户清晰 </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#信号-2留存达标" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 信号 2：留存达标 </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#信号-3有机增长" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 信号 3：有机增长 </a>  </li> </ul> </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#-pmf-的五种幻觉别被自己骗了" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]">  PMF 的五种幻觉——别被自己骗了 </a> <ul class="translate-x-3"> <li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#幻觉-1种子用户滤镜" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 幻觉 1：种子用户滤镜 </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#幻觉-2短期活动拉升" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 幻觉 2：短期活动拉升 </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#幻觉-3场景过度收窄" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 幻觉 3：场景过度收窄 </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#幻觉-4数据指标操纵" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 幻觉 4：数据指标操纵 </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#幻觉-5替代幻觉" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 幻觉 5：替代幻觉 </a>  </li> </ul> </li> </ul> </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#三者的关系一个完整的逻辑链" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 三者的关系：一个完整的逻辑链 </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#行动清单" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 行动清单 </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#延伸推荐" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 延伸推荐 </a>  </li> </ul> </nav> </details><article class="animate"> <p><img src="/images/blog/00-growth-flywheel.png" alt="PMF → MAU → ARR 增长飞轮"></p>
+<h2 id="为什么这篇文章值得你读">为什么这篇文章值得你读？</h2>
+<p>如果你刚创业，或者正在考虑创业，你一定听过这些词：<strong>MAU、ARR、PMF</strong>。</p>
+<p>投资人开会时聊这些，FA（财务顾问）做 BP 时写这些，竞品分析时也要看这些。但很多创始人对这些指标的理解停留在「听过」的层面——知道缩写，不知道内涵；知道公式，不知道陷阱。</p>
+<p><strong>这篇文章的目标很简单：让你搞懂这 3 个指标的本质，以及它们之间的逻辑关系。</strong></p>
+<p>读完之后，你就能看懂投资人问的问题到底在问什么，也能自己判断业务的健康度。</p>
+<hr>
+<h2 id="mau月活跃用户数">MAU（月活跃用户数）</h2>
+<h3 id="一句话定义">一句话定义</h3>
+<blockquote>
+<p>MAU = 一个自然月内，至少登录或使用过产品一次的去重用户数。</p>
+</blockquote>
+<h3 id="为什么-mau-重要">为什么 MAU 重要？</h3>
+<p>想象你是一个健身房老板。你想知道这个月生意怎么样，最简单的办法是数一数「这个月有多少不同的人来过」。</p>
+<p>这就是 MAU 的本质——<strong>衡量你的产品有多少人在用</strong>。</p>
+<p>但请注意，MAU 只关心「有没有来过」，不关心「来了多久」「做了什么」。哪怕用户只在 1 号登录了一次就再没回来，他也完整贡献了这个月的 MAU。</p>
+<h3 id="计算规则">计算规则</h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>规则</th><th>说明</th><th>举例</th></tr></thead><tbody><tr><td><strong>统计周期</strong></td><td>完整自然月（1 号 → 月末最后一天）</td><td>11 月 MAU 统计 11/1-11/30 的数据</td></tr><tr><td><strong>活跃标准</strong></td><td>当月至少有 1 次登录事件即计入</td><td>用户只看了一次广告也算活跃</td></tr><tr><td><strong>去重原则</strong></td><td>同一用户多次登录只算 1 次</td><td>用户 A 登录 10 次 = 还是算 1 个人</td></tr></tbody></table>
+<h3 id="具体例子">具体例子</h3>
+<blockquote>
+<p><strong>场景</strong>：一款记账 App</p>
+<ul>
+<li>用户 A：11 月 1 号登录，11 月 15 号又登录 → <strong>算 1 人</strong></li>
+<li>用户 B：11 月 30 号登录了 1 次 → <strong>算 1 人</strong></li>
+<li>用户 C：10 月登录过，但 11 月没登录 → <strong>不算</strong></li>
+</ul>
+<p><strong>11 月 MAU = 2</strong></p>
+</blockquote>
+<h3 id="mau-的局限性">MAU 的局限性</h3>
+<p>MAU 是最基础的指标，但<strong>只看 MAU 会误导你</strong>：</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>场景</th><th>MAU 看起来</th><th>实际情况</th></tr></thead><tbody><tr><td>大量补贴拉新</td><td>暴涨</td><td>补贴停止后归零</td></tr><tr><td>推送骚扰用户</td><td>虚高</td><td>用户只是误触打开</td></tr><tr><td>产品体验差</td><td>稳定</td><td>用户在流失但新用户补上了</td></tr></tbody></table>
+<p><strong>所以 MAU 要和留存率一起看。</strong> MAU 告诉你「有多少人来了」，留存率告诉你「有多少人留下了」。</p>
+<hr>
+<h2 id="arr年度经常性收入">ARR（年度经常性收入）</h2>
+<h3 id="一句话定义-1">一句话定义</h3>
+<blockquote>
+<p>ARR = 你的订阅业务一年能稳定收多少钱。</p>
+</blockquote>
+<h3 id="为什么-arr-比收入更重要">为什么 ARR 比收入更重要？</h3>
+<p>假设你是 SaaS 公司，今年收入 1000 万。听起来很多对吧？</p>
+<p>但如果这 1000 万里：</p>
+<ul>
+<li>500 万是一次性项目收入（明年没了）</li>
+<li>300 万是大客户折扣价（明年不续了）</li>
+<li>200 万是真实订阅收入</li>
+</ul>
+<p>那你的<strong>真实 ARR 只有 200 万</strong>，而不是 1000 万。</p>
+<p><strong>ARR 的核心价值是「可预测性」。</strong> 投资人喜欢 ARR，是因为它告诉他们：即使明天不签新客户，公司也有稳定的收入来源。</p>
+<h3 id="核心公式">核心公式</h3>
+<pre class="astro-code css-variables" style="background-color:var(--astro-code-background);color:var(--astro-code-foreground); overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>ARR = MRR × 12</span></span></code></pre>
+<p>MRR（Monthly Recurring Revenue）= 所有活跃订阅合同的月度收入总和。</p>
+<p><strong>举例：</strong></p>
+<ul>
+<li>100 个用户，每人每月付 100 元 → MRR = 10,000 元 → ARR = 120,000 元</li>
+</ul>
+<h3 id="什么不算-arr">什么不算 ARR？</h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>排除项</th><th>为什么</th><th>例子</th></tr></thead><tbody><tr><td><strong>一次性收入</strong></td><td>不可持续</td><td>定制开发费、咨询费</td></tr><tr><td><strong>折扣/补贴</strong></td><td>非真实收入</td><td>「首年半价」的折扣部分</td></tr><tr><td><strong>退款</strong></td><td>已冲销</td><td>用户退款要扣除</td></tr><tr><td><strong>非订阅收入</strong></td><td>不符合「经常性」</td><td>单次购买、广告收入</td></tr></tbody></table>
+<h3 id="-五种劣质-arr-增长一定要警惕"><svg style="display:inline-block;vertical-align:-2px;margin-right:4px" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg> 五种「劣质 ARR 增长」——一定要警惕</h3>
+<p>这是很多创始人容易踩的坑。ARR 数字好看，不代表业务健康。</p>
+<h4 id="1-短期促销冲量">1. 短期促销冲量</h4>
+<p><strong>表现：</strong> 双 11 打 3 折，ARR 暴涨 200%。
+<strong>真相：</strong> 优惠到期后 80% 用户流失。
+<strong>判断标准：</strong> 看促销结束 3 个月后的留存率。</p>
+<h4 id="2-渠道补贴叠加">2. 渠道补贴叠加</h4>
+<p><strong>表现：</strong> 每花 1 块钱获客，带来 3 块钱 ARR。看起来 ROI = 3，很健康？
+<strong>真相：</strong> 获客成本里没算人力、工具、办公分摊。真实 CAC 是 4 块钱，<strong>每单亏 1 块</strong>。
+<strong>判断标准：</strong> 用「完全加载 CAC」重新计算。</p>
+<h4 id="3-单一超大客户依赖">3. 单一超大客户依赖</h4>
+<p><strong>表现：</strong> ARR 1000 万，其中 600 万来自 1 个大客户。
+<strong>真相：</strong> 失去这个客户 = 公司崩盘。
+<strong>判断标准：</strong> 最大客户收入占比 &#x3C; 20% 才健康。</p>
+<h4 id="4-提前确认收入">4. 提前确认收入</h4>
+<p><strong>表现：</strong> 签了 3 年合同，把 3 年的钱都算进今年 ARR。
+<strong>真相：</strong> 现金流跟不上，明年没新签就断崖。
+<strong>判断标准：</strong> ARR 应该按服务期分摊确认。</p>
+<h4 id="5-新签掩盖低续约">5. 新签掩盖低续约</h4>
+<p><strong>表现：</strong> ARR 每月增长 10%，看起来很好。
+<strong>真相：</strong> 老客户续约率只有 50%，全靠不断签新客户维持。这是「漏桶」。
+<strong>判断标准：</strong> 看<strong>净收入留存率（NRR）</strong>。NRR > 100% 才说明老客户在增购。</p>
+<h3 id="判断-arr-质量的黄金标准">判断 ARR 质量的黄金标准</h3>
+<blockquote>
+<p><strong>净收入留存率（NRR）> 100%</strong></p>
+<p>公式：（期初 ARR + 增购 - 降级 - 流失）/ 期初 ARR × 100%</p>
+<p>意味着即使不签新客户，老客户的增购也能让收入自然增长。</p>
+</blockquote>
+<p><strong>标杆公司：</strong></p>
+<ul>
+<li>Slack：NRR ~ 130%</li>
+<li>Zoom：NRR ~ 130%</li>
+<li>健康 SaaS：NRR > 110%</li>
+</ul>
+<hr>
+<h2 id="pmf产品市场契合度">PMF（产品市场契合度）</h2>
+<h3 id="一句话定义-2">一句话定义</h3>
+<blockquote>
+<p>PMF = 你的产品正好解决了市场的一个真实、强烈的需求。</p>
+</blockquote>
+<h3 id="为什么-pmf-是一切的前提">为什么 PMF 是一切的前提？</h3>
+<p><strong>没有 PMF 就做增长 = 往漏桶里倒水。</strong></p>
+<p>很多创业公司死在这一步：产品还没找到 PMF，就开始大规模投放获客。结果花了几百万，发现留存率惨不忍睹，用户来了就走。</p>
+<p><strong>正确的顺序是：</strong></p>
+<pre class="astro-code css-variables" style="background-color:var(--astro-code-background);color:var(--astro-code-foreground); overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>找到 PMF → 验证留存 → 再开始规模化获客</span></span></code></pre>
+<h3 id="pmf-的三个信号">PMF 的三个信号</h3>
+<h4 id="信号-1目标用户清晰">信号 1：目标用户清晰</h4>
+<blockquote>
+<p>用户能一句话说明你的产品解决了什么问题。</p>
+</blockquote>
+<p><strong>有 PMF：</strong> 「这个 App 帮我自动记账，再也不用手动输入了。」
+<strong>没 PMF：</strong> 「这个 App 好像挺酷的，但我不知道什么时候会用。」</p>
+<h4 id="信号-2留存达标">信号 2：留存达标</h4>
+<blockquote>
+<p>Sean Ellis 测试中，> 40% 的用户表示「如果产品消失会很失望」。</p>
+</blockquote>
+<p>这是最著名的 PMF 测试方法。具体做法：</p>
+<p><strong>问用户一个问题：</strong></p>
+<blockquote>
+<p>「如果这个产品明天消失了，你会有什么感觉？」</p>
+</blockquote>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>回答</th><th>含义</th></tr></thead><tbody><tr><td><strong>非常失望</strong></td><td>核心用户，产品对他们有真实价值</td></tr><tr><td><strong>有点失望</strong></td><td>普通用户，有替代方案</td></tr><tr><td><strong>不失望</strong></td><td>非目标用户</td></tr></tbody></table>
+<blockquote>
+<p><strong>如果「非常失望」的比例 ≥ 40%，说明你找到了 PMF。</strong></p>
+</blockquote>
+<h4 id="信号-3有机增长">信号 3：有机增长</h4>
+<blockquote>
+<p>用户自发推荐给朋友，不需要你花钱推广。</p>
+</blockquote>
+<p><strong>有 PMF 的表现：</strong></p>
+<ul>
+<li>用户主动在社交媒体分享</li>
+<li>K 因子（每个用户带来的新用户数）> 0.5</li>
+<li>自然流量占比 > 30%</li>
+</ul>
+<h3 id="-pmf-的五种幻觉别被自己骗了"><svg style="display:inline-block;vertical-align:-2px;margin-right:4px" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg> PMF 的五种幻觉——别被自己骗了</h3>
+<p>这是最关键的部分。很多创始人以为找到了 PMF，其实是幻觉。</p>
+<h4 id="幻觉-1种子用户滤镜">幻觉 1：种子用户滤镜</h4>
+<p><strong>表现：</strong> 早期数据极好，留存 80%，NPS 90+。
+<strong>真相：</strong> 你的早期用户是朋友、同事、超级粉丝，不是真实市场。
+<strong>验证方法：</strong> 找完全陌生的用户测试，看数据是否一样好。</p>
+<h4 id="幻觉-2短期活动拉升">幻觉 2：短期活动拉升</h4>
+<p><strong>表现：</strong> 双 11 期间 DAU 暴涨 10 倍。
+<strong>真相：</strong> 补贴停了，数据回到原点。
+<strong>验证方法：</strong> 看活动结束 30 天后的留存曲线。</p>
+<h4 id="幻觉-3场景过度收窄">幻觉 3：场景过度收窄</h4>
+<p><strong>表现：</strong> 产品在某个极窄场景下非常好用。
+<strong>真相：</strong> 这个场景的用户总量太小，无法规模化。
+<strong>验证方法：</strong> 计算 TAM（总可触达市场），看天花板有多高。</p>
+<h4 id="幻觉-4数据指标操纵">幻觉 4：数据指标操纵</h4>
+<p><strong>表现：</strong> 挑选高留存窗口、排除低活跃用户，让数据看起来很好。
+<strong>真相：</strong> 真实数据没那么好看。
+<strong>验证方法：</strong> 用原始数据重新计算，不加任何过滤条件。</p>
+<h4 id="幻觉-5替代幻觉">幻觉 5：替代幻觉</h4>
+<p><strong>表现：</strong> 用户留存率高，看起来很有粘性。
+<strong>真相：</strong> 用户留下只是因为没有更好的替代品。竞品一出现，立刻流失。
+<strong>验证方法：</strong> 问用户「如果有更好的替代品，你会换吗？」</p>
+<hr>
+<h2 id="三者的关系一个完整的逻辑链">三者的关系：一个完整的逻辑链</h2>
+<pre class="astro-code css-variables" style="background-color:var(--astro-code-background);color:var(--astro-code-foreground); overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>PMF → MAU 稳定增长 → ARR 可持续 → 可以融资放大</span></span>
+<span class="line"><span>  ↑                                        |</span></span>
+<span class="line"><span>  └──────────────── 数据反馈 ──────────────┘</span></span></code></pre>
+<p>让我用一句话解释这个链条：</p>
+<ol>
+<li><strong>先找到 PMF</strong>：证明产品有价值，用户愿意留下来</li>
+<li><strong>MAU 开始增长</strong>：因为产品好，用户自发传播 + 你开始获客</li>
+<li><strong>ARR 变得可持续</strong>：用户留下来并付费，收入可预测</li>
+<li><strong>可以融资放大</strong>：投资人看到健康的数据，愿意给钱帮你加速</li>
+</ol>
+<p><strong>如果链条在某一步断了：</strong></p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>断裂位置</th><th>症状</th><th>解决方案</th></tr></thead><tbody><tr><td><strong>PMF → MAU</strong></td><td>产品好但没人知道</td><td>加强获客和营销</td></tr><tr><td><strong>MAU → ARR</strong></td><td>很多人用但没人付费</td><td>优化变现模式</td></tr><tr><td><strong>ARR → 融资</strong></td><td>收入增长但质量差</td><td>提升 NRR，降低 CAC</td></tr></tbody></table>
+<hr>
+<h2 id="行动清单">行动清单</h2>
+<p>今天读完这篇文章，你可以立刻做这几件事：</p>
+<ul class="contains-task-list">
+<li class="task-list-item"><input type="checkbox" disabled> <strong>计算本月 MAU</strong>：确认去重逻辑正确，不要虚高</li>
+<li class="task-list-item"><input type="checkbox" disabled> <strong>梳理 ARR 构成</strong>：排除「劣质 ARR」，看真实数字</li>
+<li class="task-list-item"><input type="checkbox" disabled> <strong>做 Sean Ellis 测试</strong>：给 50 个活跃用户发问卷</li>
+<li class="task-list-item"><input type="checkbox" disabled> <strong>检查 NRR</strong>：如果 &#x3C; 100%，先解决老客户留存，别急着获客</li>
+<li class="task-list-item"><input type="checkbox" disabled> <strong>如果 PMF 未达标</strong>：暂停大规模投放，先打磨产品</li>
+</ul>
+<hr>
+<h2 id="延伸推荐">延伸推荐</h2>
+<p>这个系列还有 8 篇文章，覆盖创业融资、出海推广、增长指标等主题：</p>
+<ul>
+<li><a href="/blog/01-convertible-bonds/">可转债 vs 可转换优先股</a> — 两种融资工具怎么选？</li>
+<li><a href="/blog/02-safe-financing/">SAFE 融资工具详解</a> — YC 推出的新型融资方案</li>
+<li><a href="/blog/06-ltv-cac/">LTV/CAC > 3？</a> — 单位经济模型的健康度检验</li>
+</ul> <div class="mt-8"> <div class="share-buttons flex items-center gap-2 pt-4" data-astro-cid-zllr3mxm> <span class="text-sm text-muted-fg mr-1" data-astro-cid-zllr3mxm>分享</span> <!-- Twitter/X --> <a href="https://twitter.com/intent/tweet?text=MAU%E3%80%81ARR%E3%80%81PMF%EF%BC%9A%E5%88%9D%E5%88%9B%E5%85%AC%E5%8F%B8%E5%BF%85%E6%87%82%E7%9A%84%203%20%E4%B8%AA%E6%A0%B8%E5%BF%83%E6%8C%87%E6%A0%87&url=https%3A%2F%2Fwww.jayzzhang.online%2Fblog%2F00-mau-arr-pmf%2F" target="_blank" rel="noopener noreferrer" class="share-btn flex items-center justify-center w-8 h-8 rounded-lg border border-border text-muted-fg hover:text-primary hover:border-primary/30 transition-colors duration-200" aria-label="分享到 X" data-astro-cid-zllr3mxm> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-astro-cid-zllr3mxm> <path d="M4 4l11.733 16h4.267l-11.733 -16z" data-astro-cid-zllr3mxm></path><path d="M4 20l6.768 -6.768m2.46 -2.46l6.772 -6.772" data-astro-cid-zllr3mxm></path> </svg> </a> <!-- Facebook --> <a href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fwww.jayzzhang.online%2Fblog%2F00-mau-arr-pmf%2F" target="_blank" rel="noopener noreferrer" class="share-btn flex items-center justify-center w-8 h-8 rounded-lg border border-border text-muted-fg hover:text-primary hover:border-primary/30 transition-colors duration-200" aria-label="分享到 Facebook" data-astro-cid-zllr3mxm> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-astro-cid-zllr3mxm> <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" data-astro-cid-zllr3mxm></path> </svg> </a> <!-- LinkedIn --> <a href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fwww.jayzzhang.online%2Fblog%2F00-mau-arr-pmf%2F" target="_blank" rel="noopener noreferrer" class="share-btn flex items-center justify-center w-8 h-8 rounded-lg border border-border text-muted-fg hover:text-primary hover:border-primary/30 transition-colors duration-200" aria-label="分享到 LinkedIn" data-astro-cid-zllr3mxm> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-astro-cid-zllr3mxm> <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" data-astro-cid-zllr3mxm></path><rect width="4" height="12" x="2" y="9" data-astro-cid-zllr3mxm></rect><circle cx="4" cy="4" r="2" data-astro-cid-zllr3mxm></circle> </svg> </a> <!-- WhatsApp --> <a href="https://wa.me/?text=MAU%E3%80%81ARR%E3%80%81PMF%EF%BC%9A%E5%88%9D%E5%88%9B%E5%85%AC%E5%8F%B8%E5%BF%85%E6%87%82%E7%9A%84%203%20%E4%B8%AA%E6%A0%B8%E5%BF%83%E6%8C%87%E6%A0%87%20https%3A%2F%2Fwww.jayzzhang.online%2Fblog%2F00-mau-arr-pmf%2F" target="_blank" rel="noopener noreferrer" class="share-btn flex items-center justify-center w-8 h-8 rounded-lg border border-border text-muted-fg hover:text-primary hover:border-primary/30 transition-colors duration-200" aria-label="分享到 WhatsApp" data-astro-cid-zllr3mxm> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-astro-cid-zllr3mxm> <path d="M3 21l1.65-3.8a9 9 0 1 1 3.4 2.9L3 21" data-astro-cid-zllr3mxm></path><path d="M9 10a.5.5 0 0 0 1 0V9a.5.5 0 0 0-1 0v1a5 5 0 0 0 5 5h1a.5.5 0 0 0 0-1h-1a.5.5 0 0 0 0 1" data-astro-cid-zllr3mxm></path> </svg> </a> <!-- Weibo --> <a href="https://service.weibo.com/share/share.php?url=https%3A%2F%2Fwww.jayzzhang.online%2Fblog%2F00-mau-arr-pmf%2F&title=MAU%E3%80%81ARR%E3%80%81PMF%EF%BC%9A%E5%88%9D%E5%88%9B%E5%85%AC%E5%8F%B8%E5%BF%85%E6%87%82%E7%9A%84%203%20%E4%B8%AA%E6%A0%B8%E5%BF%83%E6%8C%87%E6%A0%87" target="_blank" rel="noopener noreferrer" class="share-btn flex items-center justify-center w-8 h-8 rounded-lg border border-border text-muted-fg hover:text-primary hover:border-primary/30 transition-colors duration-200" aria-label="分享到微博" data-astro-cid-zllr3mxm> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-astro-cid-zllr3mxm> <path d="M10.098 20.323c-3.977.391-7.414-1.406-7.672-4.02-.259-2.609 2.759-5.047 6.74-5.441 3.979-.394 7.413 1.404 7.671 4.018.259 2.6-2.759 5.049-6.739 5.443z" data-astro-cid-zllr3mxm></path> <circle cx="9.05" cy="17.219" r="1.2" data-astro-cid-zllr3mxm></circle> <path d="M17.66 11.649c-.346-.105-.578-.18-.405-.635.384-1.013.423-1.894.008-2.522-.776-1.17-2.902-1.109-5.341-.033" data-astro-cid-zllr3mxm></path> </svg> </a> <!-- WeChat - Modal Trigger --> <button id="wechat-share-btn" class="share-btn flex items-center justify-center w-8 h-8 rounded-lg border border-border text-muted-fg hover:text-primary hover:border-primary/30 transition-colors duration-200" aria-label="分享到微信" data-astro-cid-zllr3mxm> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-astro-cid-zllr3mxm> <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" data-astro-cid-zllr3mxm></path> </svg> </button> <!-- Copy Link --> <button id="copy-link-btn" class="share-btn flex items-center justify-center w-8 h-8 rounded-lg border border-border text-muted-fg hover:text-primary hover:border-primary/30 transition-colors duration-200" aria-label="复制链接" data-astro-cid-zllr3mxm> <svg class="icon-link" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-astro-cid-zllr3mxm> <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" data-astro-cid-zllr3mxm></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" data-astro-cid-zllr3mxm></path> </svg> <svg class="icon-check hidden" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-astro-cid-zllr3mxm> <polyline points="20 6 9 17 4 12" data-astro-cid-zllr3mxm></polyline> </svg> </button> </div> <!-- WeChat QR Modal --> <div id="wechat-modal" class="fixed inset-0 z-[100] hidden items-center justify-center" data-astro-cid-zllr3mxm> <div class="modal-backdrop absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="closeWechatModal()" data-astro-cid-zllr3mxm></div> <div class="modal-content relative z-10 flex flex-col items-center p-6 rounded-2xl border border-border bg-background shadow-2xl animate-modal-in" data-astro-cid-zllr3mxm> <button class="absolute top-3 right-3 text-muted-fg hover:text-foreground transition-colors" onclick="closeWechatModal()" data-astro-cid-zllr3mxm> <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-astro-cid-zllr3mxm> <line x1="18" y1="6" x2="6" y2="18" data-astro-cid-zllr3mxm></line><line x1="6" y1="6" x2="18" y2="18" data-astro-cid-zllr3mxm></line> </svg> </button> <img id="wechat-qr-img" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https%3A%2F%2Fwww.jayzzhang.online%2Fblog%2F00-mau-arr-pmf%2F&bgcolor=0b0f1a&color=4ade80&qzone=1" alt="微信扫码分享" width="200" height="200" class="rounded-xl" data-astro-cid-zllr3mxm> <p class="text-sm text-foreground mt-4 font-medium" data-astro-cid-zllr3mxm>微信扫码分享</p> <p class="text-xs text-muted-fg mt-1" data-astro-cid-zllr3mxm>打开微信扫描二维码</p> </div> </div> <script>
+  // Copy link
+  document.getElementById('copy-link-btn')?.addEventListener('click', function() {
+    navigator.clipboard.writeText('{url}').then(() => {
+      this.querySelector('.icon-link').classList.add('hidden');
+      this.querySelector('.icon-check').classList.remove('hidden');
+      setTimeout(() => {
+        this.querySelector('.icon-link').classList.remove('hidden');
+        this.querySelector('.icon-check').classList.add('hidden');
+      }, 2000);
+    });
+  });
+
+  // WeChat modal
+  const modal = document.getElementById('wechat-modal');
+  document.getElementById('wechat-share-btn')?.addEventListener('click', () => {
+    modal?.classList.remove('hidden');
+    modal?.classList.add('flex');
+  });
+
+  function closeWechatModal() {
+    modal?.classList.add('hidden');
+    modal?.classList.remove('flex');
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeWechatModal();
+  });
+</script>  </div> <div class="mt-16 pt-8 border-t border-border"> <div class="grid grid-cols-2 gap-3 sm:gap-6"> <a href="/blog/01-convertible-bonds" rel="prefetch" class="group relative flex flex-nowrap rounded-lg border border-border bg-secondary/20 px-4 py-4 pl-10 text-muted-fg no-underline transition-colors duration-300 ease-in-out hover:border-primary/30 hover:text-primary"> <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="absolute left-2.5 top-1/2 size-4 -translate-y-1/2 fill-none stroke-current stroke-2 pointer-events-none"> <polyline points="15 18 9 12 15 6"></polyline> </svg> <div class="flex flex-col"> <span class="text-xs text-muted-fg mb-1">上一篇</span> <div class="text-sm leading-snug">可转债 vs 可转换优先股：两种融资工具的核心区别</div> </div> </a> <div></div> </div> <div class="mt-16 pt-8 border-t border-border"><h3 class="text-xl font-semibold text-foreground mb-6">相关文章</h3><div class="grid md:grid-cols-3 gap-6"><a href="/blog/01-convertible-bonds/" class="group block rounded-xl border border-border overflow-hidden hover:border-primary/30 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/5"><div class="aspect-[16/9] bg-secondary overflow-hidden"><img src="/og/01-convertible-bonds.png" alt="可转债 vs 可转换优先股：两种融资工具的核心区别" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"></div><div class="p-4 space-y-2"><h4 class="text-sm font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2">可转债 vs 可转换优先股：两种融资工具的核心区别</h4><div class="flex items-center gap-2 text-xs text-muted-fg"><time datetime="2025-07-03T00:00:00.000Z"> 2025年7月03日 </time></div></div></a><a href="/blog/07-growth-metrics/" class="group block rounded-xl border border-border overflow-hidden hover:border-primary/30 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/5"><div class="aspect-[16/9] bg-secondary overflow-hidden"><img src="/og/07-growth-metrics.png" alt="增长指标体系搭建：从虚荣指标到北极星指标" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"></div><div class="p-4 space-y-2"><h4 class="text-sm font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2">增长指标体系搭建：从虚荣指标到北极星指标</h4><div class="flex items-center gap-2 text-xs text-muted-fg"><time datetime="2025-10-28T00:00:00.000Z"> 2025年10月28日 </time></div></div></a><a href="/blog/02-safe-financing/" class="group block rounded-xl border border-border overflow-hidden hover:border-primary/30 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/5"><div class="aspect-[16/9] bg-secondary overflow-hidden"><img src="/og/02-safe-financing.png" alt="SAFE 融资工具详解：Y Combinator 的新型融资方案" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"></div><div class="p-4 space-y-2"><h4 class="text-sm font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2">SAFE 融资工具详解：Y Combinator 的新型融资方案</h4><div class="flex items-center gap-2 text-xs text-muted-fg"><time datetime="2025-07-22T00:00:00.000Z"> 2025年7月22日 </time></div></div></a></div></div> </div> <div class="mt-12"> <div class="giscus mt-12"></div> <script>
+  function getGiscusTheme() {
+    const saved = localStorage.getItem('theme');
+    if (saved) return saved === 'light' ? 'light' : 'dark';
+    return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+  }
+
+  function loadGiscusScript() {
+    if (document.querySelector('.giscus script[src]')) return;
+    const script = document.createElement('script');
+    script.src = 'https://giscus.app/client.js';
+    script.setAttribute('data-repo', 'Jay-Z-zhang/Jay-Z-zhang.github.io');
+    script.setAttribute('data-repo-id', 'R_kgDOTgKuOA');
+    script.setAttribute('data-category', 'Announcements');
+    script.setAttribute('data-category-id', 'DIC_kwDOTgKuOM4DCxNB');
+    script.setAttribute('data-mapping', 'pathname');
+    script.setAttribute('data-strict', '1');
+    script.setAttribute('data-reactions-enabled', '1');
+    script.setAttribute('data-emit-metadata', '0');
+    script.setAttribute('data-input-position', 'bottom');
+    script.setAttribute('data-theme', getGiscusTheme());
+    script.setAttribute('data-lang', 'zh-CN');
+    script.setAttribute('crossorigin', 'anonymous');
+    script.async = true;
+    document.querySelector('.giscus')?.appendChild(script);
+  }
+
+  function updateGiscusTheme() {
+    const iframe = document.querySelector('iframe.giscus-frame');
+    if (!iframe) return;
+    const theme = getGiscusTheme();
+    iframe.contentWindow.postMessage({
+      giscus: { setConfig: { theme } }
+    }, 'https://giscus.app');
+  }
+
+  // Lazy load: only init when scrolled near comments
+  function lazyInitGiscus() {
+    const giscusEl = document.querySelector('.giscus');
+    if (!giscusEl) return;
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          loadGiscusScript();
+          observer.disconnect();
+        }
+      });
+    }, { rootMargin: '200px' });
+    observer.observe(giscusEl);
+  }
+
+  // Init lazy load
+  lazyInitGiscus();
+
+  // Listen for theme toggle
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('#theme-toggle')) {
+      setTimeout(updateGiscusTheme, 400);
+    }
+  });
+
+  // Astro client-side navigation
+  document.addEventListener('astro:after-swap', () => {
+    lazyInitGiscus();
+  });
+</script> </div> </article> </div>  </main> <footer class="animate"> <div class="max-w-6xl mx-auto px-6 flex items-center justify-between text-sm text-muted-fg"> <p>Copyright &copy; 2026 Jayz Zhang. All rights reserved.</p> <button id="back-to-top" class="group inline-flex items-center gap-1.5 text-sm text-muted-fg transition-colors duration-200 hover:text-primary"> <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="transition-transform duration-200 group-hover:-translate-y-0.5"> <polyline points="18 15 12 9 6 15"></polyline> </svg> <span>返回顶部</span> </button> </div> </footer> <aside data-pagefind-ignore> <div id="backdrop" class="invisible fixed left-0 top-0 z-50 flex h-screen w-full justify-center p-6" style="background: rgba(0,0,0,0.5); backdrop-filter: blur(8px);" data-astro-transition-persist="astro-3snakcvo-1"> <div id="pagefind-container" class="m-0 flex h-fit max-h-[80%] w-full max-w-(--breakpoint-sm) flex-col overflow-auto rounded-xl border border-border bg-secondary p-2 px-4 py-3 shadow-lg"> <div id="search" class="pagefind-ui pagefind-init" data-pagefind-ui data-bundle-path="/pagefind/" data-ui-options="{&#34;showImages&#34;:false,&#34;excerptLength&#34;:15,&#34;resetStyles&#34;:false}"></div> <script type="module" src="/_astro/Search.astro_astro_type_script_index_0_lang.DSe1Ey-Z.js"></script> <div class="mr-2 pb-1 pt-4 text-right text-xs text-muted-fg">
+按 <kbd class="rounded border border-border bg-background px-1.5 py-0.5 text-xs">Esc</kbd> 关闭
+</div> </div> </div> </aside> <script>
+  const magnifyingGlass = document.getElementById("magnifying-glass");
+  const backdrop = document.getElementById("backdrop");
+
+  function openPagefind() {
+    const searchDiv = document.getElementById("search");
+    const search = searchDiv.querySelector("input");
+    setTimeout(() => {
+      search.focus();
+    }, 0);
+    backdrop?.classList.remove("invisible");
+    backdrop?.classList.add("visible");
+  }
+
+  function closePagefind() {
+    const search = document.getElementById("search");
+    search.value = "";
+    backdrop?.classList.remove("visible");
+    backdrop?.classList.add("invisible");
+  }
+
+  magnifyingGlass?.addEventListener("click", () => {
+    openPagefind();
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "/") {
+      e.preventDefault();
+      openPagefind();
+    } else if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+      e.preventDefault();
+      openPagefind();
+    }
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      closePagefind();
+    }
+  });
+
+  document.addEventListener("click", (event) => {
+    if (event.target.classList.contains("pagefind-ui__result-link")) {
+      closePagefind();
+    }
+  });
+
+  backdrop?.addEventListener("click", (event) => {
+    if (!event.target.closest("#pagefind-container")) {
+      closePagefind();
+    }
+  });
+
+  const form = document.getElementById("form");
+  form?.addEventListener("submit", (event) => {
+    event.preventDefault();
+  });
+</script>  </body></html>

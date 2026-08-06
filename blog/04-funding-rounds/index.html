@@ -1,0 +1,746 @@
+<!DOCTYPE html><html lang="zh-CN"> <head><!-- Global Metadata --><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><meta name="generator" content="Astro v5.13.9"><!-- Canonical URL --><link rel="canonical" href="https://www.jayzzhang.online/blog/04-funding-rounds/"><!-- Primary Meta Tags --><title>天使轮·A 轮·B 轮·C 轮：一文搞懂创业融资全流程 | Jayz Zhang</title><meta name="title" content="天使轮·A 轮·B 轮·C 轮：一文搞懂创业融资全流程 | Jayz Zhang"><meta name="description" content="从天使轮到 IPO，每个阶段该找谁？融多少？估值怎么算？创业者必看的融资路线图。"><meta name="author" content="Jayz Zhang"><meta name="robots" content="index, follow, max-image-preview:large"><meta name="googlebot" content="index, follow"><!-- Open Graph / Facebook --><meta property="og:type" content="article"><meta property="og:url" content="https://www.jayzzhang.online/blog/04-funding-rounds/"><meta property="og:title" content="天使轮·A 轮·B 轮·C 轮：一文搞懂创业融资全流程 | Jayz Zhang"><meta property="og:description" content="从天使轮到 IPO，每个阶段该找谁？融多少？估值怎么算？创业者必看的融资路线图。"><meta property="og:image" content="https://www.jayzzhang.online/og/04-funding-rounds.png"><meta property="og:site_name" content="Jayz Zhang"><meta property="og:locale" content="zh_CN"><meta property="article:published_time" content="2025-08-27T00:00:00.000Z"><meta property="article:author" content="https://www.jayzzhang.online"><!-- Twitter --><meta property="twitter:card" content="summary_large_image"><meta property="twitter:url" content="https://www.jayzzhang.online/blog/04-funding-rounds/"><meta property="twitter:title" content="天使轮·A 轮·B 轮·C 轮：一文搞懂创业融资全流程 | Jayz Zhang"><meta property="twitter:description" content="从天使轮到 IPO，每个阶段该找谁？融多少？估值怎么算？创业者必看的融资路线图。"><meta property="twitter:image" content="https://www.jayzzhang.online/og/04-funding-rounds.png"><meta property="twitter:creator" content="@jayzzhang"><!-- JSON-LD Structured Data --><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","name":"天使轮·A 轮·B 轮·C 轮：一文搞懂创业融资全流程 | Jayz Zhang","description":"从天使轮到 IPO，每个阶段该找谁？融多少？估值怎么算？创业者必看的融资路线图。","url":"https://www.jayzzhang.online/blog/04-funding-rounds/","author":{"@type":"Person","name":"Jayz Zhang","url":"https://www.jayzzhang.online"},"publisher":{"@type":"Person","name":"Jayz Zhang","url":"https://www.jayzzhang.online"},"datePublished":"2025-08-27T00:00:00.000Z","image":"https://www.jayzzhang.online/og/04-funding-rounds.png"}</script><!-- Performance: Preconnect --><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="preconnect" href="https://giscus.app"><!-- PageFind --><link href="/pagefind/pagefind-ui.css" rel="stylesheet"><script src="/pagefind/pagefind-ui.js"></script><script>
+  document.addEventListener("DOMContentLoaded", () => {
+    animate();
+    addCopyCodeButtons();
+
+    const backToPrev = document.getElementById("back-to-prev");
+    backToPrev?.addEventListener("click", () => window.history.back());
+
+    // Consolidated scroll handler (replaces 3 separate listeners)
+    initScrollHandlers();
+  });
+
+  // Astro client-side navigation: re-run animations on page swap
+  document.addEventListener("astro:after-swap", () => {
+    animate();
+    addCopyCodeButtons();
+  });
+
+  function animate() {
+    const animateElements = document.querySelectorAll(".animate");
+    if (!animateElements.length) return;
+
+    // 立即显示所有 .animate 元素（简单可靠，不依赖 IntersectionObserver）
+    animateElements.forEach((el) => {
+      el.classList.add("show");
+    });
+  }
+
+  function addCopyCodeButtons() {
+    let copyButtonLabel = "📋";
+    let codeBlocks = Array.from(document.querySelectorAll("pre"));
+
+    async function copyCode(codeBlock, copyButton) {
+      const codeText = codeBlock.innerText;
+      const buttonText = copyButton.innerText;
+      const textToCopy = codeText.replace(buttonText, "");
+
+      await navigator.clipboard.writeText(textToCopy);
+      copyButton.innerText = "✅";
+
+      setTimeout(() => {
+        copyButton.innerText = copyButtonLabel;
+      }, 2000);
+    }
+
+    for (let codeBlock of codeBlocks) {
+      const wrapper = document.createElement("div");
+      wrapper.style.position = "relative";
+
+      const copyButton = document.createElement("button");
+      copyButton.innerText = copyButtonLabel;
+      copyButton.classList = "copy-code";
+
+      codeBlock.setAttribute("tabindex", "0");
+      codeBlock.appendChild(copyButton);
+
+      codeBlock.parentNode.insertBefore(wrapper, codeBlock);
+      wrapper.appendChild(codeBlock);
+
+      copyButton?.addEventListener("click", async () => {
+        await copyCode(codeBlock, copyButton);
+      });
+    }
+  }
+
+  function initScrollHandlers() {
+    const progressBar = document.getElementById('reading-progress');
+    const nav = document.getElementById('nav');
+    const backToTopBtn = document.getElementById('back-to-top');
+    const isHome = window.location.pathname === '/' || window.location.pathname === '';
+    let ticking = false;
+
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          const scrollY = window.scrollY;
+
+          // 1. Reading progress bar
+          if (progressBar) {
+            const total = document.documentElement.scrollHeight - window.innerHeight;
+            const progress = total > 0 ? scrollY / total : 0;
+            progressBar.style.transform = `scaleX(${progress})`;
+          }
+
+          // 2. Nav background
+          if (nav) {
+            if (isHome) {
+              nav.classList.toggle('has-bg', scrollY > 20);
+            } else {
+              nav.classList.add('has-bg');
+            }
+          }
+
+          // 3. Back to top visibility
+          if (backToTopBtn) {
+            if (scrollY > 300) {
+              document.documentElement.classList.add('scrolled');
+            } else {
+              document.documentElement.classList.remove('scrolled');
+            }
+          }
+
+          ticking = false;
+        });
+        ticking = true;
+      }
+    }, { passive: true });
+
+    // Back to top click
+    backToTopBtn?.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+</script><link rel="stylesheet" href="/_astro/_id_.DX0r1tvC.css">
+<style>.animate-modal-in[data-astro-cid-zllr3mxm]{animation:modalIn .2s ease-out}@keyframes modalIn{0%{opacity:0;transform:scale(.95) translateY(8px)}to{opacity:1;transform:scale(1) translateY(0)}}
+</style></head> <body> <!-- Reading Progress Bar --> <div id="reading-progress" class="fixed top-0 left-0 h-1 bg-primary z-[60] origin-left scale-x-0 transition-transform duration-100"></div> <noscript> <style>
+        .animate, .scroll-section {
+          opacity: 1;
+          transform: none;
+        }
+      </style> </noscript> <header id="nav" class="fixed top-0 left-0 right-0 z-50 py-4 transition-all duration-300 has-bg"> <div class="max-w-6xl mx-auto px-6 flex items-center justify-between"> <a href="/" class="text-lg font-bold text-primary"> Jayz Zhang </a> <div class="flex items-center gap-5"> <a href="/" class="text-sm font-medium text-muted-fg hover:text-primary transition-colors" rel="prefetch">首页</a> <a href="/blog" class="text-sm font-medium text-muted-fg hover:text-primary transition-colors" rel="prefetch">博客</a> <a href="/projects" class="text-sm font-medium text-muted-fg hover:text-primary transition-colors" rel="prefetch">作品</a> <a href="https://github.com/Jay-Z-zhang" target="_blank" rel="noopener noreferrer" class="flex items-center gap-1.5 text-sm font-medium text-muted-fg hover:text-primary transition-colors" aria-label="GitHub"> <svg height="16" width="16" viewBox="0 0 16 16" fill="currentColor"> <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path> </svg>
+GitHub
+</a> <!-- Theme Toggle --> <button id="theme-toggle" class="theme-toggle" aria-label="切换主题"> <svg id="theme-icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><circle cx="12" cy="12" r="5"></circle><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path></svg> <svg id="theme-icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg> </button> <button id="magnifying-glass" aria-label="Search" class="flex items-center rounded-sm border border-border bg-secondary px-2 py-1 text-xs text-muted-fg transition-colors duration-300 ease-in-out hover:text-primary"> <svg height="14" stroke-linejoin="round" viewBox="0 0 16 16" width="14" style="color: currentcolor;"> <path fill-rule="evenodd" clip-rule="evenodd" d="M3.5 7C3.5 5.067 5.067 3.5 7 3.5C8.933 3.5 10.5 5.067 10.5 7C10.5 7.88461 10.1718 8.69256 9.63058 9.30876L9.30876 9.63058C8.69256 10.1718 7.88461 10.5 7 10.5C5.067 10.5 3.5 8.933 3.5 7ZM9.96544 11.0261C9.13578 11.6382 8.11014 12 7 12C4.23858 12 2 9.76142 2 7C2 4.23858 4.23858 2 7 2C9.76142 2 12 4.23858 12 7C12 8.11014 11.6382 9.13578 11.0261 9.96544L14.0303 12.9697L14.5607 13.5L13.5 14.5607L12.9697 14.0303L9.96544 11.0261Z" fill="currentColor"></path> </svg> </button> </div> </div> </header> <script>
+  const nav = document.getElementById('nav');
+
+  function isHomepage() {
+    return window.location.pathname === '/' || window.location.pathname === '';
+  }
+
+  // Theme toggle
+  const themeToggle = document.getElementById('theme-toggle');
+  const sunIcon = document.getElementById('theme-icon-sun');
+  const moonIcon = document.getElementById('theme-icon-moon');
+
+  function setTheme(theme) {
+    if (theme === 'light') {
+      document.documentElement.classList.add('light');
+      if (sunIcon) sunIcon.style.display = 'none';
+      if (moonIcon) moonIcon.style.display = 'block';
+    } else {
+      document.documentElement.classList.remove('light');
+      if (sunIcon) sunIcon.style.display = 'block';
+      if (moonIcon) moonIcon.style.display = 'none';
+    }
+    localStorage.setItem('theme', theme);
+  }
+
+  // Init theme
+  const saved = localStorage.getItem('theme');
+  if (saved) { setTheme(saved); }
+  else if (window.matchMedia('(prefers-color-scheme: light)').matches) { setTheme('light'); }
+
+  themeToggle?.addEventListener('click', () => {
+    setTheme(document.documentElement.classList.contains('light') ? 'dark' : 'light');
+  });
+
+  // Nav background
+  if (isHomepage()) {
+    nav.classList.remove('has-bg');
+  } else {
+    nav.classList.add('has-bg');
+  }
+</script> <main class="has-nav-padding">  <div class="mx-auto max-w-6xl px-6"> <div class="flex items-center gap-3 mb-6"> <a href="/blog" class="group inline-flex items-center gap-1.5 text-sm text-muted-fg transition-colors duration-200 hover:text-primary"> <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="transition-transform duration-200 group-hover:-translate-x-0.5"> <polyline points="15 18 9 12 15 6"></polyline> </svg> <span>返回博客</span> </a> </div> <div class="my-10 space-y-1"> <div class="flex items-center gap-1.5 text-muted-fg"> <div class="font-base text-sm"> <time datetime="2025-08-27T00:00:00.000Z"> 2025年8月27日 </time> </div>
+&bull;
+<div class="font-base text-sm"> 4 min read </div> </div> <h1 class="text-3xl font-semibold text-foreground"> 天使轮·A 轮·B 轮·C 轮：一文搞懂创业融资全流程 </h1> <div class="flex gap-2 pt-2"> <a href="/tags/融资" class="rounded-sm border border-border bg-secondary px-2 py-1 text-sm text-muted-fg transition-colors duration-300 ease-in-out hover:border-primary/30 hover:text-primary"> 融资 </a><a href="/tags/创业" class="rounded-sm border border-border bg-secondary px-2 py-1 text-sm text-muted-fg transition-colors duration-300 ease-in-out hover:border-primary/30 hover:text-primary"> 创业 </a><a href="/tags/股权" class="rounded-sm border border-border bg-secondary px-2 py-1 text-sm text-muted-fg transition-colors duration-300 ease-in-out hover:border-primary/30 hover:text-primary"> 股权 </a> </div> </div> <details open class="group rounded-lg border border-border bg-secondary/20"> <summary class="cursor-pointer rounded-t-lg px-3 py-1.5 font-medium text-muted-fg transition-colors hover:text-primary">目录</summary> <nav> <ul class="py-3"> <li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#从一个真实问题说起" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 从一个真实问题说起 </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#先理解三大投资类型" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 先理解三大投资类型 </a> <ul class="translate-x-3"> <li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#天使投资人angel-investor" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 天使投资人（Angel Investor） </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#风险投资vc" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 风险投资（VC） </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#私募股权pe" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 私募股权（PE） </a>  </li> </ul> </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#融资轮次详解" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 融资轮次详解 </a> <ul class="translate-x-3"> <li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#种子轮seed-round" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 种子轮（Seed Round） </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#天使轮angel-round" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 天使轮（Angel Round） </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#a-轮series-a" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> A 轮（Series A） </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#b-轮series-b" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> B 轮（Series B） </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#c-轮series-c" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> C 轮（Series C） </a>  </li> </ul> </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#为什么要分轮次融资" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 为什么要分轮次融资？ </a> <ul class="translate-x-3"> <li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#1-投资人限制" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 1. 投资人限制 </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#2-资金使用效率" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 2. 资金使用效率 </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#3-估值和稀释" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 3. 估值和稀释 </a>  </li> </ul> </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#融资全流程" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 融资全流程 </a> <ul class="translate-x-3"> <li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#step-1准备阶段2-4-周" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> Step 1：准备阶段（2-4 周） </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#step-2路演阶段4-8-周" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> Step 2：路演阶段（4-8 周） </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#step-3尽调阶段4-8-周" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> Step 3：尽调阶段（4-8 周） </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#step-4签约阶段2-4-周" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> Step 4：签约阶段（2-4 周） </a>  </li> </ul> </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#估值怎么算" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 估值怎么算？ </a> <ul class="translate-x-3"> <li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#早期公司种子a-轮" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 早期公司（种子/A 轮） </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#成长期公司bc-轮" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 成长期公司（B/C 轮） </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#成熟公司c-轮后" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 成熟公司（C 轮后） </a>  </li> </ul> </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#常见坑" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 常见坑 </a> <ul class="translate-x-3"> <li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#1-估值过高" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 1. 估值过高 </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#2-稀释过多" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 2. 稀释过多 </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#3-条款陷阱" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 3. 条款陷阱 </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#4-融资节奏错误" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 4. 融资节奏错误 </a>  </li> </ul> </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#一句话总结" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 一句话总结 </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#延伸推荐" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 延伸推荐 </a>  </li> </ul> </nav> </details><article class="animate"> <p><img src="/images/blog/04-funding-stairs.png" alt="创业融资路线图"></p>
+<h2 id="从一个真实问题说起">从一个真实问题说起</h2>
+<p>经常有创业者问我：</p>
+<blockquote>
+<p>「我的项目刚有个想法，该找谁融资？融多少？估值怎么算？」</p>
+</blockquote>
+<p>这个问题背后其实有 3 个子问题：</p>
+<ol>
+<li><strong>什么时候该融钱？</strong></li>
+<li><strong>该找谁融钱？</strong></li>
+<li><strong>该融多少、估值怎么定？</strong></li>
+</ol>
+<p>这篇文章帮你一次性搞清楚。</p>
+<hr>
+<h2 id="先理解三大投资类型">先理解三大投资类型</h2>
+<p>在讲具体轮次之前，先搞清楚谁在给钱。</p>
+<h3 id="天使投资人angel-investor">天使投资人（Angel Investor）</h3>
+<p><strong>一句话：</strong> 用个人资金投早期项目的富人。</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>特征</th><th>说明</th></tr></thead><tbody><tr><td><strong>阶段</strong></td><td>最早期，只有一个想法或原型</td></tr><tr><td><strong>金额</strong></td><td>小额（通常 &#x3C; 100 万）</td></tr><tr><td><strong>来源</strong></td><td>成功创业者、企业高管、富裕个人</td></tr><tr><td><strong>动机</strong></td><td>财务回报 + 帮助创业者 + 行业兴趣</td></tr><tr><td><strong>退出</strong></td><td>通常在下一轮融资后退出</td></tr></tbody></table>
+<p><strong>特点：</strong></p>
+<ul>
+<li>决策快（个人决定，不需要投委会）</li>
+<li>金额小（不会改变公司股权结构）</li>
+<li>除了钱，还能提供人脉和经验</li>
+</ul>
+<h3 id="风险投资vc">风险投资（VC）</h3>
+<p><strong>一句话：</strong> 用基金的钱投成长期项目的专业机构。</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>特征</th><th>说明</th></tr></thead><tbody><tr><td><strong>阶段</strong></td><td>早中期，已有产品和初步验证</td></tr><tr><td><strong>金额</strong></td><td>中大额（100 万 - 数亿）</td></tr><tr><td><strong>来源</strong></td><td>专业基金（如红杉、高瓴、经纬）</td></tr><tr><td><strong>动机</strong></td><td>财务回报（基金有存续期，通常 10 年）</td></tr><tr><td><strong>退出</strong></td><td>IPO 或被收购</td></tr></tbody></table>
+<p><strong>特点：</strong></p>
+<ul>
+<li>决策慢（需要投委会审批）</li>
+<li>金额大（可能改变公司股权结构）</li>
+<li>除了钱，还能提供战略指导和资源</li>
+</ul>
+<h3 id="私募股权pe">私募股权（PE）</h3>
+<p><strong>一句话：</strong> 用大额资金投后期项目的机构。</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>特征</th><th>说明</th></tr></thead><tbody><tr><td><strong>阶段</strong></td><td>后期，准备上市</td></tr><tr><td><strong>金额</strong></td><td>大额（数亿 - 数十亿）</td></tr><tr><td><strong>来源</strong></td><td>专业基金（如 KKR、黑石）</td></tr><tr><td><strong>动机</strong></td><td>财务回报（优化公司治理后上市退出）</td></tr><tr><td><strong>退出</strong></td><td>IPO 后二级市场卖出</td></tr></tbody></table>
+<p><strong>特点：</strong></p>
+<ul>
+<li>关注盈利和现金流</li>
+<li>可能要求董事会席位</li>
+<li>参与公司治理优化</li>
+</ul>
+<hr>
+<h2 id="融资轮次详解">融资轮次详解</h2>
+<h3 id="种子轮seed-round">种子轮（Seed Round）</h3>
+<pre class="astro-code css-variables" style="background-color:var(--astro-code-background);color:var(--astro-code-foreground); overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>阶段：只有一个想法</span></span>
+<span class="line"><span>金额：10-50 万</span></span>
+<span class="line"><span>投资人：家人、朋友、天使投资人</span></span>
+<span class="line"><span>用途：组建团队、做原型</span></span></code></pre>
+<p><strong>核心任务：</strong> 证明「这个想法值得做」</p>
+<p><strong>具体要做什么：</strong></p>
+<ul class="contains-task-list">
+<li class="task-list-item"><input type="checkbox" disabled> 写一份简单的商业计划书（BP）</li>
+<li class="task-list-item"><input type="checkbox" disabled> 做一个产品原型（哪怕是 Figma 设计稿）</li>
+<li class="task-list-item"><input type="checkbox" disabled> 找到 10 个愿意试用的人</li>
+<li class="task-list-item"><input type="checkbox" disabled> 收集他们的反馈</li>
+</ul>
+<p><strong>估值参考：</strong> 500 万 - 2000 万</p>
+<p><strong>常见陷阱：</strong></p>
+<blockquote>
+<p>种子轮融太多钱 = 浪费。因为你还没找到正确的方向，钱多了反而会乱花。</p>
+</blockquote>
+<hr>
+<h3 id="天使轮angel-round">天使轮（Angel Round）</h3>
+<pre class="astro-code css-variables" style="background-color:var(--astro-code-background);color:var(--astro-code-foreground); overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>阶段：有原型，没验证</span></span>
+<span class="line"><span>金额：100-500 万</span></span>
+<span class="line"><span>投资人：天使投资人、早期基金</span></span>
+<span class="line"><span>用途：产品开发、早期用户获取</span></span></code></pre>
+<p><strong>核心任务：</strong> 证明「有人愿意用」</p>
+<p><strong>具体要做什么：</strong></p>
+<ul class="contains-task-list">
+<li class="task-list-item"><input type="checkbox" disabled> 完成产品开发（MVP）</li>
+<li class="task-list-item"><input type="checkbox" disabled> 获取 100-1000 个早期用户</li>
+<li class="task-list-item"><input type="checkbox" disabled> 验证留存率（7 日留存 > 30%）</li>
+<li class="task-list-item"><input type="checkbox" disabled> 找到初步的变现路径</li>
+</ul>
+<p><strong>估值参考：</strong> 2000 万 - 5000 万</p>
+<p><strong>投资人会问什么：</strong></p>
+<ul>
+<li>「你的用户是谁？」</li>
+<li>「他们为什么用你的产品？」</li>
+<li>「留存率怎么样？」</li>
+<li>「怎么赚钱？」</li>
+</ul>
+<hr>
+<h3 id="a-轮series-a">A 轮（Series A）</h3>
+<pre class="astro-code css-variables" style="background-color:var(--astro-code-background);color:var(--astro-code-foreground); overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>阶段：有产品，有初步数据</span></span>
+<span class="line"><span>金额：1000 万 -1 亿</span></span>
+<span class="line"><span>投资人：VC</span></span>
+<span class="line"><span>用途：完善产品、扩大团队、验证商业模式</span></span></code></pre>
+<p><strong>核心任务：</strong> 证明「商业模式可行」</p>
+<p><strong>关键指标：</strong></p>
+<ul>
+<li>用户留存率 > 40%</li>
+<li>月增长 > 20%</li>
+<li>清晰的变现路径</li>
+<li>单位经济模型初步验证（LTV/CAC > 2）</li>
+</ul>
+<p><strong>估值参考：</strong> 5000 万 - 2 亿</p>
+<p><strong>投资人会问什么：</strong></p>
+<ul>
+<li>「你的商业模式是什么？」</li>
+<li>「获客成本（CAC）是多少？」</li>
+<li>「用户终身价值（LTV）是多少？」</li>
+<li>「市场规模（TAM）有多大？」</li>
+</ul>
+<hr>
+<h3 id="b-轮series-b">B 轮（Series B）</h3>
+<pre class="astro-code css-variables" style="background-color:var(--astro-code-background);color:var(--astro-code-foreground); overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>阶段：模式验证成功，需要快速扩张</span></span>
+<span class="line"><span>金额：1 亿 -5 亿</span></span>
+<span class="line"><span>投资人：VC、成长型基金</span></span>
+<span class="line"><span>用途：市场扩张、团队扩充、技术升级</span></span></code></pre>
+<p><strong>核心任务：</strong> 证明「可以快速复制」</p>
+<p><strong>关键指标：</strong></p>
+<ul>
+<li>收入快速增长（月环比 > 30%）</li>
+<li>单位经济模型健康（LTV/CAC > 3）</li>
+<li>市场份额开始领先</li>
+<li>净收入留存率（NRR）> 100%</li>
+</ul>
+<p><strong>估值参考：</strong> 2 亿 - 10 亿</p>
+<p><strong>投资人会问什么：</strong></p>
+<ul>
+<li>「你的增长引擎是什么？」</li>
+<li>「怎么保证增长质量？」</li>
+<li>「竞争对手在做什么？」</li>
+<li>「国际化有机会吗？」</li>
+</ul>
+<hr>
+<h3 id="c-轮series-c">C 轮（Series C）</h3>
+<pre class="astro-code css-variables" style="background-color:var(--astro-code-background);color:var(--astro-code-foreground); overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>阶段：行业领先，准备上市</span></span>
+<span class="line"><span>金额：5 亿 -20 亿+</span></span>
+<span class="line"><span>投资人：PE、大型 VC、战略投资人</span></span>
+<span class="line"><span>用途：进一步扩张、并购、准备 IPO</span></span></code></pre>
+<p><strong>核心任务：</strong> 证明「能成为行业龙头」</p>
+<p><strong>关键指标：</strong></p>
+<ul>
+<li>市场前三</li>
+<li>持续盈利或清晰盈利路径</li>
+<li>IPO 可行性</li>
+<li>国际化进展</li>
+</ul>
+<p><strong>估值参考：</strong> 10 亿 - 100 亿+</p>
+<p><strong>投资人会问什么：</strong></p>
+<ul>
+<li>「你的护城河是什么？」</li>
+<li>「IPO 时间表？」</li>
+<li>「国际化战略？」</li>
+<li>「并购机会？」</li>
+</ul>
+<hr>
+<h2 id="为什么要分轮次融资">为什么要分轮次融资？</h2>
+<p>很多创始人会问：<strong>为什么不一次性融够所有钱？</strong></p>
+<p>原因有三个：</p>
+<h3 id="1-投资人限制">1. 投资人限制</h3>
+<blockquote>
+<p>不同基金只能投特定阶段。种子基金不能投 B 轮，PE 基金不能投种子轮。</p>
+</blockquote>
+<p><strong>举例：</strong></p>
+<ul>
+<li>种子基金：通常只投 &#x3C; 500 万的项目</li>
+<li>A 轮基金：通常投 1000 万 -1 亿的项目</li>
+<li>B 轮基金：通常投 1 亿 -5 亿的项目</li>
+</ul>
+<h3 id="2-资金使用效率">2. 资金使用效率</h3>
+<blockquote>
+<p>早期公司拿太多钱 = 浪费。因为你还没找到正确的方向，钱多了反而会乱花。</p>
+</blockquote>
+<p><strong>真实案例：</strong></p>
+<blockquote>
+<p>某公司种子轮融了 1000 万（远超需要的 200 万）。</p>
+<p>结果：</p>
+<ul>
+<li>招了太多人（30 人，实际只需要 10 人）</li>
+<li>做了太多功能（10 个，实际只需要 3 个）</li>
+<li>18 个月后钱花完，业务没找到方向</li>
+<li>倒闭</li>
+</ul>
+</blockquote>
+<h3 id="3-估值和稀释">3. 估值和稀释</h3>
+<blockquote>
+<p>早期估值低，融太多 = 稀释太多股权。分轮次融资，每轮估值更高，稀释更少。</p>
+</blockquote>
+<p><strong>举例对比：</strong></p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>方案</th><th>种子轮</th><th>A 轮</th><th>总融资</th><th>总稀释</th></tr></thead><tbody><tr><td><strong>一次性融</strong></td><td>-</td><td>2000 万@1 亿估值</td><td>2000 万</td><td>20%</td></tr><tr><td><strong>分轮次融</strong></td><td>200 万@2000 万估值</td><td>1800 万@1 亿估值</td><td>2000 万</td><td>10% + 15% = 23.5%</td></tr></tbody></table>
+<p>看起来分轮次稀释更多？但注意：</p>
+<ul>
+<li>种子轮 200 万帮你验证了方向</li>
+<li>A 轮估值从 2000 万涨到 1 亿，证明了你做对了</li>
+<li>如果一次性融 2000 万@1 亿估值，你可能做不到这个估值</li>
+</ul>
+<hr>
+<h2 id="融资全流程">融资全流程</h2>
+<h3 id="step-1准备阶段2-4-周">Step 1：准备阶段（2-4 周）</h3>
+<pre class="astro-code css-variables" style="background-color:var(--astro-code-background);color:var(--astro-code-foreground); overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>── 完善产品/数据</span></span>
+<span class="line"><span>│   └── 确保关键指标健康（留存、增长、变现）</span></span>
+<span class="line"><span>│</span></span>
+<span class="line"><span>├── 准备 BP（商业计划书）</span></span>
+<span class="line"><span>│   ├── 10-15 页 PPT</span></span>
+<span class="line"><span>│   ├── 包含：问题、解决方案、市场、产品、团队、财务</span></span>
+<span class="line"><span>│   └── 重点：突出数据和增长</span></span>
+<span class="line"><span>│</span></span>
+<span class="line"><span>├── 确定目标投资人</span></span>
+<span class="line"><span>│   ├── 找 20-50 个合适的投资人</span></span>
+<span class="line"><span>│   └── 优先找：投过同赛道、同阶段的</span></span>
+<span class="line"><span>│</span></span>
+<span class="line"><span>└── 找 FA（财务顾问）</span></span>
+<span class="line"><span>    ├── FA 帮你对接投资人、谈判条款</span></span>
+<span class="line"><span>    ── FA 费用：融资额的 3-5%</span></span></code></pre>
+<h3 id="step-2路演阶段4-8-周">Step 2：路演阶段（4-8 周）</h3>
+<pre class="astro-code css-variables" style="background-color:var(--astro-code-background);color:var(--astro-code-foreground); overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>├── 见 20-50 个投资人</span></span>
+<span class="line"><span>│   ├── 每次会议 30-60 分钟</span></span>
+<span class="line"><span>│   └── 准备 10 分钟演示 + 20 分钟问答</span></span>
+<span class="line"><span>│</span></span>
+<span class="line"><span>├── 收到 3-5 个 TS（投资意向书）</span></span>
+<span class="line"><span>│   ├── TS 包含：估值、金额、条款</span></span>
+<span class="line"><span>│   └── 选择最优条款（不是最高估值）</span></span>
+<span class="line"><span>│</span></span>
+<span class="line"><span>└── 签署 TS</span></span>
+<span class="line"><span>    ├── TS 不具法律约束力（除了排他条款）</span></span>
+<span class="line"><span>    └── 签署后进入尽调</span></span></code></pre>
+<h3 id="step-3尽调阶段4-8-周">Step 3：尽调阶段（4-8 周）</h3>
+<pre class="astro-code css-variables" style="background-color:var(--astro-code-background);color:var(--astro-code-foreground); overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>├── 投资人做业务尽调</span></span>
+<span class="line"><span>│   ├── 用户访谈</span></span>
+<span class="line"><span>│   ├── 竞品分析</span></span>
+<span class="line"><span>│   └── 市场验证</span></span>
+<span class="line"><span>│</span></span>
+<span class="line"><span>├── 投资人做法务尽调</span></span>
+<span class="line"><span>│   ├── 公司架构</span></span>
+<span class="line"><span>│   ├── 知识产权</span></span>
+<span class="line"><span>│   ── 合同审查</span></span>
+<span class="line"><span>│</span></span>
+<span class="line"><span>└── 投资人做财务尽调</span></span>
+<span class="line"><span>    ├── 财务数据审计</span></span>
+<span class="line"><span>    ├── 收入确认</span></span>
+<span class="line"><span>    ── 成本结构</span></span></code></pre>
+<h3 id="step-4签约阶段2-4-周">Step 4：签约阶段（2-4 周）</h3>
+<pre class="astro-code css-variables" style="background-color:var(--astro-code-background);color:var(--astro-code-foreground); overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>├── 签署 SHA（股东协议）</span></span>
+<span class="line"><span>│   ├── 包含：股权比例、投票权、退出机制</span></span>
+<span class="line"><span>│   ── 请专业律师审核</span></span>
+<span class="line"><span>│</span></span>
+<span class="line"><span>├── 完成工商变更</span></span>
+<span class="line"><span>│   └── 更新股东名册、章程备案</span></span>
+<span class="line"><span>│</span></span>
+<span class="line"><span>── 钱到账</span></span>
+<span class="line"><span>    └── 通常分 1-2 次打款</span></span></code></pre>
+<hr>
+<h2 id="估值怎么算">估值怎么算？</h2>
+<h3 id="早期公司种子a-轮">早期公司（种子/A 轮）</h3>
+<p><strong>方法：可比公司法</strong></p>
+<pre class="astro-code css-variables" style="background-color:var(--astro-code-background);color:var(--astro-code-foreground); overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>找 3-5 个类似阶段、类似赛道的公司</span></span>
+<span class="line"><span>看他们融资时的估值</span></span>
+<span class="line"><span>取中位数作为参考</span></span></code></pre>
+<p><strong>举例：</strong></p>
+<ul>
+<li>公司 A（同赛道）：种子轮估值 3000 万</li>
+<li>公司 B（同赛道）：种子轮估值 5000 万</li>
+<li>公司 C（同赛道）：种子轮估值 4000 万</li>
+<li><strong>你的估值参考：4000 万（中位数）</strong></li>
+</ul>
+<h3 id="成长期公司bc-轮">成长期公司（B/C 轮）</h3>
+<p><strong>方法：收入倍数法</strong></p>
+<pre class="astro-code css-variables" style="background-color:var(--astro-code-background);color:var(--astro-code-foreground); overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>估值 = 年收入 × 倍数</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>倍数参考：</span></span>
+<span class="line"><span>- SaaS：5-15x</span></span>
+<span class="line"><span>- 电商：1-3x</span></span>
+<span class="line"><span>- 硬件：0.5-2x</span></span></code></pre>
+<p><strong>举例：</strong></p>
+<ul>
+<li>SaaS 公司年收入 5000 万</li>
+<li>倍数取 10x</li>
+<li><strong>估值 = 5 亿</strong></li>
+</ul>
+<h3 id="成熟公司c-轮后">成熟公司（C 轮后）</h3>
+<p><strong>方法：DCF（现金流折现）</strong></p>
+<pre class="astro-code css-variables" style="background-color:var(--astro-code-background);color:var(--astro-code-foreground); overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>预测未来 5 年现金流</span></span>
+<span class="line"><span>用折现率（通常 10-20%）折算到现在</span></span></code></pre>
+<p>这个方法比较复杂，通常由专业 FA 或投行来做。</p>
+<hr>
+<h2 id="常见坑">常见坑</h2>
+<h3 id="1-估值过高">1. 估值过高</h3>
+<blockquote>
+<p>估值太高 = 下一轮融资困难（投资人觉得贵）</p>
+</blockquote>
+<p><strong>建议：</strong> 估值合理偏低，给下一轮留空间。</p>
+<h3 id="2-稀释过多">2. 稀释过多</h3>
+<blockquote>
+<p>每轮稀释 15-25% 是合理的。如果单轮稀释 > 30%，说明你议价能力太弱。</p>
+</blockquote>
+<p><strong>建议：</strong> 多拿几个 TS，互相竞价。</p>
+<h3 id="3-条款陷阱">3. 条款陷阱</h3>
+<blockquote>
+<p>注意对赌条款、清算优先权、反稀释条款。</p>
+</blockquote>
+<p><strong>建议：</strong> 请专业律师审核，不要省这个钱。</p>
+<h3 id="4-融资节奏错误">4. 融资节奏错误</h3>
+<blockquote>
+<p>太早融资（没数据）→ 估值低、条款差
+太晚融资（钱快花完）→ 议价能力弱</p>
+</blockquote>
+<p><strong>建议：</strong> 在公司数据最好的时候融资，而不是钱快花完的时候。</p>
+<hr>
+<h2 id="一句话总结">一句话总结</h2>
+<blockquote>
+<p><strong>融资不是目的，是手段。每一轮钱都应该帮你到达下一个里程碑。</strong></p>
+<p><strong>种子轮：证明想法 → 天使轮：证明有人用 → A 轮：证明商业模式 → B 轮：证明可复制 → C 轮：证明能上市。</strong></p>
+</blockquote>
+<hr>
+<h2 id="延伸推荐">延伸推荐</h2>
+<ul>
+<li><a href="/blog/01-convertible-bonds/">可转债 vs 可转换优先股</a> — 早期融资工具怎么选</li>
+<li><a href="/blog/02-safe-financing/">SAFE 融资工具详解</a> — YC 推出的更简单方案</li>
+<li><a href="/blog/06-ltv-cac/">LTV/CAC > 3？</a> — 投资人最关心的指标</li>
+</ul> <div class="mt-8"> <div class="share-buttons flex items-center gap-2 pt-4" data-astro-cid-zllr3mxm> <span class="text-sm text-muted-fg mr-1" data-astro-cid-zllr3mxm>分享</span> <!-- Twitter/X --> <a href="https://twitter.com/intent/tweet?text=%E5%A4%A9%E4%BD%BF%E8%BD%AE%C2%B7A%20%E8%BD%AE%C2%B7B%20%E8%BD%AE%C2%B7C%20%E8%BD%AE%EF%BC%9A%E4%B8%80%E6%96%87%E6%90%9E%E6%87%82%E5%88%9B%E4%B8%9A%E8%9E%8D%E8%B5%84%E5%85%A8%E6%B5%81%E7%A8%8B&url=https%3A%2F%2Fwww.jayzzhang.online%2Fblog%2F04-funding-rounds%2F" target="_blank" rel="noopener noreferrer" class="share-btn flex items-center justify-center w-8 h-8 rounded-lg border border-border text-muted-fg hover:text-primary hover:border-primary/30 transition-colors duration-200" aria-label="分享到 X" data-astro-cid-zllr3mxm> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-astro-cid-zllr3mxm> <path d="M4 4l11.733 16h4.267l-11.733 -16z" data-astro-cid-zllr3mxm></path><path d="M4 20l6.768 -6.768m2.46 -2.46l6.772 -6.772" data-astro-cid-zllr3mxm></path> </svg> </a> <!-- Facebook --> <a href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fwww.jayzzhang.online%2Fblog%2F04-funding-rounds%2F" target="_blank" rel="noopener noreferrer" class="share-btn flex items-center justify-center w-8 h-8 rounded-lg border border-border text-muted-fg hover:text-primary hover:border-primary/30 transition-colors duration-200" aria-label="分享到 Facebook" data-astro-cid-zllr3mxm> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-astro-cid-zllr3mxm> <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" data-astro-cid-zllr3mxm></path> </svg> </a> <!-- LinkedIn --> <a href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fwww.jayzzhang.online%2Fblog%2F04-funding-rounds%2F" target="_blank" rel="noopener noreferrer" class="share-btn flex items-center justify-center w-8 h-8 rounded-lg border border-border text-muted-fg hover:text-primary hover:border-primary/30 transition-colors duration-200" aria-label="分享到 LinkedIn" data-astro-cid-zllr3mxm> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-astro-cid-zllr3mxm> <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" data-astro-cid-zllr3mxm></path><rect width="4" height="12" x="2" y="9" data-astro-cid-zllr3mxm></rect><circle cx="4" cy="4" r="2" data-astro-cid-zllr3mxm></circle> </svg> </a> <!-- WhatsApp --> <a href="https://wa.me/?text=%E5%A4%A9%E4%BD%BF%E8%BD%AE%C2%B7A%20%E8%BD%AE%C2%B7B%20%E8%BD%AE%C2%B7C%20%E8%BD%AE%EF%BC%9A%E4%B8%80%E6%96%87%E6%90%9E%E6%87%82%E5%88%9B%E4%B8%9A%E8%9E%8D%E8%B5%84%E5%85%A8%E6%B5%81%E7%A8%8B%20https%3A%2F%2Fwww.jayzzhang.online%2Fblog%2F04-funding-rounds%2F" target="_blank" rel="noopener noreferrer" class="share-btn flex items-center justify-center w-8 h-8 rounded-lg border border-border text-muted-fg hover:text-primary hover:border-primary/30 transition-colors duration-200" aria-label="分享到 WhatsApp" data-astro-cid-zllr3mxm> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-astro-cid-zllr3mxm> <path d="M3 21l1.65-3.8a9 9 0 1 1 3.4 2.9L3 21" data-astro-cid-zllr3mxm></path><path d="M9 10a.5.5 0 0 0 1 0V9a.5.5 0 0 0-1 0v1a5 5 0 0 0 5 5h1a.5.5 0 0 0 0-1h-1a.5.5 0 0 0 0 1" data-astro-cid-zllr3mxm></path> </svg> </a> <!-- Weibo --> <a href="https://service.weibo.com/share/share.php?url=https%3A%2F%2Fwww.jayzzhang.online%2Fblog%2F04-funding-rounds%2F&title=%E5%A4%A9%E4%BD%BF%E8%BD%AE%C2%B7A%20%E8%BD%AE%C2%B7B%20%E8%BD%AE%C2%B7C%20%E8%BD%AE%EF%BC%9A%E4%B8%80%E6%96%87%E6%90%9E%E6%87%82%E5%88%9B%E4%B8%9A%E8%9E%8D%E8%B5%84%E5%85%A8%E6%B5%81%E7%A8%8B" target="_blank" rel="noopener noreferrer" class="share-btn flex items-center justify-center w-8 h-8 rounded-lg border border-border text-muted-fg hover:text-primary hover:border-primary/30 transition-colors duration-200" aria-label="分享到微博" data-astro-cid-zllr3mxm> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-astro-cid-zllr3mxm> <path d="M10.098 20.323c-3.977.391-7.414-1.406-7.672-4.02-.259-2.609 2.759-5.047 6.74-5.441 3.979-.394 7.413 1.404 7.671 4.018.259 2.6-2.759 5.049-6.739 5.443z" data-astro-cid-zllr3mxm></path> <circle cx="9.05" cy="17.219" r="1.2" data-astro-cid-zllr3mxm></circle> <path d="M17.66 11.649c-.346-.105-.578-.18-.405-.635.384-1.013.423-1.894.008-2.522-.776-1.17-2.902-1.109-5.341-.033" data-astro-cid-zllr3mxm></path> </svg> </a> <!-- WeChat - Modal Trigger --> <button id="wechat-share-btn" class="share-btn flex items-center justify-center w-8 h-8 rounded-lg border border-border text-muted-fg hover:text-primary hover:border-primary/30 transition-colors duration-200" aria-label="分享到微信" data-astro-cid-zllr3mxm> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-astro-cid-zllr3mxm> <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" data-astro-cid-zllr3mxm></path> </svg> </button> <!-- Copy Link --> <button id="copy-link-btn" class="share-btn flex items-center justify-center w-8 h-8 rounded-lg border border-border text-muted-fg hover:text-primary hover:border-primary/30 transition-colors duration-200" aria-label="复制链接" data-astro-cid-zllr3mxm> <svg class="icon-link" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-astro-cid-zllr3mxm> <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" data-astro-cid-zllr3mxm></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" data-astro-cid-zllr3mxm></path> </svg> <svg class="icon-check hidden" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-astro-cid-zllr3mxm> <polyline points="20 6 9 17 4 12" data-astro-cid-zllr3mxm></polyline> </svg> </button> </div> <!-- WeChat QR Modal --> <div id="wechat-modal" class="fixed inset-0 z-[100] hidden items-center justify-center" data-astro-cid-zllr3mxm> <div class="modal-backdrop absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="closeWechatModal()" data-astro-cid-zllr3mxm></div> <div class="modal-content relative z-10 flex flex-col items-center p-6 rounded-2xl border border-border bg-background shadow-2xl animate-modal-in" data-astro-cid-zllr3mxm> <button class="absolute top-3 right-3 text-muted-fg hover:text-foreground transition-colors" onclick="closeWechatModal()" data-astro-cid-zllr3mxm> <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-astro-cid-zllr3mxm> <line x1="18" y1="6" x2="6" y2="18" data-astro-cid-zllr3mxm></line><line x1="6" y1="6" x2="18" y2="18" data-astro-cid-zllr3mxm></line> </svg> </button> <img id="wechat-qr-img" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https%3A%2F%2Fwww.jayzzhang.online%2Fblog%2F04-funding-rounds%2F&bgcolor=0b0f1a&color=4ade80&qzone=1" alt="微信扫码分享" width="200" height="200" class="rounded-xl" data-astro-cid-zllr3mxm> <p class="text-sm text-foreground mt-4 font-medium" data-astro-cid-zllr3mxm>微信扫码分享</p> <p class="text-xs text-muted-fg mt-1" data-astro-cid-zllr3mxm>打开微信扫描二维码</p> </div> </div> <script>
+  // Copy link
+  document.getElementById('copy-link-btn')?.addEventListener('click', function() {
+    navigator.clipboard.writeText('{url}').then(() => {
+      this.querySelector('.icon-link').classList.add('hidden');
+      this.querySelector('.icon-check').classList.remove('hidden');
+      setTimeout(() => {
+        this.querySelector('.icon-link').classList.remove('hidden');
+        this.querySelector('.icon-check').classList.add('hidden');
+      }, 2000);
+    });
+  });
+
+  // WeChat modal
+  const modal = document.getElementById('wechat-modal');
+  document.getElementById('wechat-share-btn')?.addEventListener('click', () => {
+    modal?.classList.remove('hidden');
+    modal?.classList.add('flex');
+  });
+
+  function closeWechatModal() {
+    modal?.classList.add('hidden');
+    modal?.classList.remove('flex');
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeWechatModal();
+  });
+</script>  </div> <div class="mt-16 pt-8 border-t border-border"> <div class="grid grid-cols-2 gap-3 sm:gap-6"> <a href="/blog/05-prelaunch-checklist" rel="prefetch" class="group relative flex flex-nowrap rounded-lg border border-border bg-secondary/20 px-4 py-4 pl-10 text-muted-fg no-underline transition-colors duration-300 ease-in-out hover:border-primary/30 hover:text-primary"> <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="absolute left-2.5 top-1/2 size-4 -translate-y-1/2 fill-none stroke-current stroke-2 pointer-events-none"> <polyline points="15 18 9 12 15 6"></polyline> </svg> <div class="flex flex-col"> <span class="text-xs text-muted-fg mb-1">上一篇</span> <div class="text-sm leading-snug">应用上线前自查清单：操作·安全·可靠·性能·成本</div> </div> </a> <a href="/blog/03-overseas-promotion" rel="prefetch" class="group relative flex grow flex-row-reverse flex-nowrap rounded-lg border border-border bg-secondary/20 px-4 py-4 pr-10 text-muted-fg no-underline transition-colors duration-300 ease-in-out hover:border-primary/30 hover:text-primary"> <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="absolute right-2.5 top-1/2 size-4 -translate-y-1/2 fill-none stroke-current stroke-2 pointer-events-none"> <polyline points="9 18 15 12 9 6"></polyline> </svg> <div class="flex flex-col text-right"> <span class="text-xs text-muted-fg mb-1">下一篇</span> <div class="text-sm leading-snug">海外社媒推广指南：7 大平台搭建出海流量矩阵</div> </div> </a> </div> <div class="mt-16 pt-8 border-t border-border"><h3 class="text-xl font-semibold text-foreground mb-6">相关文章</h3><div class="grid md:grid-cols-3 gap-6"><a href="/blog/01-convertible-bonds/" class="group block rounded-xl border border-border overflow-hidden hover:border-primary/30 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/5"><div class="aspect-[16/9] bg-secondary overflow-hidden"><img src="/og/01-convertible-bonds.png" alt="可转债 vs 可转换优先股：两种融资工具的核心区别" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"></div><div class="p-4 space-y-2"><h4 class="text-sm font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2">可转债 vs 可转换优先股：两种融资工具的核心区别</h4><div class="flex items-center gap-2 text-xs text-muted-fg"><time datetime="2025-07-03T00:00:00.000Z"> 2025年7月03日 </time></div></div></a><a href="/blog/00-mau-arr-pmf/" class="group block rounded-xl border border-border overflow-hidden hover:border-primary/30 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/5"><div class="aspect-[16/9] bg-secondary overflow-hidden"><img src="/og/00-mau-arr-pmf.png" alt="MAU、ARR、PMF：初创公司必懂的 3 个核心指标" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"></div><div class="p-4 space-y-2"><h4 class="text-sm font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2">MAU、ARR、PMF：初创公司必懂的 3 个核心指标</h4><div class="flex items-center gap-2 text-xs text-muted-fg"><time datetime="2025-06-12T00:00:00.000Z"> 2025年6月12日 </time></div></div></a><a href="/blog/02-safe-financing/" class="group block rounded-xl border border-border overflow-hidden hover:border-primary/30 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/5"><div class="aspect-[16/9] bg-secondary overflow-hidden"><img src="/og/02-safe-financing.png" alt="SAFE 融资工具详解：Y Combinator 的新型融资方案" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"></div><div class="p-4 space-y-2"><h4 class="text-sm font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2">SAFE 融资工具详解：Y Combinator 的新型融资方案</h4><div class="flex items-center gap-2 text-xs text-muted-fg"><time datetime="2025-07-22T00:00:00.000Z"> 2025年7月22日 </time></div></div></a></div></div> </div> <div class="mt-12"> <div class="giscus mt-12"></div> <script>
+  function getGiscusTheme() {
+    const saved = localStorage.getItem('theme');
+    if (saved) return saved === 'light' ? 'light' : 'dark';
+    return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+  }
+
+  function loadGiscusScript() {
+    if (document.querySelector('.giscus script[src]')) return;
+    const script = document.createElement('script');
+    script.src = 'https://giscus.app/client.js';
+    script.setAttribute('data-repo', 'Jay-Z-zhang/Jay-Z-zhang.github.io');
+    script.setAttribute('data-repo-id', 'R_kgDOTgKuOA');
+    script.setAttribute('data-category', 'Announcements');
+    script.setAttribute('data-category-id', 'DIC_kwDOTgKuOM4DCxNB');
+    script.setAttribute('data-mapping', 'pathname');
+    script.setAttribute('data-strict', '1');
+    script.setAttribute('data-reactions-enabled', '1');
+    script.setAttribute('data-emit-metadata', '0');
+    script.setAttribute('data-input-position', 'bottom');
+    script.setAttribute('data-theme', getGiscusTheme());
+    script.setAttribute('data-lang', 'zh-CN');
+    script.setAttribute('crossorigin', 'anonymous');
+    script.async = true;
+    document.querySelector('.giscus')?.appendChild(script);
+  }
+
+  function updateGiscusTheme() {
+    const iframe = document.querySelector('iframe.giscus-frame');
+    if (!iframe) return;
+    const theme = getGiscusTheme();
+    iframe.contentWindow.postMessage({
+      giscus: { setConfig: { theme } }
+    }, 'https://giscus.app');
+  }
+
+  // Lazy load: only init when scrolled near comments
+  function lazyInitGiscus() {
+    const giscusEl = document.querySelector('.giscus');
+    if (!giscusEl) return;
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          loadGiscusScript();
+          observer.disconnect();
+        }
+      });
+    }, { rootMargin: '200px' });
+    observer.observe(giscusEl);
+  }
+
+  // Init lazy load
+  lazyInitGiscus();
+
+  // Listen for theme toggle
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('#theme-toggle')) {
+      setTimeout(updateGiscusTheme, 400);
+    }
+  });
+
+  // Astro client-side navigation
+  document.addEventListener('astro:after-swap', () => {
+    lazyInitGiscus();
+  });
+</script> </div> </article> </div>  </main> <footer class="animate"> <div class="max-w-6xl mx-auto px-6 flex items-center justify-between text-sm text-muted-fg"> <p>Copyright &copy; 2026 Jayz Zhang. All rights reserved.</p> <button id="back-to-top" class="group inline-flex items-center gap-1.5 text-sm text-muted-fg transition-colors duration-200 hover:text-primary"> <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="transition-transform duration-200 group-hover:-translate-y-0.5"> <polyline points="18 15 12 9 6 15"></polyline> </svg> <span>返回顶部</span> </button> </div> </footer> <aside data-pagefind-ignore> <div id="backdrop" class="invisible fixed left-0 top-0 z-50 flex h-screen w-full justify-center p-6" style="background: rgba(0,0,0,0.5); backdrop-filter: blur(8px);" data-astro-transition-persist="astro-3snakcvo-1"> <div id="pagefind-container" class="m-0 flex h-fit max-h-[80%] w-full max-w-(--breakpoint-sm) flex-col overflow-auto rounded-xl border border-border bg-secondary p-2 px-4 py-3 shadow-lg"> <div id="search" class="pagefind-ui pagefind-init" data-pagefind-ui data-bundle-path="/pagefind/" data-ui-options="{&#34;showImages&#34;:false,&#34;excerptLength&#34;:15,&#34;resetStyles&#34;:false}"></div> <script type="module" src="/_astro/Search.astro_astro_type_script_index_0_lang.DSe1Ey-Z.js"></script> <div class="mr-2 pb-1 pt-4 text-right text-xs text-muted-fg">
+按 <kbd class="rounded border border-border bg-background px-1.5 py-0.5 text-xs">Esc</kbd> 关闭
+</div> </div> </div> </aside> <script>
+  const magnifyingGlass = document.getElementById("magnifying-glass");
+  const backdrop = document.getElementById("backdrop");
+
+  function openPagefind() {
+    const searchDiv = document.getElementById("search");
+    const search = searchDiv.querySelector("input");
+    setTimeout(() => {
+      search.focus();
+    }, 0);
+    backdrop?.classList.remove("invisible");
+    backdrop?.classList.add("visible");
+  }
+
+  function closePagefind() {
+    const search = document.getElementById("search");
+    search.value = "";
+    backdrop?.classList.remove("visible");
+    backdrop?.classList.add("invisible");
+  }
+
+  magnifyingGlass?.addEventListener("click", () => {
+    openPagefind();
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "/") {
+      e.preventDefault();
+      openPagefind();
+    } else if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+      e.preventDefault();
+      openPagefind();
+    }
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      closePagefind();
+    }
+  });
+
+  document.addEventListener("click", (event) => {
+    if (event.target.classList.contains("pagefind-ui__result-link")) {
+      closePagefind();
+    }
+  });
+
+  backdrop?.addEventListener("click", (event) => {
+    if (!event.target.closest("#pagefind-container")) {
+      closePagefind();
+    }
+  });
+
+  const form = document.getElementById("form");
+  form?.addEventListener("submit", (event) => {
+    event.preventDefault();
+  });
+</script>  </body></html>

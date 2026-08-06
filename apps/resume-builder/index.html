@@ -1,0 +1,1580 @@
+<!DOCTYPE html>
+<!--
+  Resume Builder
+  Copyright © 2026 Jayz Zhang. All rights reserved.
+  Unauthorized copying, redistribution, or modification of this file,
+  via any medium, is strictly prohibited.
+  Source obfuscated. Original work by Jayz Zhang.
+-->
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>简历生成器</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@400;600;700&family=Inter:wght@300;400;500;600;700&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&family=Lato:wght@300;400;700&family=Raleway:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ── App Shell ── */
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --app-bg:#0f1117;--app-surface:#181b23;--app-border:#252832;
+  --app-text:#e8eaf0;--app-muted:#6b7280;--app-accent:#6366f1;
+  --app-accent-dim:rgba(99,102,241,.12);
+}
+body{background:var(--app-bg);color:var(--app-text);font-family:'Inter','Noto Sans SC',sans-serif;height:100vh;overflow:hidden;display:flex;flex-direction:column;}
+/* ── Top bar ── */
+.topbar{height:52px;background:var(--app-surface);border-bottom:1px solid var(--app-border);display:flex;align-items:center;padding:0 20px;gap:16px;flex-shrink:0;z-index:10;}
+.topbar-logo{font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px;}
+.topbar-logo span{background:var(--app-accent);color:#fff;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:700;}
+.topbar-actions{margin-left:auto;display:flex;gap:8px;}
+.btn{padding:6px 14px;border-radius:7px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid transparent;transition:all .18s;font-family:inherit;}
+.btn-ghost{background:transparent;color:var(--app-muted);border-color:var(--app-border);}
+.btn-ghost:hover{color:var(--app-text);border-color:#3a3f4e;}
+.btn-primary{background:var(--app-accent);color:#fff;border-color:var(--app-accent);}
+.btn-primary:hover{filter:brightness(1.1);}
+.btn-pdf{background:rgba(239,68,68,.1);color:#f87171;border-color:rgba(239,68,68,.25);}
+.btn-pdf:hover{background:rgba(239,68,68,.2);}
+.btn-demo{background:rgba(16,185,129,.1);color:#34d399;border-color:rgba(16,185,129,.25);}
+.btn-demo:hover{background:rgba(16,185,129,.2);}/* ── AI Polish Dialog ── */
+.ai-dialog-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);z-index:100;display:flex;align-items:center;justify-content:center;animation:fadeIn .2s ease;}
+.ai-dialog{background:var(--app-surface);border:1px solid var(--app-border);border-radius:16px;width:520px;max-height:80vh;display:flex;flex-direction:column;box-shadow:0 24px 80px rgba(0,0,0,.5);animation:slideUp .25s ease;}
+.ai-dialog-header{padding:18px 22px 14px;border-bottom:1px solid var(--app-border);display:flex;align-items:center;justify-content:space-between;}
+.ai-dialog-header h3{font-size:15px;font-weight:600;display:flex;align-items:center;gap:8px;}
+.ai-dialog-close{background:none;border:none;color:var(--app-muted);font-size:20px;cursor:pointer;padding:4px 8px;border-radius:6px;transition:all .15s;}
+.ai-dialog-close:hover{color:var(--app-text);background:rgba(255,255,255,.08);}
+.ai-dialog-body{padding:18px 22px;overflow-y:auto;flex:1;}
+.ai-options{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
+.ai-option{display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid var(--app-border);border-radius:8px;cursor:pointer;font-size:12px;color:var(--app-text);transition:all .15s;background:rgba(15,17,23,.4);}
+.ai-option:hover{border-color:#3a3f4e;background:rgba(99,102,241,.06);}
+.ai-option.selected{border-color:var(--app-accent);background:var(--app-accent-dim);}
+.ai-option input[type=checkbox]{width:auto;margin:0;}
+.ai-dialog-actions{display:flex;gap:8px;margin-top:14px;}
+.ai-dialog-actions .btn{flex:1;padding:9px;font-size:13px;}
+.ai-result{background:rgba(15,17,23,.6);border:1px solid var(--app-border);border-radius:10px;padding:14px;font-size:13px;line-height:1.7;color:var(--app-text);max-height:350px;overflow-y:auto;white-space:pre-wrap;margin-top:12px;}
+.ai-result::-webkit-scrollbar{width:4px;}
+.ai-result::-webkit-scrollbar-thumb{background:#2a2f3e;border-radius:2px;}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}/* ── Layout ── */
+.app-body{flex:1;display:flex;overflow:hidden;}
+/* ── Sidebar (left panel) ── */
+.sidebar{width:380px;flex-shrink:0;background:var(--app-surface);border-right:1px solid var(--app-border);overflow-y:auto;display:flex;flex-direction:column;}
+.sidebar::-webkit-scrollbar{width:4px;}
+.sidebar::-webkit-scrollbar-thumb{background:#2a2f3e;border-radius:2px;}
+/* ── Preview (right panel) ── */
+.preview-wrap{flex:1;background:#d1d5db;overflow:auto;display:flex;justify-content:center;align-items:flex-start;padding:28px 20px;}
+.preview-wrap::-webkit-scrollbar{width:6px;}
+.preview-wrap::-webkit-scrollbar-thumb{background:#9ca3af;border-radius:3px;}
+#resume-preview{width:794px;min-height:1123px;background:#fff;box-shadow:0 4px 32px rgba(0,0,0,.3);flex-shrink:0;position:relative;}
+.pg-break{position:absolute;left:0;right:0;height:0;border-top:2px dashed #94a3b8;pointer-events:none;z-index:20;display:flex;justify-content:center;}
+.pg-break-label{position:absolute;top:-9px;background:#94a3b8;color:#fff;font-size:9px;font-family:'Inter',sans-serif;font-weight:600;letter-spacing:.08em;padding:1px 8px;border-radius:3px;white-space:nowrap;}
+/* ── Sidebar sections ── */
+.sb-section{border-bottom:1px solid var(--app-border);}
+.sb-section-head{padding:14px 18px 14px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;border-left:2px solid transparent;transition:background .2s,border-color .2s;}
+.sb-section-head.open{background:rgba(99,102,241,.08);border-left-color:var(--app-accent);}
+.sb-section-head h3{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--app-muted);display:flex;align-items:center;gap:7px;transition:color .2s;}
+.sb-section-head.open h3{color:var(--app-text);}
+.sb-section-head .chevron{font-size:10px;color:var(--app-muted);transition:transform .2s;}
+.sb-section-head.open .chevron{transform:rotate(180deg);}
+.sb-icon{width:14px;height:14px;flex-shrink:0;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.sb-section-body{padding:4px 18px 16px;}
+/* ── AI Loading spinner ── */
+@keyframes spin{to{transform:rotate(360deg)}}
+/* ── Form elements ── */
+.field{margin-bottom:12px;}
+.field label{display:block;font-size:11px;font-weight:500;color:var(--app-muted);margin-bottom:5px;letter-spacing:.04em;}
+.field .hint{font-size:10px;color:#4b5563;margin-top:3px;line-height:1.4;}
+.field .hint.good{color:#10b981;}
+.field .hint.warn{color:#f59e0b;}
+.field .hint.bad{color:#f87171;}
+input[type=text],input[type=email],input[type=url],input[type=tel],textarea,select{
+  width:100%;background:rgba(15,17,23,.6);border:1px solid var(--app-border);
+  color:var(--app-text);border-radius:7px;padding:7px 10px;font-size:12px;
+  font-family:inherit;outline:none;transition:border-color .18s;
+}
+input:focus,textarea:focus,select:focus{border-color:var(--app-accent);}
+textarea{resize:vertical;min-height:60px;line-height:1.6;}
+select option{background:#181b23;}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+/* ── Toggle switch ── */
+.toggle-field{display:flex;align-items:center;justify-content:space-between;padding:8px 0;}
+.toggle-field label{font-size:12px;color:var(--app-text);}
+.toggle{position:relative;width:34px;height:18px;flex-shrink:0;}
+.toggle input{opacity:0;width:0;height:0;}
+.toggle-slider{position:absolute;inset:0;background:#252832;border-radius:9px;cursor:pointer;transition:.2s;}
+.toggle-slider:before{content:'';position:absolute;width:12px;height:12px;left:3px;top:3px;background:#6b7280;border-radius:50%;transition:.2s;}
+.toggle input:checked+.toggle-slider{background:var(--app-accent);}
+.toggle input:checked+.toggle-slider:before{transform:translateX(16px);background:#fff;}
+/* ── Template picker ── */
+.tpl-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:4px 0;}
+.tpl-card{border:2px solid var(--app-border);border-radius:8px;padding:10px 8px;cursor:pointer;transition:all .18s;text-align:center;}
+.tpl-card:hover{border-color:#3a3f4e;}
+.tpl-card.active{border-color:var(--app-accent);background:var(--app-accent-dim);}
+.tpl-card .tpl-preview{height:50px;border-radius:4px;margin-bottom:6px;position:relative;overflow:hidden;}
+.tpl-card .tpl-name{font-size:11px;font-weight:500;}
+/* ── Color palette ── */
+.color-row{display:flex;gap:6px;flex-wrap:wrap;padding:4px 0;}
+.color-swatch{width:24px;height:24px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:transform .15s;flex-shrink:0;}
+.color-swatch:hover{transform:scale(1.15);}
+.color-swatch.active{border-color:#fff;transform:scale(1.1);}
+/* ── Entry cards (work/edu/project) ── */
+.entry-card{background:rgba(15,17,23,.5);border:1px solid var(--app-border);border-radius:8px;padding:12px;margin-bottom:8px;}
+.entry-card-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.entry-card-head span{font-size:11px;font-weight:600;color:var(--app-muted);}
+.entry-del{background:transparent;border:none;color:#6b7280;cursor:pointer;font-size:13px;padding:2px 6px;border-radius:4px;}
+.entry-del:hover{color:#f87171;background:rgba(248,113,113,.1);}
+.add-btn{width:100%;padding:8px;border:1px dashed var(--app-border);background:transparent;color:var(--app-muted);border-radius:7px;cursor:pointer;font-size:12px;font-family:inherit;transition:all .18s;margin-top:4px;}
+.add-btn:hover{border-color:var(--app-accent);color:var(--app-accent);}
+/* ── Lang toggle ── */
+.lang-tabs{display:flex;background:rgba(15,17,23,.5);border-radius:8px;padding:3px;margin-bottom:12px;}
+.lang-tab{flex:1;padding:5px;text-align:center;font-size:11px;font-weight:500;border-radius:6px;cursor:pointer;color:var(--app-muted);transition:all .18s;}
+.lang-tab.active{background:var(--app-accent);color:#fff;}
+/* ── Font selector ── */
+.font-options{display:flex;gap:6px;flex-wrap:wrap;}
+.font-opt{padding:5px 10px;border:1px solid var(--app-border);border-radius:6px;cursor:pointer;font-size:11px;transition:all .18s;color:var(--app-muted);}
+.font-opt:hover{border-color:#3a3f4e;color:var(--app-text);}
+.font-opt.active{border-color:var(--app-accent);color:var(--app-accent);background:var(--app-accent-dim);}
+/* ── Typo grid ── */
+.typo-grid{display:flex;flex-direction:column;gap:6px;margin-top:4px;}
+.typo-row{display:flex;align-items:center;justify-content:space-between;}
+.typo-label{font-size:11px;color:var(--app-muted);flex:1;min-width:0;}
+.typo-controls{display:flex;align-items:center;gap:5px;flex-shrink:0;}
+.typo-size{width:44px;background:rgba(15,17,23,.6);border:1px solid var(--app-border);color:var(--app-text);border-radius:5px;padding:4px 6px;font-size:11px;font-family:inherit;outline:none;text-align:center;-moz-appearance:textfield;}
+.typo-size::-webkit-inner-spin-button,.typo-size::-webkit-outer-spin-button{opacity:0;}
+.typo-size:focus{border-color:var(--app-accent);}
+.typo-unit{font-size:10px;color:var(--app-muted);}
+.typo-color{width:24px;height:24px;border:2px solid var(--app-border);border-radius:5px;padding:0;cursor:pointer;background:none;outline:none;}
+.typo-color::-webkit-color-swatch-wrapper{padding:2px;}
+.typo-color::-webkit-color-swatch{border:none;border-radius:2px;}
+</style>
+</head>
+<body>
+<!-- Top bar -->
+<div class="topbar">
+  <div class="topbar-logo">📄 <strong>简历生成器</strong> <span>BETA</span></div>
+  <div id="topbar-tagline" style="font-size:11px;color:var(--app-muted)">实时预览 · 4套模板 · 中英双语</div>
+  <div class="topbar-actions">
+    <button class="btn btn-demo" onclick="fillDemoData()">✦ 模板预览</button>
+    <button class="btn btn-ghost" onclick="resetAll()">重置</button>
+    <button class="btn btn-primary" id="aiPolishBtn" onclick="openAIPolish()" style="background:rgba(168,85,247,.15);color:#c084fc;border-color:rgba(168,85,247,.3);">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block;vertical-align:-2px;margin-right:4px;"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      AI 润色
+    </button>
+    <button class="btn btn-pdf" onclick="exportPDF()">⬇ 导出 PDF</button>
+    <button class="btn btn-primary" onclick="downloadHTML()">⬇ 下载 HTML</button>
+  </div>
+</div>
+<div class="app-body">
+<!-- ════ LEFT SIDEBAR ════ -->
+<div class="sidebar">
+
+<!-- 语言 -->
+<div class="sb-section">
+  <div class="sb-section-head open" onclick="toggleSection(this)"><h3><svg class="sb-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>语言 / Language</h3><span class="chevron">▼</span></div>
+  <div class="sb-section-body">
+    <div class="lang-tabs">
+      <div class="lang-tab active" onclick="setLang('zh',this)">中文</div>
+      <div class="lang-tab" onclick="setLang('en',this)">English</div>
+    </div>
+  </div>
+</div>
+
+<!-- 模板选择 -->
+<div class="sb-section">
+  <div class="sb-section-head open" onclick="toggleSection(this)"><h3><svg class="sb-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>模板风格</h3><span class="chevron">▼</span></div>
+  <div class="sb-section-body">
+    <div class="tpl-grid">
+      <div class="tpl-card active" onclick="setTemplate('classic',this)" title="极简黑白">
+        <div class="tpl-preview" style="background:#fff;border:1px solid #e5e7eb;">
+          <div style="height:8px;background:#111;margin:8px 8px 4px;border-radius:2px;width:40%"></div>
+          <div style="height:2px;background:#111;margin:4px 8px;"></div>
+          <div style="height:3px;background:#d1d5db;margin:4px 8px;border-radius:1px;"></div>
+          <div style="height:3px;background:#d1d5db;margin:4px 8px;border-radius:1px;width:80%"></div>
+          <div style="height:3px;background:#d1d5db;margin:4px 8px;border-radius:1px;width:60%"></div>
+        </div>
+        <div class="tpl-name">极简黑白</div>
+      </div>
+      <div class="tpl-card" onclick="setTemplate('modern',this)" title="蓝色现代">
+        <div class="tpl-preview" style="background:#f8f9ff;border:1px solid #dde2ff;">
+          <div style="height:10px;background:#4F8BFF;margin:8px 8px 4px;border-radius:2px;"></div>
+          <div style="height:3px;background:#cbd5e1;margin:4px 8px;border-radius:1px;"></div>
+          <div style="height:6px;background:#4F8BFF;margin:8px 8px 2px;border-radius:2px;width:60%"></div>
+          <div style="height:3px;background:#cbd5e1;margin:2px 8px;border-radius:1px;"></div>
+        </div>
+        <div class="tpl-name">蓝色现代</div>
+      </div>
+      <div class="tpl-card" onclick="setTemplate('dark',this)" title="深色强调">
+        <div class="tpl-preview" style="background:#1a1a2e;border:1px solid #2d2d44;">
+          <div style="height:10px;background:#7c3aed;margin:8px 8px 4px;border-radius:2px;"></div>
+          <div style="height:3px;background:#3d3d5c;margin:4px 8px;border-radius:1px;"></div>
+          <div style="height:6px;background:#7c3aed;margin:8px 8px 2px;border-radius:2px;width:60%"></div>
+          <div style="height:3px;background:#3d3d5c;margin:2px 8px;border-radius:1px;"></div>
+        </div>
+        <div class="tpl-name">深色强调</div>
+      </div>
+      <div class="tpl-card" onclick="setTemplate('twocol',this)" title="双栏布局">
+        <div class="tpl-preview" style="background:#fff;border:1px solid #e5e7eb;display:flex;gap:0;overflow:hidden;">
+          <div style="width:35%;background:#1e293b;height:50px;"></div>
+          <div style="flex:1;padding:4px 6px;">
+            <div style="height:3px;background:#d1d5db;margin-bottom:3px;border-radius:1px;"></div>
+            <div style="height:3px;background:#d1d5db;margin-bottom:3px;border-radius:1px;width:80%"></div>
+            <div style="height:3px;background:#d1d5db;border-radius:1px;width:60%"></div>
+          </div>
+        </div>
+        <div class="tpl-name">双栏布局</div>
+      </div>
+    </div>
+    <!-- Accent color -->
+    <div class="field" style="margin-top:12px;">
+      <label>主题色</label>
+      <div class="color-row" id="colorRow">
+        <div class="color-swatch active" style="background:#374151;" data-color="#374151" onclick="setColor(this)"></div>
+        <div class="color-swatch" style="background:#1d4ed8;" data-color="#1d4ed8" onclick="setColor(this)"></div>
+        <div class="color-swatch" style="background:#6366f1;" data-color="#6366f1" onclick="setColor(this)"></div>
+        <div class="color-swatch" style="background:#7c3aed;" data-color="#7c3aed" onclick="setColor(this)"></div>
+        <div class="color-swatch" style="background:#059669;" data-color="#059669" onclick="setColor(this)"></div>
+        <div class="color-swatch" style="background:#0891b2;" data-color="#0891b2" onclick="setColor(this)"></div>
+        <div class="color-swatch" style="background:#b91c1c;" data-color="#b91c1c" onclick="setColor(this)"></div>
+        <div class="color-swatch" style="background:#92400e;" data-color="#92400e" onclick="setColor(this)"></div>
+        <div class="color-swatch" style="background:#334155;" data-color="#334155" onclick="setColor(this)"></div>
+        <div class="color-swatch" style="background:#111827;" data-color="#111827" onclick="setColor(this)"></div>
+      </div>
+    </div>
+    <!-- Font -->
+    <div class="field">
+      <label>字体</label>
+      <div class="font-options" id="fontOptions">
+        <div class="font-opt active" data-font="'Noto Sans SC','Inter',sans-serif" onclick="setFont(this)">思源黑体</div>
+        <div class="font-opt" data-font="'Noto Serif SC',serif" onclick="setFont(this)" style="font-family:'Georgia',serif">宋体</div>
+        <div class="font-opt" data-font="'Source Serif 4',serif" onclick="setFont(this)" style="font-family:'Georgia',serif">衬线</div>
+        <div class="font-opt" data-font="'Inter',sans-serif" onclick="setFont(this)" style="font-family:Arial,sans-serif">Inter</div>
+        <div class="font-opt" data-font="'DM Sans',sans-serif" onclick="setFont(this)" style="font-family:Arial,sans-serif">DM Sans</div>
+        <div class="font-opt" data-font="'Lato',sans-serif" onclick="setFont(this)" style="font-family:Arial,sans-serif">Lato</div>
+        <div class="font-opt" data-font="'Raleway',sans-serif" onclick="setFont(this)" style="font-family:Arial,sans-serif">Raleway</div>
+        <div class="font-opt" data-font="'JetBrains Mono',monospace" onclick="setFont(this)" style="font-family:monospace">Mono</div>
+      </div>
+    </div>
+    <!-- Typography -->
+    <div class="field" style="margin-top:4px;">
+      <label>字号 &amp; 颜色调整</label>
+      <div class="typo-grid">
+        <div class="typo-row">
+          <span class="typo-label">姓名</span>
+          <div class="typo-controls">
+            <input type="number" class="typo-size" id="sz-name" value="24" min="16" max="36" oninput="render()">
+            <span class="typo-unit">px</span>
+            <input type="color" class="typo-color" id="cl-name" value="#111111" oninput="render()">
+          </div>
+        </div>
+        <div class="typo-row">
+          <span class="typo-label">章节标题</span>
+          <div class="typo-controls">
+            <input type="number" class="typo-size" id="sz-section" value="13" min="10" max="18" oninput="render()">
+            <span class="typo-unit">px</span>
+            <input type="color" class="typo-color" id="cl-section" value="#374151" oninput="render()">
+          </div>
+        </div>
+        <div class="typo-row">
+          <span class="typo-label">机构/公司</span>
+          <div class="typo-controls">
+            <input type="number" class="typo-size" id="sz-org" value="12" min="9" max="16" oninput="render()">
+            <span class="typo-unit">px</span>
+            <input type="color" class="typo-color" id="cl-org" value="#111111" oninput="render()">
+          </div>
+        </div>
+        <div class="typo-row">
+          <span class="typo-label">职位/学位</span>
+          <div class="typo-controls">
+            <input type="number" class="typo-size" id="sz-role" value="11" min="9" max="15" oninput="render()">
+            <span class="typo-unit">px</span>
+            <input type="color" class="typo-color" id="cl-role" value="#374151" oninput="render()">
+          </div>
+        </div>
+        <div class="typo-row">
+          <span class="typo-label">正文内容</span>
+          <div class="typo-controls">
+            <input type="number" class="typo-size" id="sz-body" value="11" min="8" max="14" oninput="render()">
+            <span class="typo-unit">px</span>
+            <input type="color" class="typo-color" id="cl-body" value="#374151" oninput="render()">
+          </div>
+        </div>
+        <div class="typo-row">
+          <span class="typo-label">辅助信息</span>
+          <div class="typo-controls">
+            <input type="number" class="typo-size" id="sz-meta" value="11" min="8" max="14" oninput="render()">
+            <span class="typo-unit">px</span>
+            <input type="color" class="typo-color" id="cl-meta" value="#6b7280" oninput="render()">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 基本信息 -->
+<div class="sb-section">
+  <div class="sb-section-head open" onclick="toggleSection(this)"><h3><svg class="sb-icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span data-i18n="sBasic">基本信息</span></h3><span class="chevron">▼</span></div>
+  <div class="sb-section-body">
+    <div class="toggle-field">
+      <label data-i18n="lPhoto">头像（右上角）</label>
+      <label class="toggle"><input type="checkbox" id="showPhoto" onchange="render()"><span class="toggle-slider"></span></label>
+    </div>
+    <div id="photoField" style="display:none;" class="field">
+      <label data-i18n="lPhotoUrl">照片 URL</label>
+      <input type="url" id="photoUrl" placeholder="https://..." oninput="render()">
+      <div class="hint" data-i18n="hPhoto">建议证件照风格，比例 3:4</div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label><span data-i18n="lName">姓名</span> <span style="color:#6b7280;font-size:9px;" data-i18n="lRequired">必填</span></label><input type="text" id="name" data-i18n-ph="phName" placeholder="张三" oninput="render()"></div>
+      <div class="field" id="nameEnField"><label>Name (EN)</label><input type="text" id="nameEn" placeholder="Alex Zhang" oninput="render()"></div>
+    </div>
+    <div class="field"><label data-i18n="lJobTitle">求职意向</label><input type="text" id="jobTitle" data-i18n-ph="phJobTitle" placeholder="增长产品经理 / Growth PM" oninput="render()">
+      <div class="hint good" data-i18n="hJobTitle">建议 8-16 字，精准描述目标岗位</div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label data-i18n="lPhone">📞 手机</label><input type="tel" id="phone" data-i18n-ph="phPhone" placeholder="+86 138 0000 0000" oninput="render()"></div>
+      <div class="field"><label data-i18n="lEmail">📧 邮箱</label><input type="email" id="email" placeholder="name@example.com" oninput="render()"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label data-i18n="lCity">🏙 城市</label><input type="text" id="city" data-i18n-ph="phCity" placeholder="上海" oninput="render()"></div>
+      <div class="field"><label>💼 LinkedIn</label><input type="text" id="linkedin" placeholder="linkedin.com/in/username" oninput="render()"></div>
+    </div>
+    <div class="toggle-field">
+      <label data-i18n="lWechat">显示微信号</label>
+      <label class="toggle"><input type="checkbox" id="showWechat" onchange="render()"><span class="toggle-slider"></span></label>
+    </div>
+    <div id="wechatField" style="display:none;" class="field">
+      <label data-i18n="lWechatId">微信号</label><input type="text" id="wechat" placeholder="wechat_id" oninput="render()">
+    </div>
+  </div>
+</div>
+
+<!-- 自我评价 -->
+<div class="sb-section">
+  <div class="sb-section-head open" onclick="toggleSection(this)"><h3><svg class="sb-icon" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg><span data-i18n="sSummary">自我评价</span></h3><span class="chevron">▼</span></div>
+  <div class="sb-section-body">
+    <div class="toggle-field">
+      <label data-i18n="lShowModule">显示此模块</label>
+      <label class="toggle"><input type="checkbox" id="showSummary" checked onchange="render()"><span class="toggle-slider"></span></label>
+    </div>
+    <div id="summaryBody">
+      <div class="field"><label data-i18n="lSummaryContent">简介内容</label>
+        <textarea id="summary" rows="3" data-i18n-ph="phSummary" placeholder="专注增长方向的产品经理，擅长活动设计与数据分析..." oninput="updateHint(this,'summaryHint',30,60,90)"></textarea>
+        <div class="hint" id="summaryHint" data-i18n="hSummary">建议 40-60 字，聚焦核心优势 + 差异化亮点</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 教育经历 -->
+<div class="sb-section">
+  <div class="sb-section-head open" onclick="toggleSection(this)"><h3><svg class="sb-icon" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg><span data-i18n="sEdu">教育经历</span></h3><span class="chevron">▼</span></div>
+  <div class="sb-section-body">
+    <div id="eduList"></div>
+    <button class="add-btn" onclick="addEntry('edu')" data-i18n="btnAddEdu">+ 添加教育经历</button>
+  </div>
+</div>
+
+<!-- 工作/实习经历 -->
+<div class="sb-section">
+  <div class="sb-section-head open" onclick="toggleSection(this)"><h3><svg class="sb-icon" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg><span data-i18n="sWork">工作经历</span></h3><span class="chevron">▼</span></div>
+  <div class="sb-section-body">
+    <div id="workList"></div>
+    <button class="add-btn" onclick="addEntry('work')" data-i18n="btnAddWork">+ 添加工作/实习经历</button>
+  </div>
+</div>
+
+<!-- 项目经历 -->
+<div class="sb-section">
+  <div class="sb-section-head" onclick="toggleSection(this)"><h3><svg class="sb-icon" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg><span data-i18n="sProject">项目经历</span></h3><span class="chevron">▼</span></div>
+  <div class="sb-section-body" style="display:none;">
+    <div class="toggle-field">
+      <label data-i18n="lShowModule">显示此模块</label>
+      <label class="toggle"><input type="checkbox" id="showProject" checked onchange="render()"><span class="toggle-slider"></span></label>
+    </div>
+    <div id="projectList"></div>
+    <button class="add-btn" onclick="addEntry('project')" data-i18n="btnAddProject">+ 添加项目</button>
+  </div>
+</div>
+
+<!-- 技能 -->
+<div class="sb-section">
+  <div class="sb-section-head" onclick="toggleSection(this)"><h3><svg class="sb-icon" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg><span data-i18n="sSkills">技能</span></h3><span class="chevron">▼</span></div>
+  <div class="sb-section-body" style="display:none;">
+    <div class="toggle-field">
+      <label data-i18n="lShowModule">显示此模块</label>
+      <label class="toggle"><input type="checkbox" id="showSkills" checked onchange="render()"><span class="toggle-slider"></span></label>
+    </div>
+    <div id="skillBody">
+      <div class="field"><label><span data-i18n="lSkillTools">专业技能</span> <span style="color:#6b7280;font-size:9px;" data-i18n="lCommaSep">逗号分隔</span></label>
+        <input type="text" id="skillTools" data-i18n-ph="phSkillTools" placeholder="SQL, Python, Tableau, A/B Testing" oninput="render()">
+        <div class="hint" data-i18n="hSkillTools">5-10 项技能，与目标岗位匹配</div>
+      </div>
+      <div class="field"><label data-i18n="lSkillLang">语言能力</label>
+        <input type="text" id="skillLang" data-i18n-ph="phSkillLang" placeholder="普通话（母语），英语（CET-6 580）" oninput="render()">
+      </div>
+      <div class="field"><label data-i18n="lSkillCerts">证书 / 资质</label>
+        <input type="text" id="skillCerts" data-i18n-ph="phSkillCerts" placeholder="PMP / Google Analytics 认证" oninput="render()">
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 荣誉奖项 -->
+<div class="sb-section">
+  <div class="sb-section-head" onclick="toggleSection(this)"><h3><svg class="sb-icon" viewBox="0 0 24 24"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg><span data-i18n="sAwards">荣誉奖项</span></h3><span class="chevron">▼</span></div>
+  <div class="sb-section-body" style="display:none;">
+    <div class="toggle-field">
+      <label data-i18n="lShowModule">显示此模块</label>
+      <label class="toggle"><input type="checkbox" id="showAwards" onchange="render()"><span class="toggle-slider"></span></label>
+    </div>
+    <div id="awardList"></div>
+    <button class="add-btn" onclick="addEntry('award')" data-i18n="btnAddAward">+ 添加奖项</button>
+  </div>
+</div>
+
+<!-- 论文/作品 -->
+<div class="sb-section">
+  <div class="sb-section-head" onclick="toggleSection(this)"><h3><svg class="sb-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg><span data-i18n="sPubs">论文/作品</span></h3><span class="chevron">▼</span></div>
+  <div class="sb-section-body" style="display:none;">
+    <div class="toggle-field">
+      <label data-i18n="lShowModule">显示此模块</label>
+      <label class="toggle"><input type="checkbox" id="showPubs" onchange="render()"><span class="toggle-slider"></span></label>
+    </div>
+    <div id="pubList"></div>
+    <button class="add-btn" onclick="addEntry('pub')" data-i18n="btnAddPub">+ 添加论文/作品链接</button>
+  </div>
+</div>
+
+<!-- AI 配置（隐藏字段，供右上角 AI 润色对话框使用） -->
+<input type="hidden" id="aiApiKey" value="">
+<input type="hidden" id="aiWorkerUrl" value="https://deepseek-proxy.jayzzhang.workers.dev">
+</div><!-- end sidebar -->
+
+<!-- ════ RIGHT PREVIEW ════ -->
+<div class="preview-wrap">
+  <div id="resume-preview"></div>
+</div>
+</div><!-- end app-body -->
+
+<!-- ════ AI 润色对话框 ════ -->
+<div id="aiPolishDialog" class="ai-dialog-overlay" style="display:none;">
+  <div class="ai-dialog">
+    <div class="ai-dialog-header">
+      <h3><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c084fc" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg> AI 润色</h3>
+      <button class="ai-dialog-close" onclick="closeAIPolish()">×</button>
+    </div>
+    <div class="ai-dialog-body">
+      <!-- 润色选项 -->
+      <div style="font-size:12px;color:var(--app-muted);margin-bottom:10px;">选择润色维度：</div>
+      <div class="ai-options">
+        <label class="ai-option selected" onclick="toggleOption(this)">
+          <input type="checkbox" checked> 文案质量（STAR 法则）
+        </label>
+        <label class="ai-option selected" onclick="toggleOption(this)">
+          <input type="checkbox" checked> ATS 关键词匹配
+        </label>
+        <label class="ai-option selected" onclick="toggleOption(this)">
+          <input type="checkbox" checked> 语法/拼写检查
+        </label>
+        <label class="ai-option" onclick="toggleOption(this)">
+          <input type="checkbox"> 精简篇幅
+        </label>
+      </div>
+
+      <!-- 目标岗位 -->
+      <div class="field" style="margin-bottom:12px;">
+        <label style="font-size:11px;color:var(--app-muted);margin-bottom:4px;display:block;">目标岗位 JD（可选）</label>
+        <textarea id="aiPolishJd" rows="2" placeholder="粘贴职位描述，AI 会针对性优化..." style="width:100%;background:rgba(15,17,23,.6);border:1px solid var(--app-border);color:var(--app-text);border-radius:7px;padding:8px 10px;font-size:12px;font-family:inherit;resize:vertical;"></textarea>
+      </div>
+
+      <!-- 操作按钮 -->
+      <div class="ai-dialog-actions">
+        <button class="btn btn-ghost" onclick="closeAIPolish()">取消</button>
+        <button class="btn btn-primary" onclick="runAIPolish()" id="aiPolishRunBtn" style="background:rgba(168,85,247,.15);color:#c084fc;border-color:rgba(168,85,247,.3);">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block;vertical-align:-2px;margin-right:4px;"><path d="M22 2L11 13"/><path d="M22 2L15 22l-4-9-9-4 20-7z"/></svg>
+          开始润色
+        </button>
+      </div>
+
+      <!-- 结果展示 -->
+      <div id="aiPolishResult" style="display:none;">
+        <div style="font-size:12px;color:var(--app-muted);margin-top:14px;margin-bottom:6px;">润色建议：</div>
+        <div id="aiPolishResultContent" class="ai-result"></div>
+      </div>
+
+      <!-- 加载状态 -->
+      <div id="aiPolishLoading" style="display:none;text-align:center;padding:20px;">
+        <div style="display:inline-block;width:22px;height:22px;border:2px solid var(--app-border);border-top-color:#c084fc;border-radius:50%;animation:spin .8s linear infinite;"></div>
+        <div style="font-size:12px;color:var(--app-muted);margin-top:10px;">AI 正在分析你的简历...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- end app-body -->
+
+<script>(function(){
+const S = {
+template: ('cla'+'ssic'),
+color: '#374151',
+font: "'Noto Sans SC',('In'+'ter'),sans-serif",
+lang: 'zh',
+eduEntries: [],
+workEntries: [],
+projectEntries: [],
+awardEntries: [],
+pubEntries: [],
+};
+function _t0(head) {
+const body = head.nextElementSibling;
+const open = head.classList.toggle(('op'+'en'));
+body.style.display = open ? '' : ('no'+'ne');
+}
+function _t1(lang, tab) {
+S.lang = lang;
+document.querySelectorAll('.lang-tab').forEach(t => t.classList.remove(('act'+'ive')));
+tab.classList.add(('act'+'ive'));
+_tb();
+_tu();
+}
+function _t2(t, card) {
+S.template = t;
+document.querySelectorAll('.tpl-card').forEach(c => c.classList.remove(('act'+'ive')));
+card.classList.add(('act'+'ive'));
+const defaults = {classic:'#374151', modern:'#1d4ed8', dark:'#7c3aed', twocol:'#1e293b'};
+_t4(defaults[t]);
+_tu();
+}
+function _t3(el) {
+document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove(('act'+'ive')));
+el.classList.add(('act'+'ive'));
+S.color = el.dataset.color;
+_tu();
+}
+function _t4(hex) {
+S.color = hex;
+document.querySelectorAll('.color-swatch').forEach(s => {
+s.classList.toggle(('act'+'ive'), s.dataset.color === hex);
+});
+}
+function _t5(el) {
+document.querySelectorAll('.font-opt').forEach(f => f.classList.remove(('act'+'ive')));
+el.classList.add(('act'+'ive'));
+S.font = el.dataset.font;
+_tu();
+}
+document.getElementById(('show'+'Photo')).addEventListener(('cha'+'nge'), function() {
+document.getElementById(('photo'+'Field')).style.display = this.checked ? '' : ('no'+'ne');
+});
+document.getElementById(('showW'+'echat')).addEventListener(('cha'+'nge'), function() {
+document.getElementById(('wecha'+'tField')).style.display = this.checked ? '' : ('no'+'ne');
+});
+document.getElementById(('showS'+'ummary')).addEventListener(('cha'+'nge'), function() {
+document.getElementById(('summa'+'ryBody')).style.display = this.checked ? '' : ('no'+'ne');
+_tu();
+});
+function _t6(el, hintId, good, ok, warn) {
+const len = el.value.length;
+const hint = document.getElementById(hintId);
+const h = I18N[S.lang];
+if (!hint) { _tu(); return; }
+if (len === 0) { hint.className = ('hi'+'nt'); hint.textContent = h.hintEmpty(good, ok); }
+else if (len < good) { hint.className = 'hint warn'; hint.textContent = h.hintShort(len, good); }
+else if (len <= ok) { hint.className = 'hint good'; hint.textContent = h.hintGood(len); }
+else if (len <= warn){ hint.className = 'hint warn'; hint.textContent = h.hintLong(len, ok); }
+else { hint.className = 'hint bad'; hint.textContent = h.hintTooLong(len); }
+_tu();
+}
+const I18N = {
+zh: {
+tagline: '实时预览 · 4套模板 · 中英双语',
+btnDemo: '✦ 模板预览', btnReset: '重置', btnPdf: '⬇ 导出 PDF', btnHtml: '⬇ 下载 HTML',
+sLang:'语言 / Language', sTpl:'模板风格', sBasic:'基本信息', sSummary:'自我评价',
+sEdu:'教育经历', sWork:'工作经历', sProject:'项目经历', sSkills:'技能',
+sAwards:'荣誉奖项', sPubs:'论文/作品',
+lPhoto:'头像（右上角）', lPhotoUrl:'照片 URL', hPhoto:'建议证件照风格，比例 3:4',
+lName:'姓名', lRequired:'必填',
+phName:'张三', phJobTitle:'增长产品经理 / Growth PM',
+lJobTitle:'求职意向', hJobTitle:'建议 8-16 字，精准描述目标岗位',
+lPhone:'📞 手机', phPhone:'+86 138 0000 0000',
+lEmail:'📧 邮箱',
+lCity:'🏙 城市', phCity:'上海',
+lWechat:'显示微信号', lWechatId:'微信号',
+lShowModule:'显示此模块',
+lSummaryContent:'简介内容', phSummary:'专注增长方向的产品经理，擅长活动设计与数据分析...',
+hSummary:'建议 40-60 字，聚焦核心优势 + 差异化亮点',
+btnAddEdu:'+ 添加教育经历', btnAddWork:'+ 添加工作/实习经历',
+btnAddProject:'+ 添加项目', btnAddAward:'+ 添加奖项', btnAddPub:'+ 添加论文/作品链接',
+lSkillTools:'专业技能', lCommaSep:'逗号分隔',
+phSkillTools:'SQL, Python, Tableau, A/B Testing',
+hSkillTools:'5-10 项技能，与目标岗位匹配',
+lSkillLang:'语言能力', phSkillLang:'普通话（母语），英语（CET-6 580）',
+lSkillCerts:'证书 / 资质', phSkillCerts:'PMP / Google Analytics 认证',
+lFont:'字体', lTypo:'字号 & 颜色调整',
+lTzName:'姓名', lTzSection:'章节标题', lTzOrg:'机构/公司',
+lTzRole:'职位/学位', lTzBody:'正文内容', lTzMeta:'辅助信息',
+ecEduTitle:'教育经历',
+ecEduSchool:'学校名称', ecEduSchoolPh:'某某大学', ecEduSchoolHint:'全称，可加括号标注 985/211',
+ecEduDegree:'学历/专业', ecEduDegreePh:'硕士 · 计算机科学', ecEduDegreeHint:'',
+ecEduPeriod:'时间段', ecEduPeriodPh:'2020.09 — 2023.06', ecEduPeriodHint:'月.年格式',
+ecEduGpa:'GPA / 排名（选填）', ecEduGpaPh:'GPA 3.8/4.0，专业前 10%', ecEduGpaHint:'有则写，无则留空',
+ecWorkTitle:'工作经历',
+ecWorkCompany:'公司名称', ecWorkCompanyPh:'某互联网公司', ecWorkCompanyHint:'',
+ecWorkRole:'职位', ecWorkRolePh:'产品经理', ecWorkRoleHint:'',
+ecWorkPeriod:'时间段', ecWorkPeriodPh:'2023.07 — 2024.01', ecWorkPeriodHint:'',
+ecWorkDesc:'工作描述', ecWorkDescPh:'• 负责... 实现了...\n• 通过 A/B 测试...\n• 推动...',
+ecWorkDescHint:'3-5 条，以量化结果结尾，单条建议 20-35 字',
+ecProjTitle:'项目经历',
+ecProjName:'项目名称', ecProjNamePh:'某某效果分析工具', ecProjNameHint:'',
+ecProjRole:'角色', ecProjRolePh:'独立开发 / 产品负责人', ecProjRoleHint:'',
+ecProjPeriod:'时间', ecProjPeriodPh:'2025.06', ecProjPeriodHint:'',
+ecProjLink:'项目链接（选填）', ecProjLinkPh:'https://...', ecProjLinkHint:'',
+ecProjDesc:'项目描述', ecProjDescPh:'• 解决了... 问题\n• 技术栈：...\n• 核心成果：...',
+ecProjDescHint:'2-4 条，突出技术亮点或业务价值',
+ecAwardTitle:'荣誉奖项',
+ecAwardName:'奖项名称', ecAwardNamePh:'某某竞赛 二等奖', ecAwardNameHint:'',
+ecAwardOrg:'颁奖机构', ecAwardOrgPh:'某机构', ecAwardOrgHint:'',
+ecAwardYear:'年份', ecAwardYearPh:'2023', ecAwardYearHint:'',
+ecPubTitle:'论文/作品',
+ecPubTitleF:'标题', ecPubTitlePh:'基于协同过滤的推荐系统研究', ecPubTitleHint:'',
+ecPubVenue:'期刊/会议/平台', ecPubVenuePh:'GitHub / ACM MM 2024', ecPubVenueHint:'',
+ecPubLink:'链接', ecPubLinkPh:'https://...', ecPubLinkHint:'',
+hintEmpty:(g,ok)=>`建议 ${g}-${ok} 字`,
+hintShort:(len,g)=>`当前 ${len} 字，稍短，建议补充到 ${g} 字`,
+hintGood:(len)=>`✓ 当前 ${len} 字，长度合适`,
+hintLong:(len,ok)=>`当前 ${len} 字，稍长，建议精简到 ${ok} 字以内`,
+hintTooLong:(len)=>`当前 ${len} 字，过长！会溢出版面`,
+resetConfirm:'确认重置所有内容？',
+rSummary:'自我评价', rEdu:'教育经历', rWork:'工作经历', rProject:'项目经历',
+rSkillsSection:'技能', rAwards:'荣誉奖项', rPubs:'论文/作品',
+rSkillTools:'专业技能', rSkillLang:'语言能力', rSkillCerts:'证书资质',
+rContact:'联系方式', rLangSide:'语言', rCertsSide:'证书',
+rWechat:'微信', rViewLink:'🔗 链接',
+},
+en: {
+tagline: 'Live Preview · 4 Templates · Bilingual',
+btnDemo: '✦ Preview Demo', btnReset: ('Re'+'set'), btnPdf: '⬇ Export PDF', btnHtml: '⬇ Download HTML',
+sLang:'Language / 语言', sTpl:('Temp'+'late'), sBasic:'Personal Info', sSummary:('Sum'+'mary'),
+sEdu:('Educ'+'ation'), sWork:('Exper'+'ience'), sProject:('Proj'+'ects'), sSkills:('Ski'+'lls'),
+sAwards:('Awa'+'rds'), sPubs:('Public'+'ations'),
+lPhoto:'Photo (top right)', lPhotoUrl:'Photo URL', hPhoto:'Passport-style preferred, ratio 3:4',
+lName:'Full Name', lRequired:('requ'+'ired'),
+phName:'Alex Zhang', phJobTitle:'Growth Product Manager',
+lJobTitle:'Target Role', hJobTitle:'8-16 words, precise job title',
+lPhone:'📞 Phone', phPhone:'+1 (555) 000-0000',
+lEmail:'📧 Email',
+lCity:'🏙 City', phCity:'San Francisco',
+lWechat:'Show WeChat', lWechatId:'WeChat ID',
+lShowModule:'Show this section',
+lSummaryContent:('Sum'+'mary'), phSummary:'Growth PM with 5+ years experience, specializing in user acquisition and retention...',
+hSummary:'40-80 words, lead with your strongest differentiator',
+btnAddEdu:'+ Add Education', btnAddWork:'+ Add Experience',
+btnAddProject:'+ Add Project', btnAddAward:'+ Add Award', btnAddPub:'+ Add Publication',
+lSkillTools:('Ski'+'lls'), lCommaSep:'comma separated',
+phSkillTools:'SQL, Python, Tableau, A/B Testing',
+hSkillTools:'5-10 skills relevant to the target role',
+lSkillLang:('Lang'+'uages'), phSkillLang:'English (Native), Mandarin (Fluent)',
+lSkillCerts:'Certifications', phSkillCerts:'PMP / Google Analytics Certified',
+lFont:('Fo'+'nt'), lTypo:'Font Size & Color',
+lTzName:('Na'+'me'), lTzSection:'Section Title', lTzOrg:'Org / Company',
+lTzRole:'Role / Degree', lTzBody:'Body Text', lTzMeta:'Meta Info',
+ecEduTitle:('Educ'+'ation'),
+ecEduSchool:('Insti'+'tution'), ecEduSchoolPh:'State University', ecEduSchoolHint:'Full official name',
+ecEduDegree:'Degree / Major', ecEduDegreePh:'M.S. Computer Science', ecEduDegreeHint:'',
+ecEduPeriod:('Per'+'iod'), ecEduPeriodPh:'Sep 2020 — Jun 2023', ecEduPeriodHint:'Month Year format',
+ecEduGpa:'GPA / Rank (optional)', ecEduGpaPh:'GPA 3.8/4.0, Top 10%', ecEduGpaHint:'Leave blank if not applicable',
+ecWorkTitle:('Exper'+'ience'),
+ecWorkCompany:('Com'+'pany'), ecWorkCompanyPh:'Tech Company Inc.', ecWorkCompanyHint:'',
+ecWorkRole:('Ti'+'tle'), ecWorkRolePh:'Product Manager', ecWorkRoleHint:'',
+ecWorkPeriod:('Per'+'iod'), ecWorkPeriodPh:'Jul 2023 — Jan 2024', ecWorkPeriodHint:'',
+ecWorkDesc:('Descr'+'iption'), ecWorkDescPh:'• Led... resulting in...\n• Increased ... by X% through...\n• Collaborated with...',
+ecWorkDescHint:'3-5 bullets, end with quantified results',
+ecProjTitle:('Proj'+'ects'),
+ecProjName:'Project Name', ecProjNamePh:'Analytics Dashboard', ecProjNameHint:'',
+ecProjRole:('Ro'+'le'), ecProjRolePh:'Solo Developer / PM', ecProjRoleHint:'',
+ecProjPeriod:('Da'+'te'), ecProjPeriodPh:'Jun 2025', ecProjPeriodHint:'',
+ecProjLink:'Link (optional)', ecProjLinkPh:'https://...', ecProjLinkHint:'',
+ecProjDesc:('Descr'+'iption'), ecProjDescPh:'• Solved... problem\n• Stack: ...\n• Outcome: ...',
+ecProjDescHint:'2-4 bullets, highlight tech or business impact',
+ecAwardTitle:('Awa'+'rds'),
+ecAwardName:'Award Name', ecAwardNamePh:'National Innovation Competition — 2nd Place', ecAwardNameHint:'',
+ecAwardOrg:'Issuing Organization', ecAwardOrgPh:'IEEE / Ministry of Education', ecAwardOrgHint:'',
+ecAwardYear:('Ye'+'ar'), ecAwardYearPh:'2023', ecAwardYearHint:'',
+ecPubTitle:('Public'+'ations'),
+ecPubTitleF:('Ti'+'tle'), ecPubTitlePh:'Collaborative Filtering for Recommendation Systems', ecPubTitleHint:'',
+ecPubVenue:'Journal / Conference / Platform', ecPubVenuePh:'GitHub / ACM MM 2024', ecPubVenueHint:'',
+ecPubLink:('Li'+'nk'), ecPubLinkPh:'https://...', ecPubLinkHint:'',
+hintEmpty:(g,ok)=>`Suggested ${g}-${ok} words`,
+hintShort:(len,g)=>`${len} chars — a bit short, aim for ${g}`,
+hintGood:(len)=>`✓ ${len} chars — looks good`,
+hintLong:(len,ok)=>`${len} chars — slightly long, try to keep under ${ok}`,
+hintTooLong:(len)=>`${len} chars — too long, may overflow the page`,
+resetConfirm:'Reset all content?',
+rSummary:('Sum'+'mary'), rEdu:('Educ'+'ation'), rWork:('Exper'+'ience'), rProject:('Proj'+'ects'),
+rSkillsSection:('Ski'+'lls'), rAwards:('Awa'+'rds'), rPubs:('Public'+'ations'),
+rSkillTools:('Ski'+'lls'), rSkillLang:('Lang'+'uages'), rSkillCerts:'Certifications',
+rContact:('Con'+'tact'), rLangSide:('Lang'+'uages'), rCertsSide:'Certifications',
+rWechat:('WeC'+'hat'), rViewLink:'🔗 View',
+}
+};
+function _tb() {
+const t = I18N[S.lang];
+document.querySelectorAll('[data-i18n]').forEach(el => {
+const key = el.dataset.i18n;
+if (t[key] !== undefined) el.textContent = t[key];
+});
+document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+const key = el.dataset.i18nPh;
+if (t[key] !== undefined) el.placeholder = t[key];
+});
+const tagEl = document.getElementById('topbar-tagline');
+if (tagEl) tagEl.textContent = t.tagline;
+const tzKeys = [('lTz'+'Name'),('lTzSe'+'ction'),('lTz'+'Org'),('lTz'+'Role'),('lTz'+'Body'),('lTz'+'Meta')];
+document.querySelectorAll('.typo-label').forEach((el, i) => {
+if (t[tzKeys[i]]) el.textContent = t[tzKeys[i]];
+});
+[('e'+'du'),('wo'+'rk'),('pro'+'ject'),('aw'+'ard'),('p'+'ub')].forEach(type => _t9(type));
+}
+function _ta() {
+const t = I18N[S.lang];
+return {
+edu: { title: t.ecEduTitle, fields: [
+{id:('sch'+'ool'), label:t.ecEduSchool, placeholder:t.ecEduSchoolPh, hint:t.ecEduSchoolHint},
+{id:('deg'+'ree'), label:t.ecEduDegree, placeholder:t.ecEduDegreePh, hint:t.ecEduDegreeHint},
+{id:('per'+'iod'), label:t.ecEduPeriod, placeholder:t.ecEduPeriodPh, hint:t.ecEduPeriodHint},
+{id:('g'+'pa'), label:t.ecEduGpa, placeholder:t.ecEduGpaPh, hint:t.ecEduGpaHint},
+]},
+work: { title: t.ecWorkTitle, fields: [
+{id:('com'+'pany'), label:t.ecWorkCompany, placeholder:t.ecWorkCompanyPh, hint:t.ecWorkCompanyHint},
+{id:('ro'+'le'), label:t.ecWorkRole, placeholder:t.ecWorkRolePh, hint:t.ecWorkRoleHint},
+{id:('per'+'iod'), label:t.ecWorkPeriod, placeholder:t.ecWorkPeriodPh, hint:t.ecWorkPeriodHint},
+{id:('de'+'sc'), label:t.ecWorkDesc, placeholder:t.ecWorkDescPh, hint:t.ecWorkDescHint,
+isTextarea:true, hintId:('workDe'+'scHint'), good:60, ok:150, warn:250},
+]},
+project: { title: t.ecProjTitle, fields: [
+{id:('na'+'me'), label:t.ecProjName, placeholder:t.ecProjNamePh, hint:t.ecProjNameHint},
+{id:('ro'+'le'), label:t.ecProjRole, placeholder:t.ecProjRolePh, hint:t.ecProjRoleHint},
+{id:('per'+'iod'), label:t.ecProjPeriod, placeholder:t.ecProjPeriodPh, hint:t.ecProjPeriodHint},
+{id:('li'+'nk'), label:t.ecProjLink, placeholder:t.ecProjLinkPh, hint:t.ecProjLinkHint},
+{id:('de'+'sc'), label:t.ecProjDesc, placeholder:t.ecProjDescPh, hint:t.ecProjDescHint,
+isTextarea:true, hintId:('projDe'+'scHint'), good:50, ok:120, warn:200},
+]},
+award: { title: t.ecAwardTitle, fields: [
+{id:('na'+'me'), label:t.ecAwardName, placeholder:t.ecAwardNamePh, hint:t.ecAwardNameHint},
+{id:('o'+'rg'), label:t.ecAwardOrg, placeholder:t.ecAwardOrgPh, hint:t.ecAwardOrgHint},
+{id:('ye'+'ar'), label:t.ecAwardYear, placeholder:t.ecAwardYearPh, hint:t.ecAwardYearHint},
+]},
+pub: { title: t.ecPubTitle, fields: [
+{id:('ti'+'tle'), label:t.ecPubTitleF, placeholder:t.ecPubTitlePh, hint:t.ecPubTitleHint},
+{id:('ve'+'nue'), label:t.ecPubVenue, placeholder:t.ecPubVenuePh, hint:t.ecPubVenueHint},
+{id:('li'+'nk'), label:t.ecPubLink, placeholder:t.ecPubLinkPh, hint:t.ecPubLinkHint},
+]},
+};
+}
+function _t7(type) {
+const key = type + ('Ent'+'ries');
+const id = Date.now();
+S[key].push({id, data:{}});
+_t9(type);
+_tu();
+}
+function _t8(type, id) {
+const key = type + ('Ent'+'ries');
+S[key] = S[key].filter(e => e.id !== id);
+_t9(type);
+_tu();
+}
+function _t9(type) {
+const key = type + ('Ent'+'ries');
+const cfg = _ta()[type];
+const container = document.getElementById(type + ('Li'+'st'));
+if (!container) return;
+container.innerHTML = '';
+S[key].forEach((entry, idx) => {
+const card = document.createElement(('d'+'iv'));
+card.className = ('entry'+'-card');
+card.innerHTML = `<div class="entry-card-head">
+<span>${cfg.title} ${idx+1}</span>
+<button class="entry-del" onclick="_t8('${type}',${entry.id})">✕</button>
+</div>`;
+cfg.fields.forEach(f => {
+const div = document.createElement(('d'+'iv'));
+div.className = ('fi'+'eld');
+div.innerHTML = `<label>${f.label}</label>`;
+if (f.isTextarea) {
+const ta = document.createElement(('text'+'area'));
+ta.placeholder = f.placeholder;
+ta.rows = 3;
+ta.value = entry.data[f.id] || '';
+ta.oninput = function() {
+entry.data[f.id] = this.value;
+if (f.hintId) _t6(this, f.hintId + '_' + entry.id, f.good, f.ok, f.warn);
+else _tu();
+};
+div.appendChild(ta);
+if (f.hintId) {
+const hint = document.createElement(('d'+'iv'));
+hint.id = f.hintId + '_' + entry.id;
+hint.className = ('hi'+'nt');
+hint.textContent = f.hint;
+div.appendChild(hint);
+} else if (f.hint) {
+const hint = document.createElement(('d'+'iv'));
+hint.className = ('hi'+'nt');
+hint.textContent = f.hint;
+div.appendChild(hint);
+}
+} else {
+const inp = document.createElement(('in'+'put'));
+inp.type = f.id === ('li'+'nk') ? ('u'+'rl') : ('te'+'xt');
+inp.placeholder = f.placeholder;
+inp.value = entry.data[f.id] || '';
+inp.oninput = function() { entry.data[f.id] = this.value; _tu(); };
+div.appendChild(inp);
+if (f.hint) {
+const hint = document.createElement(('d'+'iv'));
+hint.className = ('hi'+'nt');
+hint.textContent = f.hint;
+div.appendChild(hint);
+}
+}
+card.appendChild(div);
+});
+container.appendChild(card);
+});
+}
+function _tc(id, fallback) { const el = document.getElementById(id); return el ? (parseFloat(el.value) || fallback) : fallback; }
+function _td(id) { const el = document.getElementById(id); return el ? el.value : '#374151'; }
+function _te() {
+const g = id => (document.getElementById(id) || {value:''}).value.trim();
+const gc = id => (document.getElementById(id) || {checked:false}).checked;
+return {
+name: g(('na'+'me')), nameEn: g(('nam'+'eEn')), jobTitle: g(('jobT'+'itle')),
+phone: g(('ph'+'one')), email: g(('em'+'ail')), city: g(('ci'+'ty')),
+linkedin: g(('link'+'edin')),
+wechat: gc(('showW'+'echat')) ? g(('wec'+'hat')) : '',
+showPhoto: gc(('show'+'Photo')), photoUrl: g(('phot'+'oUrl')),
+showSummary: gc(('showS'+'ummary')), summary: g(('sum'+'mary')),
+showProject: gc(('showP'+'roject')),
+showSkills: gc(('showS'+'kills')),
+skillTools: g(('skill'+'Tools')), skillLang: g(('skil'+'lLang')), skillCerts: g(('skill'+'Certs')),
+showAwards: gc(('showA'+'wards')),
+showPubs: gc(('show'+'Pubs')),
+edu: S.eduEntries.map(e => e.data),
+work: S.workEntries.map(e => e.data),
+project: S.projectEntries.map(e => e.data),
+award: S.awardEntries.map(e => e.data),
+pub: S.pubEntries.map(e => e.data),
+t: {
+szName: _tc(('sz-'+'name'), 24),
+szSection: _tc(('sz-se'+'ction'), 13),
+szOrg: _tc(('sz-'+'org'), 12),
+szRole: _tc(('sz-'+'role'), 11),
+szBody: _tc(('sz-'+'body'), 11),
+szMeta: _tc(('sz-'+'meta'), 11),
+clName: _td(('cl-'+'name')),
+clSection: _td(('cl-se'+'ction')),
+clOrg: _td(('cl-'+'org')),
+clRole: _td(('cl-'+'role')),
+clBody: _td(('cl-'+'body')),
+clMeta: _td(('cl-'+'meta')),
+},
+};
+}
+function _tf(hex) {
+const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+return {r,g,b};
+}
+function _tg(hex, amt) {
+const {r,g,b} = _tf(hex);
+return `rgb(${Math.min(255,r+amt)},${Math.min(255,g+amt)},${Math.min(255,b+amt)})`;
+}
+function _th(hex, a) { const {r,g,b} = _tf(hex); return `_th(${r},${g},${b},${a})`; }
+function _ti(hex) { const {r,g,b} = _tf(hex); return (r*299+g*587+b*114)/1000 < 140; }
+function _tj(text) {
+if (!text) return '';
+return text.split('\n').filter(l=>l.trim()).map(l =>
+`<div style="margin-bottom:2px;padding-left:10px;position:relative;">
+<span style="position:absolute;left:0;top:0;">${l.startsWith('•')||l.startsWith('-') ? '' : '•'}</span>
+${l.replace(/^[•\-]\s*/,'')}</div>`
+).join('');
+}
+function _tk(v, col) {
+const items = [];
+if (v.phone) items.push(v.phone);
+if (v.email) items.push(v.email);
+if (v.city) items.push(v.city);
+if (v.linkedin) items.push(v.linkedin);
+if (v.wechat) items.push((v.L ? v.L.rWechat : ('WeC'+'hat')) + ': ' + v.wechat);
+return items.map(i => `<span style="margin:0 6px;color:${col}">${i}</span>`).join('<span style="color:#9ca3af">|</span>');
+}
+function _tl(v, col, font) {
+const t = v.t;
+const sections = [];
+sections.push(`
+<div style="text-align:center;padding-bottom:12px;border-bottom:2px solid ${col};margin-bottom:14px;position:relative;">
+${v.showPhoto && v.photoUrl ? `<img src="${v.photoUrl}" style="position:absolute;right:0;top:0;width:62px;height:82px;object-fit:cover;border-radius:3px;">` : ''}
+<div style="font-size:${t.szName}px;font-weight:700;letter-spacing:.02em;color:${t.clName};">${v.name || '姓名'}${v.nameEn ? `<span style="font-size:${Math.round(t.szName*0.62)}px;font-weight:400;color:${t.clMeta};margin-left:10px;">${v.nameEn}</span>` : ''}</div>
+${v.jobTitle ? `<div style="font-size:${t.szRole}px;color:${col};margin-top:4px;font-weight:500;">${v.jobTitle}</div>` : ''}
+<div style="font-size:${t.szMeta}px;margin-top:6px;">${_tk(v, t.clBody)}</div>
+</div>`);
+if (v.showSummary && v.summary) sections.push(_tm(v.L.rSummary, `<p style="line-height:1.7;font-size:${t.szBody}px;color:${t.clBody};">${v.summary}</p>`, col, t));
+if (v.edu.length) sections.push(_tm(v.L.rEdu, v.edu.map(e=>`
+<div style="margin-bottom:8px;"><div style="display:flex;justify-content:space-between;">
+<strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${e.school||''}</strong><span style="font-size:${t.szMeta}px;color:${t.clMeta};">${e.period||''}</span>
+</div><div style="font-size:${t.szRole}px;color:${t.clRole};">${e.degree||''}${e.gpa?` &nbsp;|&nbsp; <span style="color:${col}">${e.gpa}</span>`:''}</div></div>`).join(''), col, t));
+if (v.work.length) sections.push(_tm(v.L.rWork, v.work.map(e=>`
+<div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;">
+<strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${e.company||''}</strong><span style="font-size:${t.szMeta}px;color:${t.clMeta};">${e.period||''}</span>
+</div><div style="font-size:${t.szRole}px;color:${col};font-weight:500;margin-bottom:3px;">${e.role||''}</div>
+<div style="font-size:${t.szBody}px;color:${t.clBody};line-height:1.65;">${_tj(e.desc)}</div></div>`).join(''), col, t));
+if (v.showProject && v.project.length) sections.push(_tm(v.L.rProject, v.project.map(e=>`
+<div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;align-items:baseline;">
+<strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${e.name||''}</strong><span style="font-size:${t.szMeta}px;color:${t.clMeta};">${e.period||''}</span>
+</div><div style="font-size:${t.szRole}px;color:${col};margin-bottom:2px;">${e.role||''}${e.link?` · <a href="${e.link}" style="color:${col};text-decoration:none;">${v.L.rViewLink}</a>`:''}</div>
+<div style="font-size:${t.szBody}px;color:${t.clBody};line-height:1.65;">${_tj(e.desc)}</div></div>`).join(''), col, t));
+if (v.showSkills && (v.skillTools||v.skillLang||v.skillCerts)) {
+const sk = [];
+if (v.skillTools) sk.push(`<div style="margin-bottom:4px;font-size:${t.szBody}px;color:${t.clBody};"><strong>${v.L.rSkillTools}：</strong>${v.skillTools}</div>`);
+if (v.skillLang) sk.push(`<div style="margin-bottom:4px;font-size:${t.szBody}px;color:${t.clBody};"><strong>${v.L.rSkillLang}：</strong>${v.skillLang}</div>`);
+if (v.skillCerts) sk.push(`<div style="font-size:${t.szBody}px;color:${t.clBody};"><strong>${v.L.rSkillCerts}：</strong>${v.skillCerts}</div>`);
+sections.push(_tm(v.L.rSkillsSection, sk.join(''), col, t));
+}
+if (v.showAwards && v.award.length) sections.push(_tm(v.L.rAwards, v.award.map(e=>`
+<div style="display:flex;justify-content:space-between;margin-bottom:4px;font-size:${t.szBody}px;">
+<span><strong style="color:${col}">${e.name||''}</strong>${e.org?` · <span style="color:${t.clBody}">${e.org}</span>`:''}</span><span style="color:${t.clMeta};">${e.year||''}</span>
+</div>`).join(''), col, t));
+if (v.showPubs && v.pub.length) sections.push(_tm(v.L.rPubs, v.pub.map(e=>`
+<div style="margin-bottom:6px;font-size:${t.szBody}px;color:${t.clBody};"><strong>${e.title||''}</strong>${e.venue?` · <em style="color:${t.clMeta};">${e.venue}</em>`:''}${e.link?` · <a href="${e.link}" style="color:${col};">${e.link}</a>`:''}</div>`).join(''), col, t));
+return `<div style="padding:32px 40px;font-family:${font};color:${t.clBody};">${sections.join('')}</div>`;
+}
+function _tm(title, body, col, t) {
+const sz = t ? t.szSection : 13;
+const cl = t ? t.clSection : col;
+return `<div style="margin-bottom:16px;">
+<div style="font-size:${sz}px;font-weight:700;color:${cl};border-bottom:1px solid ${cl};padding-bottom:3px;margin-bottom:8px;letter-spacing:.04em;">${title}</div>
+${body}
+</div>`;
+}
+function _tn(v, col, font) {
+const t = v.t;
+const sections = [];
+if (v.showSummary && v.summary) sections.push(_to(v.L.rSummary, `<p style="font-size:${t.szBody}px;color:${t.clBody};line-height:1.7;">${v.summary}</p>`, col, t));
+if (v.edu.length) sections.push(_to(v.L.rEdu, v.edu.map(e=>`
+<div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+<div><strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${e.school||''}</strong><br><span style="font-size:${t.szRole}px;color:${t.clRole};">${e.degree||''}</span>${e.gpa?`<br><span style="font-size:${t.szMeta}px;color:${col}">${e.gpa}</span>`:''}</div>
+<span style="font-size:${t.szMeta}px;color:${t.clMeta};white-space:nowrap;padding-top:2px;">${e.period||''}</span>
+</div>`).join(''), col, t));
+if (v.work.length) sections.push(_to(v.L.rWork, v.work.map(e=>`
+<div style="margin-bottom:12px;padding:10px;background:${_th(col,.05)};border-radius:6px;border-left:3px solid ${col};">
+<div style="display:flex;justify-content:space-between;"><strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${e.company||''}</strong><span style="font-size:${t.szMeta}px;color:${t.clMeta};">${e.period||''}</span></div>
+<div style="font-size:${t.szRole}px;color:${col};font-weight:600;margin:2px 0 4px;">${e.role||''}</div>
+<div style="font-size:${t.szBody}px;color:${t.clBody};line-height:1.65;">${_tj(e.desc)}</div>
+</div>`).join(''), col, t));
+if (v.showProject && v.project.length) sections.push(_to(v.L.rProject, v.project.map(e=>`
+<div style="margin-bottom:10px;padding:10px;background:#f8faff;border-radius:6px;border:1px solid ${_th(col,.2)};">
+<div style="display:flex;justify-content:space-between;align-items:center;">
+<strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${e.name||''}</strong>
+${e.link?`<a href="${e.link}" style="font-size:${t.szMeta}px;color:${col};text-decoration:none;background:${_th(col,.1)};padding:2px 6px;border-radius:4px;">${v.L.rViewLink}</a>`:''}
+</div>
+<div style="font-size:${t.szRole}px;color:${t.clMeta};margin:2px 0;">${e.role||''} ${e.period?`· ${e.period}`:''}</div>
+<div style="font-size:${t.szBody}px;color:${t.clBody};line-height:1.65;">${_tj(e.desc)}</div>
+</div>`).join(''), col, t));
+if (v.showSkills && (v.skillTools||v.skillLang||v.skillCerts)) {
+const tags = (v.skillTools||'').split(',').filter(s=>s.trim()).map(s=>`<span style="background:${_th(col,.1)};color:${col};padding:2px 8px;border-radius:12px;font-size:${t.szBody}px;margin:2px;display:inline-block;">${s.trim()}</span>`).join('');
+sections.push(_to(v.L.rSkillsSection, `<div style="margin-bottom:4px;">${tags}</div>${v.skillLang?`<div style="font-size:${t.szBody}px;color:${t.clBody};margin-top:6px;"><strong>${v.L.rSkillLang}：</strong>${v.skillLang}</div>`:''}${v.skillCerts?`<div style="font-size:${t.szBody}px;color:${t.clBody};margin-top:3px;"><strong>${v.L.rSkillCerts}：</strong>${v.skillCerts}</div>`:''}`, col, t));
+}
+if (v.showAwards && v.award.length) sections.push(_to(v.L.rAwards, v.award.map(e=>`<div style="display:flex;justify-content:space-between;font-size:${t.szBody}px;margin-bottom:4px;"><span><strong style="color:${col}">${e.name||''}</strong>${e.org?` · <span style="color:${t.clBody}">${e.org}</span>`:''}</span><span style="color:${t.clMeta};">${e.year||''}</span></div>`).join(''), col, t));
+if (v.showPubs && v.pub.length) sections.push(_to(v.L.rPubs, v.pub.map(e=>`<div style="margin-bottom:6px;font-size:${t.szBody}px;color:${t.clBody};"><strong>${e.title||''}</strong>${e.venue?` · <em style="color:${t.clMeta};">${e.venue}</em>`:''}${e.link?` · <a href="${e.link}" style="color:${col};">${e.link}</a>`:''}</div>`).join(''), col, t));
+return `<div style="font-family:${font};color:${t.clBody};">
+<div style="background:${col};color:#fff;padding:28px 36px 20px;">
+${v.showPhoto && v.photoUrl ? `<img src="${v.photoUrl}" style="float:right;width:62px;height:82px;object-fit:cover;border-radius:4px;margin-left:12px;">` : ''}
+<div style="font-size:${t.szName}px;font-weight:700;letter-spacing:.01em;">${v.name||(v.L?v.L.lName:('Na'+'me'))}${v.nameEn?`<span style="font-size:${Math.round(t.szName*0.54)}px;font-weight:300;opacity:.85;margin-left:10px;">${v.nameEn}</span>`:''}</div>
+${v.jobTitle?`<div style="font-size:${t.szRole}px;opacity:.9;margin-top:4px;font-weight:400;">${v.jobTitle}</div>`:''}
+<div style="font-size:${t.szMeta}px;opacity:.85;margin-top:8px;">${_tk(v,'_th(255,255,255,.9)')}</div>
+</div>
+<div style="padding:24px 36px;">${sections.join('')}</div>
+</div>`;
+}
+function _to(title, body, col, t) {
+const sz = t ? t.szSection : 12;
+return `<div style="margin-bottom:18px;">
+<div style="background:${col};color:#fff;font-size:${sz}px;font-weight:700;padding:4px 10px;border-radius:4px;display:inline-block;margin-bottom:10px;letter-spacing:.06em;">${title}</div>
+${body}
+</div>`;
+}
+function _tp(v, col, font) {
+const t = v.t;
+const bg = '#1a1a2e'; const bg2 = '#16213e'; const textLight = '#e2e8f0';
+const sections = [];
+if (v.showSummary && v.summary) sections.push(_tq(v.L.rSummary, `<p style="font-size:${t.szBody}px;color:#94a3b8;line-height:1.7;">${v.summary}</p>`, col, t));
+if (v.edu.length) sections.push(_tq(v.L.rEdu, v.edu.map(e=>`
+<div style="margin-bottom:8px;padding:8px 10px;background:_th(255,255,255,.04);border-radius:6px;">
+<div style="display:flex;justify-content:space-between;"><strong style="font-size:${t.szOrg}px;color:${textLight};">${e.school||''}</strong><span style="font-size:${t.szMeta}px;color:#64748b;">${e.period||''}</span></div>
+<div style="font-size:${t.szRole}px;color:#94a3b8;margin-top:2px;">${e.degree||''}${e.gpa?` | <span style="color:${col}">${e.gpa}</span>`:''}</div>
+</div>`).join(''), col, t));
+if (v.work.length) sections.push(_tq(v.L.rWork, v.work.map(e=>`
+<div style="margin-bottom:12px;border-left:3px solid ${col};padding-left:12px;">
+<div style="display:flex;justify-content:space-between;"><strong style="font-size:${t.szOrg}px;color:${textLight};">${e.company||''}</strong><span style="font-size:${t.szMeta}px;color:#64748b;">${e.period||''}</span></div>
+<div style="font-size:${t.szRole}px;color:${col};font-weight:600;margin:2px 0 4px;">${e.role||''}</div>
+<div style="font-size:${t.szBody}px;color:#94a3b8;line-height:1.65;">${_tj(e.desc)}</div>
+</div>`).join(''), col, t));
+if (v.showProject && v.project.length) sections.push(_tq(v.L.rProject, v.project.map(e=>`
+<div style="margin-bottom:10px;padding:10px;background:_th(255,255,255,.05);border-radius:8px;border:1px solid ${_th(col,.25)};">
+<div style="display:flex;justify-content:space-between;align-items:center;">
+<strong style="font-size:${t.szOrg}px;color:${textLight};">${e.name||''}</strong>
+${e.link?`<a href="${e.link}" style="font-size:${t.szMeta}px;color:${col};text-decoration:none;background:${_th(col,.15)};padding:2px 6px;border-radius:4px;">${v.L.rViewLink}</a>`:''}
+</div>
+<div style="font-size:${t.szRole}px;color:#64748b;margin:2px 0;">${e.role||''} ${e.period?`· ${e.period}`:''}</div>
+<div style="font-size:${t.szBody}px;color:#94a3b8;line-height:1.65;">${_tj(e.desc)}</div>
+</div>`).join(''), col, t));
+if (v.showSkills && (v.skillTools||v.skillLang||v.skillCerts)) {
+const tags = (v.skillTools||'').split(',').filter(s=>s.trim()).map(s=>`<span style="background:${_th(col,.15)};color:${col};border:1px solid ${_th(col,.3)};padding:2px 8px;border-radius:12px;font-size:${t.szBody}px;margin:2px;display:inline-block;">${s.trim()}</span>`).join('');
+sections.push(_tq(v.L.rSkillsSection, `<div>${tags}</div>${v.skillLang?`<div style="font-size:${t.szBody}px;color:#94a3b8;margin-top:6px;"><span style="color:${col};font-weight:600;">${v.L.rSkillLang} </span>${v.skillLang}</div>`:''}${v.skillCerts?`<div style="font-size:${t.szBody}px;color:#94a3b8;margin-top:3px;"><span style="color:${col};font-weight:600;">${v.L.rSkillCerts} </span>${v.skillCerts}</div>`:''}`, col, t));
+}
+if (v.showAwards && v.award.length) sections.push(_tq(v.L.rAwards, v.award.map(e=>`<div style="display:flex;justify-content:space-between;font-size:${t.szBody}px;margin-bottom:4px;color:#94a3b8;"><span>✦ <span style="color:${textLight}">${e.name||''}</span>${e.org?` · ${e.org}`:''}</span><span style="color:#64748b;">${e.year||''}</span></div>`).join(''), col, t));
+if (v.showPubs && v.pub.length) sections.push(_tq(v.L.rPubs, v.pub.map(e=>`<div style="margin-bottom:6px;font-size:${t.szBody}px;color:#94a3b8;"><span style="color:${textLight}">${e.title||''}</span>${e.venue?` · <em>${e.venue}</em>`:''}${e.link?` · <a href="${e.link}" style="color:${col};">${e.link}</a>`:''}</div>`).join(''), col, t));
+return `<div style="font-family:${font};background:${bg};min-height:1123px;">
+<div style="background:linear-gradient(135deg,${col} 0%,${bg2} 60%);padding:28px 36px 20px;">
+${v.showPhoto && v.photoUrl ? `<img src="${v.photoUrl}" style="float:right;width:62px;height:82px;object-fit:cover;border-radius:6px;border:2px solid ${_th(col,.4)};margin-left:12px;">` : ''}
+<div style="font-size:${t.szName}px;font-weight:700;color:#fff;letter-spacing:.01em;">${v.name||(v.L?v.L.lName:('Na'+'me'))}${v.nameEn?`<span style="font-size:${Math.round(t.szName*0.54)}px;font-weight:300;opacity:.7;margin-left:10px;">${v.nameEn}</span>`:''}</div>
+${v.jobTitle?`<div style="font-size:${t.szRole}px;color:${_tg(col,120)};margin-top:4px;">${v.jobTitle}</div>`:''}
+<div style="font-size:${t.szMeta}px;color:_th(255,255,255,.7);margin-top:8px;">${_tk(v,'_th(255,255,255,.9)')}</div>
+</div>
+<div style="padding:24px 36px;">${sections.join('')}</div>
+</div>`;
+}
+function _tq(title, body, col, t) {
+const sz = t ? t.szSection : 13;
+return `<div style="margin-bottom:18px;">
+<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+<div style="width:3px;height:14px;background:${col};border-radius:2px;"></div>
+<span style="font-size:${sz}px;font-weight:700;color:${col};letter-spacing:.06em;">${title}</span>
+<div style="flex:1;height:1px;background:_th(255,255,255,.08);"></div>
+</div>
+${body}
+</div>`;
+}
+function _tr(v, col, font) {
+const t = v.t;
+const sideContent = [];
+if (v.showPhoto && v.photoUrl) sideContent.push(`<div style="text-align:center;margin-bottom:16px;"><img src="${v.photoUrl}" style="width:80px;height:107px;object-fit:cover;border-radius:6px;border:2px solid _th(255,255,255,.3);"></div>`);
+sideContent.push(`<div style="text-align:center;margin-bottom:16px;">
+<div style="font-size:${Math.round(t.szName*0.75)}px;font-weight:700;color:#fff;line-height:1.3;">${v.name||(v.L?v.L.lName:('Na'+'me'))}</div>
+${v.nameEn?`<div style="font-size:${t.szMeta}px;color:_th(255,255,255,.6);margin-top:2px;">${v.nameEn}</div>`:''}
+${v.jobTitle?`<div style="font-size:${t.szMeta}px;color:_th(255,255,255,.85);margin-top:6px;font-weight:500;">${v.jobTitle}</div>`:''}
+</div>`);
+const contacts = [];
+if (v.phone) contacts.push(v.phone);
+if (v.email) contacts.push(v.email);
+if (v.city) contacts.push(v.city);
+if (v.linkedin) contacts.push(v.linkedin);
+if (v.wechat) contacts.push(v.wechat);
+if (contacts.length) sideContent.push(`<div style="margin-bottom:16px;">${_ts(v.L.rContact)}<div style="font-size:${t.szMeta}px;color:_th(255,255,255,.8);line-height:2;">${contacts.join('<br>')}</div></div>`);
+if (v.showSkills && v.skillTools) sideContent.push(`<div style="margin-bottom:14px;">${_ts(v.L.rSkillsSection)}<div>${(v.skillTools||'').split(',').filter(s=>s.trim()).map(s=>`<div style="font-size:${t.szMeta}px;color:_th(255,255,255,.8);padding:2px 0;border-bottom:1px solid _th(255,255,255,.08);margin-bottom:4px;">${s.trim()}</div>`).join('')}</div></div>`);
+if (v.showSkills && v.skillLang) sideContent.push(`<div style="margin-bottom:14px;">${_ts(v.L.rLangSide)}<div style="font-size:${t.szMeta}px;color:_th(255,255,255,.8);line-height:1.8;">${v.skillLang}</div></div>`);
+if (v.showSkills && v.skillCerts) sideContent.push(`<div style="margin-bottom:14px;">${_ts(v.L.rCertsSide)}<div style="font-size:${t.szMeta}px;color:_th(255,255,255,.8);line-height:1.8;">${v.skillCerts}</div></div>`);
+if (v.showAwards && v.award.length) sideContent.push(`<div style="margin-bottom:14px;">${_ts(v.L.rAwards)}${v.award.map(e=>`<div style="font-size:${t.szMeta}px;color:_th(255,255,255,.8);margin-bottom:4px;"><strong>${e.name||''}</strong><br>${e.org||''} ${e.year||''}</div>`).join('')}</div>`);
+const mainContent = [];
+if (v.showSummary && v.summary) mainContent.push(_tt(v.L.rSummary, `<p style="font-size:${t.szBody}px;color:${t.clBody};line-height:1.7;">${v.summary}</p>`, col, t));
+if (v.edu.length) mainContent.push(_tt(v.L.rEdu, v.edu.map(e=>`
+<div style="margin-bottom:8px;"><div style="display:flex;justify-content:space-between;">
+<strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${e.school||''}</strong><span style="font-size:${t.szMeta}px;color:${t.clMeta};">${e.period||''}</span>
+</div><div style="font-size:${t.szRole}px;color:${t.clRole};">${e.degree||''}${e.gpa?` | <span style="color:${col}">${e.gpa}</span>`:''}</div></div>`).join(''), col, t));
+if (v.work.length) mainContent.push(_tt(v.L.rWork, v.work.map(e=>`
+<div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;">
+<strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${e.company||''}</strong><span style="font-size:${t.szMeta}px;color:${t.clMeta};">${e.period||''}</span>
+</div><div style="font-size:${t.szRole}px;color:${col};font-weight:600;margin-bottom:3px;">${e.role||''}</div>
+<div style="font-size:${t.szBody}px;color:${t.clBody};line-height:1.65;">${_tj(e.desc)}</div></div>`).join(''), col, t));
+if (v.showProject && v.project.length) mainContent.push(_tt(v.L.rProject, v.project.map(e=>`
+<div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;align-items:baseline;">
+<strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${e.name||''}</strong><span style="font-size:${t.szMeta}px;color:${t.clMeta};">${e.period||''}</span>
+</div><div style="font-size:${t.szRole}px;color:${col};margin-bottom:2px;">${e.role||''}${e.link?` · <a href="${e.link}" style="color:${col};">${v.L.rViewLink}</a>`:''}</div>
+<div style="font-size:${t.szBody}px;color:${t.clBody};line-height:1.65;">${_tj(e.desc)}</div></div>`).join(''), col, t));
+if (v.showPubs && v.pub.length) mainContent.push(_tt(v.L.rPubs, v.pub.map(e=>`<div style="margin-bottom:6px;font-size:${t.szBody}px;color:${t.clBody};"><strong>${e.title||''}</strong>${e.venue?` · <em style="color:${t.clMeta};">${e.venue}</em>`:''}${e.link?` · <a href="${e.link}" style="color:${col};">${e.link}</a>`:''}</div>`).join(''), col, t));
+return `<div style="font-family:${font};display:flex;min-height:1123px;color:${t.clBody};">
+<div style="width:220px;flex-shrink:0;background:${col};color:#fff;padding:28px 18px;min-height:1123px;">${sideContent.join('')}</div>
+<div style="flex:1;padding:28px 28px;">${mainContent.join('')}</div>
+</div>`;
+}
+function _ts(title) {
+return `<div style="font-size:10px;font-weight:700;color:_th(255,255,255,.5);letter-spacing:.1em;text-transform:uppercase;border-bottom:1px solid _th(255,255,255,.15);padding-bottom:4px;margin-bottom:8px;">${title}</div>`;
+}
+function _tt(title, body, col, t) {
+const sz = t ? t.szSection : 13;
+const cl = t ? t.clSection : col;
+return `<div style="margin-bottom:18px;">
+<div style="font-size:${sz}px;font-weight:700;color:${cl};border-bottom:2px solid ${cl};padding-bottom:3px;margin-bottom:8px;letter-spacing:.04em;">${title}</div>
+${body}
+</div>`;
+}
+function _tu() {
+const v = _te();
+v.L = I18N[S.lang];
+const col = S.color;
+const font = S.font;
+let html = '';
+if (S.template === ('cla'+'ssic')) html = _tl(v, col, font);
+else if (S.template === ('mod'+'ern')) html = _tn(v, col, font);
+else if (S.template === ('da'+'rk')) html = _tp(v, col, font);
+else if (S.template === ('two'+'col')) html = _tr(v, col, font);
+const el = document.getElementById('resume-preview');
+el.innerHTML = html;
+requestAnimationFrame(() => {
+el.querySelectorAll('.pg-break').forEach(n => n.remove());
+const PAGE_H = 1123;
+const totalH = el.scrollHeight;
+const pages = Math.ceil(totalH / PAGE_H);
+for (let i = 1; i < pages; i++) {
+const marker = document.createElement(('d'+'iv'));
+marker.className = ('pg-b'+'reak');
+marker.style.top = (PAGE_H * i) + 'px';
+marker.innerHTML = `<span class="pg-break-label">第 ${i} 页 / 第 ${i+1} 页</span>`;
+el.appendChild(marker);
+}
+});
+}
+function _tv() {
+const v = _te();
+const col = S.color;
+const font = S.font;
+let body = '';
+if (S.template === ('cla'+'ssic')) body = _tl(v,col,font);
+else if (S.template === ('mod'+'ern')) body = _tn(v,col,font);
+else if (S.template === ('da'+'rk')) body = _tp(v,col,font);
+else if (S.template === ('two'+'col')) body = _tr(v,col,font);
+return `<!DOCTYPE html><html lang="zh"><head><meta charset="UTF-8">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@400;600;700&family=Inter:wght@300;400;500;600;700&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&family=Lato:wght@300;400;700&family=Raleway:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>*{box-sizing:border-box;margin:0;padding:0;}body{background:#d1d5db;display:flex;justify-content:center;padding:24px;}
+@media print{body{background:#fff;padding:0;}#page{box-shadow:none;}}
+#page{width:794px;min-height:1123px;background:#fff;box-shadow:0 4px 24px _th(0,0,0,.2);}</style>
+<title>${v.name||'简历'}</title></head>
+<body><div id="page">${body}</div></body></html>`;
+}
+function _tw() {
+const v = _te();
+const a = document.createElement('a');
+a.href = 'data:text/html;charset=utf-8,' + encodeURIComponent(_tv());
+a.download = (v.name||('res'+'ume')) + '-简历.html';
+a.click();
+}
+function _tx() {
+const win = window.open('', '_blank');
+win.document.write(_tv());
+win.document.close();
+win.focus();
+setTimeout(() => { win.print(); }, 600);
+}
+function _ty() {
+if (!confirm(I18N[S.lang].resetConfirm)) return;
+location.reload();
+}
+function _tz() {
+if (S.lang === 'en') {
+document.getElementById(('na'+'me')).value = 'Alex Zhang';
+document.getElementById(('nam'+'eEn')).value = '';
+document.getElementById(('jobT'+'itle')).value = 'Growth Product Manager';
+document.getElementById(('ph'+'one')).value = '+1 (555) 000-****';
+document.getElementById(('em'+'ail')).value = 'alex.zhang@example.com';
+document.getElementById(('ci'+'ty')).value = 'San Francisco, CA';
+document.getElementById(('link'+'edin')).value = 'linkedin.com/in/alexzhang';
+document.getElementById(('showS'+'ummary')).checked = true;
+document.getElementById(('summa'+'ryBody')).style.display = '';
+document.getElementById(('sum'+'mary')).value = 'Growth PM with 5+ years of experience driving user acquisition and retention. Led viral referral programs generating 300K+ new registrations. Skilled in A/B experimentation, data-driven attribution, and cross-functional execution across two high-growth consumer tech companies.';
+document.getElementById(('showS'+'kills')).checked = true;
+document.getElementById(('skill'+'Tools')).value = 'SQL, Python, Mixpanel, Amplitude, A/B Testing, Figma, Tableau';
+document.getElementById(('skil'+'lLang')).value = 'English (Native), Mandarin (Fluent)';
+document.getElementById(('skill'+'Certs')).value = 'Google Analytics Certified, PMP';
+S.eduEntries = [];
+S.workEntries = [];
+S.projectEntries = [];
+S.awardEntries = [];
+S.pubEntries = [];
+S.eduEntries = [
+{id: Date.now(), data: {school:'Stanford University', degree:'M.S. Computer Science', period:'Sep 2017 — Jun 2020', gpa:'GPA 3.8/4.0, Top 10%'}},
+{id: Date.now()+1, data: {school:'University of Washington', degree:'B.S. Software Engineering', period:'Sep 2013 — Jun 2017', gpa:''}},
+];
+S.workEntries = [
+{id: Date.now()+10, data: {
+company:'Acme Corp',
+role:'Senior Product Manager · Growth',
+period:'Mar 2022 — Present',
+desc:'• Built referral growth loop for international app launch; "Invite & Earn" mechanism drove +120K DAU in month one, ROI 1:4.2\n• Upgraded attribution from Last-Click to data-driven model, improving channel budget efficiency by 23%\n• Scaled A/B experimentation platform to 60+ concurrent experiments, cutting cycle time by 40%',
+}},
+{id: Date.now()+11, data: {
+company:'TechStart Inc.',
+role:'Product Manager · User Growth',
+period:'Jul 2020 — Feb 2022',
+desc:'• Optimised new-user activation funnel via landing-page stratified experiments, lifting registration CVR by 18%\n• Designed "refer-a-friend" campaign adding 80K linked payment accounts per run; CAC reduced by 35%\n• Led dormant-user re-engagement strategy, improving 7-day return rate from 6% to 11%',
+}},
+];
+document.getElementById(('showP'+'roject')).checked = true;
+S.projectEntries = [
+{id: Date.now()+20, data: {
+name:'Growth Experimentation Platform',
+role:'Product Owner',
+period:'Jun 2023 — Dec 2023',
+link:'',
+desc:'• Eliminated dependency on engineering sprints for experiment setup; PMs self-serve in minutes\n• Stack: React + Node.js + ClickHouse; integrated across 5 business lines\n• 3× faster experiment iterations; saved 200h+ engineering time per month',
+}},
+{id: Date.now()+21, data: {
+name:'Campaign Attribution Dashboard',
+role:'Solo Designer & Stakeholder',
+period:'Nov 2022',
+link:'',
+desc:'• Unified multi-channel attribution data for real-time ROI visualisation, replacing 3 manual reports\n• SQL + Tableau pipeline cut data latency from T+1 to under 2 hours',
+}},
+];
+document.getElementById(('showA'+'wards')).checked = true;
+S.awardEntries = [
+{id: Date.now()+30, data: {name:'Annual Best Growth Initiative Award', org:'Acme Corp', year:'2023'}},
+{id: Date.now()+31, data: {name:'National Math Modeling Competition — 2nd Place', org:'Ministry of Education', year:'2016'}},
+];
+} else {
+document.getElementById(('na'+'me')).value = '李明远';
+document.getElementById(('nam'+'eEn')).value = 'Alex Li';
+document.getElementById(('jobT'+'itle')).value = '增长产品经理 / Growth PM';
+document.getElementById(('ph'+'one')).value = '+86 138 **** 8888';
+document.getElementById(('em'+'ail')).value = 'alex.li@example.com';
+document.getElementById(('ci'+'ty')).value = '上海';
+document.getElementById(('link'+'edin')).value = 'linkedin.com/in/alexli';
+document.getElementById(('showS'+'ummary')).checked = true;
+document.getElementById(('summa'+'ryBody')).style.display = '';
+document.getElementById(('sum'+'mary')).value = '5 年增长方向产品经验，主导多个拉新与留存项目，累计带动新增注册用户 300 万+。擅长数据驱动决策、A/B 实验设计及跨团队协作，曾在两家大型互联网公司担任核心 PM 职位。';
+document.getElementById(('showS'+'kills')).checked = true;
+document.getElementById(('skill'+'Tools')).value = 'SQL, Python, Mixpanel, Amplitude, A/B Testing, Figma, Tableau';
+document.getElementById(('skil'+'lLang')).value = '普通话（母语），英语（CET-6 588）';
+document.getElementById(('skill'+'Certs')).value = 'Google Analytics 认证，PMP';
+S.eduEntries = [];
+S.workEntries = [];
+S.projectEntries = [];
+S.awardEntries = [];
+S.pubEntries = [];
+S.eduEntries = [
+{id: Date.now(), data: {school:'某重点高校', degree:'硕士 · 计算机科学与技术', period:'2017.09 — 2020.06', gpa:'GPA 3.8/4.0，专业前 8%'}},
+{id: Date.now()+1, data: {school:'另一所高校', degree:'本科 · 软件工程', period:'2013.09 — 2017.06', gpa:''}},
+];
+S.workEntries = [
+{id: Date.now()+10, data: {
+company:'某大型互联网公司',
+role:'高级产品经理 · 增长组',
+period:'2022.03 — 至今',
+desc:'• 主导 App 海外版拉新裂变体系搭建，设计"邀请有礼"双边激励机制，首月带动新增 DAU 12 万，ROI 1:4.2\n• 推动归因模型从 Last-Click 升级为数据驱动归因，渠道预算分配效率提升 23%\n• 联合数据团队搭建增长实验平台，支持同时在线 60+ A/B 实验，实验周期缩短 40%',
+}},
+{id: Date.now()+11, data: {
+company:'另一家互联网公司',
+role:'产品经理 · 用户增长',
+period:'2020.07 — 2022.02',
+desc:'• 负责外卖新用户激活链路优化，通过落地页分层实验将注册转化率提升 18%\n• 设计"老带新"裂变活动，单次活动新增绑卡用户 8 万，获客成本降低 35%\n• 主导用户分层召回策略，沉默用户 7 日回归率从 6% 提升至 11%',
+}},
+];
+document.getElementById(('showP'+'roject')).checked = true;
+S.projectEntries = [
+{id: Date.now()+20, data: {
+name:'增长实验自动化平台',
+role:'产品负责人',
+period:'2023.06 — 2023.12',
+link:'',
+desc:'• 解决业务侧实验配置繁琐、依赖研发排期问题，实现 PM 自助配置上线\n• 技术栈：React + Node.js + ClickHouse，接入 5 条业务线\n• 上线后实验迭代速度提升 3 倍，月均节省研发工时 200h+',
+}},
+{id: Date.now()+21, data: {
+name:'裂变活动效果归因看板',
+role:'独立设计 & 需求方',
+period:'2022.11',
+link:'',
+desc:'• 整合多渠道归因数据，实现活动 ROI 实时可视化，替代 3 张手工报表\n• 基于 SQL + Tableau，数据延迟从 T+1 降至 2 小时内刷新',
+}},
+];
+document.getElementById(('showA'+'wards')).checked = true;
+S.awardEntries = [
+{id: Date.now()+30, data: {name:'年度最佳增长项目奖', org:'某互联网公司', year:'2023'}},
+{id: Date.now()+31, data: {name:'全国大学生数学建模竞赛 二等奖', org:'教育部', year:'2016'}},
+];
+}
+[('e'+'du'),('wo'+'rk'),('pro'+'ject'),('aw'+'ard')].forEach(t => _t9(t));
+document.querySelectorAll('.sb-section-head').forEach(head => {
+if (!head.classList.contains(('op'+'en'))) {
+head.classList.add(('op'+'en'));
+head.nextElementSibling.style.display = '';
+}
+});
+_tu();
+}
+_t7(('e'+'du'));
+_t7(('wo'+'rk'));
+_tb();
+_tu();
+// 默认加载示例数据，让用户第一时间看到简历效果
+_tz();
+window.toggleSection=_t0;
+window.setLang=_t1;
+window.setTemplate=_t2;
+window.setColor=_t3;
+window.setFont=_t5;
+window.updateHint=_t6;
+window.addEntry=_t7;
+window.deleteEntry=_t8;
+window.render=_tu;
+window.downloadHTML=_tw;
+window.exportPDF=_tx;
+window.resetAll=_ty;
+window.fillDemoData=_tz;
+
+/* ════ AI 润色对话框 ════ */
+// 打开对话框
+window.openAIPolish = function() {
+  document.getElementById('aiPolishDialog').style.display = 'flex';
+  document.getElementById('aiPolishResult').style.display = 'none';
+  document.getElementById('aiPolishLoading').style.display = 'none';
+  var btn = document.getElementById('aiPolishRunBtn');
+  btn.disabled = false;
+  btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block;vertical-align:-2px;margin-right:4px;"><path d="M22 2L11 13"/><path d="M22 2L15 22l-4-9-9-4 20-7z"/></svg>开始润色';
+};
+
+// 关闭对话框
+window.closeAIPolish = function() {
+  document.getElementById('aiPolishDialog').style.display = 'none';
+};
+
+// 切换选项选中状态
+window.toggleOption = function(el) {
+  var cb = el.querySelector('input[type=checkbox]');
+  cb.checked = !cb.checked;
+  el.classList.toggle('selected', cb.checked);
+};
+
+// 执行 AI 润色
+window.runAIPolish = function() {
+  var workerUrl = document.getElementById('aiWorkerUrl')?.value.trim() || '';
+  var apiKey = document.getElementById('aiApiKey')?.value.trim() || '';
+  var jd = document.getElementById('aiPolishJd').value.trim();
+
+  var dims = [];
+  var options = document.querySelectorAll('#aiPolishDialog .ai-option');
+  options.forEach(function(opt) {
+    var cb = opt.querySelector('input[type=checkbox]');
+    if (cb.checked) {
+      var text = opt.textContent.trim();
+      if (text.includes('STAR')) dims.push('1. 文案质量优化：用 STAR 法则重写经历描述，确保每段经历都有量化成果（数据/百分比），动词开头，去掉废话');
+      else if (text.includes('ATS')) dims.push('2. ATS 关键词匹配：提取 JD 中的关键词，对比简历中是否包含，给出补充建议');
+      else if (text.includes('语法')) dims.push('3. 语法/拼写检查：找出错别字、语法错误、用词不当、标点问题');
+      else if (text.includes('精简')) dims.push('4. 精简篇幅：压缩冗余描述，控制在合理长度，突出重点');
+    }
+  });
+
+  if (!dims.length) { alert('请至少选择一个润色维度'); return; }
+  if (!apiKey && !workerUrl) { alert('请确保 Worker 代理地址已配置'); return; }
+
+  var resumeText = [];
+  var nameEl = document.getElementById('name');
+  if (nameEl && nameEl.value) resumeText.push('姓名：' + nameEl.value);
+  var jobTitleEl = document.getElementById('jobTitle');
+  if (jobTitleEl && jobTitleEl.value) resumeText.push('求职意向：' + jobTitleEl.value);
+  var summaryEl = document.getElementById('summary');
+  if (summaryEl && summaryEl.value) resumeText.push('【自我评价】\n' + summaryEl.value);
+
+  if (S.workEntries && S.workEntries.length) {
+    S.workEntries.forEach(function(e, i) {
+      var w = '【工作经历 ' + (i+1) + '】\n' + (e.data.company||'') + ' | ' + (e.data.role||'') + ' | ' + (e.data.period||'');
+      if (e.data.desc) w += '\n' + e.data.desc;
+      resumeText.push(w);
+    });
+  }
+
+  if (S.eduEntries && S.eduEntries.length) {
+    S.eduEntries.forEach(function(e, i) {
+      var ed = '【教育经历 ' + (i+1) + '】\n' + (e.data.school||'') + ' | ' + (e.data.degree||'') + ' | ' + (e.data.period||'');
+      resumeText.push(ed);
+    });
+  }
+
+  if (S.projectEntries && S.projectEntries.length) {
+    S.projectEntries.forEach(function(e, i) {
+      var p = '【项目经历 ' + (i+1) + '】\n' + (e.data.name||'');
+      if (e.data.desc) p += '\n' + e.data.desc;
+      resumeText.push(p);
+    });
+  }
+
+  if (!resumeText.length) { alert('请先填写简历内容'); return; }
+
+  var prompt = '你是一位资深简历顾问。请对以下简历内容进行润色并给出修改建议。\n\n';
+  prompt += '## 润色维度\n' + dims.join('\n') + '\n\n';
+  prompt += '## 简历内容\n' + resumeText.join('\n\n') + '\n\n';
+  if (jd) prompt += '## 目标岗位 JD\n' + jd + '\n\n';
+  prompt += '请按维度分点给出具体、可操作的修改建议。直接给出建议，不要废话。';
+
+  document.getElementById('aiPolishResult').style.display = 'none';
+  document.getElementById('aiPolishLoading').style.display = 'block';
+  var btn = document.getElementById('aiPolishRunBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block;vertical-align:-2px;margin-right:4px;animation:spin 1s linear infinite;"><circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-dashoffset="12"/></svg>分析中...';
+
+  var fetchOptions;
+  var targetUrl;
+
+  if (workerUrl) {
+    targetUrl = workerUrl.replace(/\/$/, '');
+    fetchOptions = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'deepseek-v4-flash',
+        messages: [
+          { role: 'system', content: '你是资深简历顾问，擅长用 STAR 法则优化简历、提升 ATS 通过率。回答要具体、可操作、分点列出。' },
+          { role: 'user', content: prompt }
+        ],
+        max_tokens: 2000,
+        temperature: 0.7
+      })
+    };
+  } else {
+    targetUrl = 'https://api.deepseek.com/chat/completions';
+    fetchOptions = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + apiKey
+      },
+      body: JSON.stringify({
+        model: 'deepseek-v4-flash',
+        messages: [
+          { role: 'system', content: '你是资深简历顾问，擅长用 STAR 法则优化简历、提升 ATS 通过率。回答要具体、可操作、分点列出。' },
+          { role: 'user', content: prompt }
+        ],
+        max_tokens: 2000,
+        temperature: 0.7
+      })
+    };
+  }
+
+  fetch(targetUrl, fetchOptions)
+  .then(function(res) {
+    if (!res.ok) throw new Error('API 请求失败：' + res.status);
+    return res.json();
+  })
+  .then(function(data) {
+    document.getElementById('aiPolishLoading').style.display = 'none';
+    document.getElementById('aiPolishResult').style.display = 'block';
+    var text = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
+    document.getElementById('aiPolishResultContent').textContent = text || '未获取到结果';
+    btn.disabled = false;
+    btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block;vertical-align:-2px;margin-right:4px;"><path d="M22 2L11 13"/><path d="M22 2L15 22l-4-9-9-4 20-7z"/></svg>开始润色';
+  })
+  .catch(function(err) {
+    document.getElementById('aiPolishLoading').style.display = 'none';
+    document.getElementById('aiPolishResult').style.display = 'block';
+    document.getElementById('aiPolishResultContent').textContent = '请求失败：' + err.message + '\n\n请检查：\n1. API Key 或 Worker 地址是否正确\n2. DeepSeek 账户余额是否充足\n3. 网络连接是否正常';
+    btn.disabled = false;
+    btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block;vertical-align:-2px;margin-right:4px;"><path d="M22 2L11 13"/><path d="M22 2L15 22l-4-9-9-4 20-7z"/></svg>重新尝试';
+  });
+};
+
+// 点击对话框外部关闭
+document.addEventListener('click', function(e) {
+  var dialog = document.getElementById('aiPolishDialog');
+  if (e.target === dialog) closeAIPolish();
+});
+
+// ESC 关闭对话框
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeAIPolish();
+});
+
+/* ════ AI 修改建议（左侧栏） ════ */
+  // 构建分析维度
+  var dims = [];
+  if (document.getElementById('dimQuality').checked) dims.push('1. 文案质量优化：用 STAR 法则重写经历描述，确保每段经历都有量化成果（数据/百分比），动词开头，去掉废话和空泛描述');
+  if (document.getElementById('dimATS').checked) dims.push('2. ATS 关键词匹配：提取 JD 中的关键词，对比简历中是否包含，给出补充建议');
+  if (document.getElementById('dimGrammar').checked) dims.push('3. 语法/拼写检查：找出错别字、语法错误、用词不当、标点问题');
+  if (document.getElementById('dimTargeted').checked && jobDesc) dims.push('4. 岗位针对性建议：根据目标 JD，建议突出哪些经历、弱化哪些内容、补充哪些技能');
+  if (!dims.length) { alert('请至少选择一个分析维度'); return; }
+
+  // 构建 prompt
+  var prompt = '你是一位资深简历顾问。请对以下简历内容进行分析并给出修改建议。\n\n';
+  prompt += '## 分析维度\n' + dims.join('\n') + '\n\n';
+  prompt += '## 简历内容\n' + resumeText + '\n\n';
+  if (jobDesc) prompt += '## 目标岗位 JD\n' + jobDesc + '\n\n';
+  prompt += '请按维度分点给出具体、可操作的修改建议。直接给出建议，不要废话。';
+
+  // 显示加载状态
+  resultDiv.style.display = 'none';
+  loadingDiv.style.display = 'block';
+
+  // 保存配置到 localStorage
+  try {
+    if (apiKey) localStorage.setItem('deepseek_api_key', apiKey);
+    if (workerUrl) localStorage.setItem('deepseek_worker_url', workerUrl);
+  } catch(e) {}
+
+  // 构建请求
+  var fetchOptions;
+  var targetUrl;
+
+  if (workerUrl) {
+    // Worker 代理模式：key 在服务端，前端不传
+    targetUrl = workerUrl.replace(/\/$/, '');
+    fetchOptions = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'deepseek-v4-flash',
+        messages: [
+          { role: 'system', content: '你是资深简历顾问，擅长用 STAR 法则优化简历、提升 ATS 通过率。回答要具体、可操作、分点列出。' },
+          { role: 'user', content: prompt }
+        ],
+        max_tokens: 2000,
+        temperature: 0.7
+      })
+    };
+  } else {
+    // 直接调用模式：前端传 key
+    targetUrl = 'https://api.deepseek.com/chat/completions';
+    fetchOptions = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + apiKey
+      },
+      body: JSON.stringify({
+        model: 'deepseek-v4-flash',
+        messages: [
+          { role: 'system', content: '你是资深简历顾问，擅长用 STAR 法则优化简历、提升 ATS 通过率。回答要具体、可操作、分点列出。' },
+          { role: 'user', content: prompt }
+        ],
+        max_tokens: 2000,
+        temperature: 0.7
+      })
+    };
+  }
+
+  fetch(targetUrl, fetchOptions)
+  .then(function(res) {
+    if (!res.ok) throw new Error('API 请求失败：' + res.status);
+    return res.json();
+  })
+  .then(function(data) {
+    loadingDiv.style.display = 'none';
+    resultDiv.style.display = 'block';
+    var text = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
+    resultContent.textContent = text || '未获取到结果';
+  })
+  .catch(function(err) {
+    loadingDiv.style.display = 'none';
+    resultDiv.style.display = 'block';
+    resultContent.textContent = '请求失败：' + err.message + '\n\n请检查：\n1. API Key 或 Worker 地址是否正确\n2. DeepSeek 账户余额是否充足\n3. 网络连接是否正常';
+  });
+};
+
+// 页面加载时恢复 API Key 和 Worker URL
+(function() {
+  try {
+    var savedKey = localStorage.getItem('deepseek_api_key');
+    var savedWorker = localStorage.getItem('deepseek_worker_url');
+    if (savedKey) document.getElementById('aiApiKey').value = savedKey;
+    if (savedWorker) document.getElementById('aiWorkerUrl').value = savedWorker;
+  } catch(e) {}
+})();
+})();</script>
+</body>
+</html>

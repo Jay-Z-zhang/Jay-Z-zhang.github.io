@@ -1,0 +1,644 @@
+<!DOCTYPE html><html lang="zh-CN"> <head><!-- Global Metadata --><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><meta name="generator" content="Astro v5.13.9"><!-- Canonical URL --><link rel="canonical" href="https://www.jayzzhang.online/blog/02-safe-financing/"><!-- Primary Meta Tags --><title>SAFE 融资工具详解：Y Combinator 的新型融资方案 | Jayz Zhang</title><meta name="title" content="SAFE 融资工具详解：Y Combinator 的新型融资方案 | Jayz Zhang"><meta name="description" content="什么是 SAFE？和可转债有什么区别？估值上限和折扣率怎么谈？写给创业者的 SAFE 完全指南。"><meta name="author" content="Jayz Zhang"><meta name="robots" content="index, follow, max-image-preview:large"><meta name="googlebot" content="index, follow"><!-- Open Graph / Facebook --><meta property="og:type" content="article"><meta property="og:url" content="https://www.jayzzhang.online/blog/02-safe-financing/"><meta property="og:title" content="SAFE 融资工具详解：Y Combinator 的新型融资方案 | Jayz Zhang"><meta property="og:description" content="什么是 SAFE？和可转债有什么区别？估值上限和折扣率怎么谈？写给创业者的 SAFE 完全指南。"><meta property="og:image" content="https://www.jayzzhang.online/og/02-safe-financing.png"><meta property="og:site_name" content="Jayz Zhang"><meta property="og:locale" content="zh_CN"><meta property="article:published_time" content="2025-07-22T00:00:00.000Z"><meta property="article:author" content="https://www.jayzzhang.online"><!-- Twitter --><meta property="twitter:card" content="summary_large_image"><meta property="twitter:url" content="https://www.jayzzhang.online/blog/02-safe-financing/"><meta property="twitter:title" content="SAFE 融资工具详解：Y Combinator 的新型融资方案 | Jayz Zhang"><meta property="twitter:description" content="什么是 SAFE？和可转债有什么区别？估值上限和折扣率怎么谈？写给创业者的 SAFE 完全指南。"><meta property="twitter:image" content="https://www.jayzzhang.online/og/02-safe-financing.png"><meta property="twitter:creator" content="@jayzzhang"><!-- JSON-LD Structured Data --><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","name":"SAFE 融资工具详解：Y Combinator 的新型融资方案 | Jayz Zhang","description":"什么是 SAFE？和可转债有什么区别？估值上限和折扣率怎么谈？写给创业者的 SAFE 完全指南。","url":"https://www.jayzzhang.online/blog/02-safe-financing/","author":{"@type":"Person","name":"Jayz Zhang","url":"https://www.jayzzhang.online"},"publisher":{"@type":"Person","name":"Jayz Zhang","url":"https://www.jayzzhang.online"},"datePublished":"2025-07-22T00:00:00.000Z","image":"https://www.jayzzhang.online/og/02-safe-financing.png"}</script><!-- Performance: Preconnect --><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="preconnect" href="https://giscus.app"><!-- PageFind --><link href="/pagefind/pagefind-ui.css" rel="stylesheet"><script src="/pagefind/pagefind-ui.js"></script><script>
+  document.addEventListener("DOMContentLoaded", () => {
+    animate();
+    addCopyCodeButtons();
+
+    const backToPrev = document.getElementById("back-to-prev");
+    backToPrev?.addEventListener("click", () => window.history.back());
+
+    // Consolidated scroll handler (replaces 3 separate listeners)
+    initScrollHandlers();
+  });
+
+  // Astro client-side navigation: re-run animations on page swap
+  document.addEventListener("astro:after-swap", () => {
+    animate();
+    addCopyCodeButtons();
+  });
+
+  function animate() {
+    const animateElements = document.querySelectorAll(".animate");
+    if (!animateElements.length) return;
+
+    // 立即显示所有 .animate 元素（简单可靠，不依赖 IntersectionObserver）
+    animateElements.forEach((el) => {
+      el.classList.add("show");
+    });
+  }
+
+  function addCopyCodeButtons() {
+    let copyButtonLabel = "📋";
+    let codeBlocks = Array.from(document.querySelectorAll("pre"));
+
+    async function copyCode(codeBlock, copyButton) {
+      const codeText = codeBlock.innerText;
+      const buttonText = copyButton.innerText;
+      const textToCopy = codeText.replace(buttonText, "");
+
+      await navigator.clipboard.writeText(textToCopy);
+      copyButton.innerText = "✅";
+
+      setTimeout(() => {
+        copyButton.innerText = copyButtonLabel;
+      }, 2000);
+    }
+
+    for (let codeBlock of codeBlocks) {
+      const wrapper = document.createElement("div");
+      wrapper.style.position = "relative";
+
+      const copyButton = document.createElement("button");
+      copyButton.innerText = copyButtonLabel;
+      copyButton.classList = "copy-code";
+
+      codeBlock.setAttribute("tabindex", "0");
+      codeBlock.appendChild(copyButton);
+
+      codeBlock.parentNode.insertBefore(wrapper, codeBlock);
+      wrapper.appendChild(codeBlock);
+
+      copyButton?.addEventListener("click", async () => {
+        await copyCode(codeBlock, copyButton);
+      });
+    }
+  }
+
+  function initScrollHandlers() {
+    const progressBar = document.getElementById('reading-progress');
+    const nav = document.getElementById('nav');
+    const backToTopBtn = document.getElementById('back-to-top');
+    const isHome = window.location.pathname === '/' || window.location.pathname === '';
+    let ticking = false;
+
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          const scrollY = window.scrollY;
+
+          // 1. Reading progress bar
+          if (progressBar) {
+            const total = document.documentElement.scrollHeight - window.innerHeight;
+            const progress = total > 0 ? scrollY / total : 0;
+            progressBar.style.transform = `scaleX(${progress})`;
+          }
+
+          // 2. Nav background
+          if (nav) {
+            if (isHome) {
+              nav.classList.toggle('has-bg', scrollY > 20);
+            } else {
+              nav.classList.add('has-bg');
+            }
+          }
+
+          // 3. Back to top visibility
+          if (backToTopBtn) {
+            if (scrollY > 300) {
+              document.documentElement.classList.add('scrolled');
+            } else {
+              document.documentElement.classList.remove('scrolled');
+            }
+          }
+
+          ticking = false;
+        });
+        ticking = true;
+      }
+    }, { passive: true });
+
+    // Back to top click
+    backToTopBtn?.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+</script><link rel="stylesheet" href="/_astro/_id_.DX0r1tvC.css">
+<style>.animate-modal-in[data-astro-cid-zllr3mxm]{animation:modalIn .2s ease-out}@keyframes modalIn{0%{opacity:0;transform:scale(.95) translateY(8px)}to{opacity:1;transform:scale(1) translateY(0)}}
+</style></head> <body> <!-- Reading Progress Bar --> <div id="reading-progress" class="fixed top-0 left-0 h-1 bg-primary z-[60] origin-left scale-x-0 transition-transform duration-100"></div> <noscript> <style>
+        .animate, .scroll-section {
+          opacity: 1;
+          transform: none;
+        }
+      </style> </noscript> <header id="nav" class="fixed top-0 left-0 right-0 z-50 py-4 transition-all duration-300 has-bg"> <div class="max-w-6xl mx-auto px-6 flex items-center justify-between"> <a href="/" class="text-lg font-bold text-primary"> Jayz Zhang </a> <div class="flex items-center gap-5"> <a href="/" class="text-sm font-medium text-muted-fg hover:text-primary transition-colors" rel="prefetch">首页</a> <a href="/blog" class="text-sm font-medium text-muted-fg hover:text-primary transition-colors" rel="prefetch">博客</a> <a href="/projects" class="text-sm font-medium text-muted-fg hover:text-primary transition-colors" rel="prefetch">作品</a> <a href="https://github.com/Jay-Z-zhang" target="_blank" rel="noopener noreferrer" class="flex items-center gap-1.5 text-sm font-medium text-muted-fg hover:text-primary transition-colors" aria-label="GitHub"> <svg height="16" width="16" viewBox="0 0 16 16" fill="currentColor"> <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path> </svg>
+GitHub
+</a> <!-- Theme Toggle --> <button id="theme-toggle" class="theme-toggle" aria-label="切换主题"> <svg id="theme-icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><circle cx="12" cy="12" r="5"></circle><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path></svg> <svg id="theme-icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg> </button> <button id="magnifying-glass" aria-label="Search" class="flex items-center rounded-sm border border-border bg-secondary px-2 py-1 text-xs text-muted-fg transition-colors duration-300 ease-in-out hover:text-primary"> <svg height="14" stroke-linejoin="round" viewBox="0 0 16 16" width="14" style="color: currentcolor;"> <path fill-rule="evenodd" clip-rule="evenodd" d="M3.5 7C3.5 5.067 5.067 3.5 7 3.5C8.933 3.5 10.5 5.067 10.5 7C10.5 7.88461 10.1718 8.69256 9.63058 9.30876L9.30876 9.63058C8.69256 10.1718 7.88461 10.5 7 10.5C5.067 10.5 3.5 8.933 3.5 7ZM9.96544 11.0261C9.13578 11.6382 8.11014 12 7 12C4.23858 12 2 9.76142 2 7C2 4.23858 4.23858 2 7 2C9.76142 2 12 4.23858 12 7C12 8.11014 11.6382 9.13578 11.0261 9.96544L14.0303 12.9697L14.5607 13.5L13.5 14.5607L12.9697 14.0303L9.96544 11.0261Z" fill="currentColor"></path> </svg> </button> </div> </div> </header> <script>
+  const nav = document.getElementById('nav');
+
+  function isHomepage() {
+    return window.location.pathname === '/' || window.location.pathname === '';
+  }
+
+  // Theme toggle
+  const themeToggle = document.getElementById('theme-toggle');
+  const sunIcon = document.getElementById('theme-icon-sun');
+  const moonIcon = document.getElementById('theme-icon-moon');
+
+  function setTheme(theme) {
+    if (theme === 'light') {
+      document.documentElement.classList.add('light');
+      if (sunIcon) sunIcon.style.display = 'none';
+      if (moonIcon) moonIcon.style.display = 'block';
+    } else {
+      document.documentElement.classList.remove('light');
+      if (sunIcon) sunIcon.style.display = 'block';
+      if (moonIcon) moonIcon.style.display = 'none';
+    }
+    localStorage.setItem('theme', theme);
+  }
+
+  // Init theme
+  const saved = localStorage.getItem('theme');
+  if (saved) { setTheme(saved); }
+  else if (window.matchMedia('(prefers-color-scheme: light)').matches) { setTheme('light'); }
+
+  themeToggle?.addEventListener('click', () => {
+    setTheme(document.documentElement.classList.contains('light') ? 'dark' : 'light');
+  });
+
+  // Nav background
+  if (isHomepage()) {
+    nav.classList.remove('has-bg');
+  } else {
+    nav.classList.add('has-bg');
+  }
+</script> <main class="has-nav-padding">  <div class="mx-auto max-w-6xl px-6"> <div class="flex items-center gap-3 mb-6"> <a href="/blog" class="group inline-flex items-center gap-1.5 text-sm text-muted-fg transition-colors duration-200 hover:text-primary"> <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="transition-transform duration-200 group-hover:-translate-x-0.5"> <polyline points="15 18 9 12 15 6"></polyline> </svg> <span>返回博客</span> </a> </div> <div class="my-10 space-y-1"> <div class="flex items-center gap-1.5 text-muted-fg"> <div class="font-base text-sm"> <time datetime="2025-07-22T00:00:00.000Z"> 2025年7月22日 </time> </div>
+&bull;
+<div class="font-base text-sm"> 5 min read </div> </div> <h1 class="text-3xl font-semibold text-foreground"> SAFE 融资工具详解：Y Combinator 的新型融资方案 </h1> <div class="flex gap-2 pt-2"> <a href="/tags/融资" class="rounded-sm border border-border bg-secondary px-2 py-1 text-sm text-muted-fg transition-colors duration-300 ease-in-out hover:border-primary/30 hover:text-primary"> 融资 </a><a href="/tags/创业" class="rounded-sm border border-border bg-secondary px-2 py-1 text-sm text-muted-fg transition-colors duration-300 ease-in-out hover:border-primary/30 hover:text-primary"> 创业 </a><a href="/tags/股权" class="rounded-sm border border-border bg-secondary px-2 py-1 text-sm text-muted-fg transition-colors duration-300 ease-in-out hover:border-primary/30 hover:text-primary"> 股权 </a> </div> </div> <details open class="group rounded-lg border border-border bg-secondary/20"> <summary class="cursor-pointer rounded-t-lg px-3 py-1.5 font-medium text-muted-fg transition-colors hover:text-primary">目录</summary> <nav> <ul class="py-3"> <li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#从一个真实场景说起" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 从一个真实场景说起 </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#safe-是什么" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> SAFE 是什么？ </a> <ul class="translate-x-3"> <li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#一句话解释" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 一句话解释 </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#拆解理解" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 拆解理解 </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#完整流程" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 完整流程 </a>  </li> </ul> </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#为什么创始人喜欢-safe" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 为什么创始人喜欢 SAFE？ </a> <ul class="translate-x-3"> <li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#1-延迟估值不用现在纠结公司值多少" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 1. 延迟估值——不用现在纠结「公司值多少」 </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#2-文件简单律师费从-5-万降到-5000" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 2. 文件简单——律师费从 5 万降到 5000 </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#3-快速成交不错过融资窗口" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 3. 快速成交——不错过融资窗口 </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#4-无到期日没有还不了钱的压力" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 4. 无到期日——没有「还不了钱」的压力 </a>  </li> </ul> </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#为什么投资人喜欢-safe" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 为什么投资人喜欢 SAFE？ </a> <ul class="translate-x-3"> <li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#1-低价入场通过折扣率或估值上限拿更便宜的股份" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 1. 低价入场——通过折扣率或估值上限拿更便宜的股份 </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#2-简单高效不用做复杂尽调" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 2. 简单高效——不用做复杂尽调 </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#3-自动转换不需要额外操作" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 3. 自动转换——不需要额外操作 </a>  </li> </ul> </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#safe-vs-可转债到底有什么区别" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> SAFE vs 可转债：到底有什么区别？ </a> <ul class="translate-x-3"> <li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#一句话总结区别" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 一句话总结区别 </a>  </li> </ul> </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#关键参数详解" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 关键参数详解 </a> <ul class="translate-x-3"> <li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#1-估值上限valuation-cap" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 1. 估值上限（Valuation Cap） </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#2-折扣率discount-rate" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 2. 折扣率（Discount Rate） </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#3-四种结构哪种对你最有利" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 3. 四种结构——哪种对你最有利？ </a>  </li> </ul> </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#转换场景什么时候-safe-会变成股份" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 转换场景：什么时候 SAFE 会变成股份？ </a> <ul class="translate-x-3"> <li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#场景一下一轮融资最常见" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 场景一：下一轮融资（最常见） </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#场景二公司被收购" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 场景二：公司被收购 </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#场景三公司清算倒闭" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 场景三：公司清算/倒闭 </a>  </li> </ul> </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#在中国能用吗" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 在中国能用吗？ </a> <ul class="translate-x-3"> <li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#美国广泛使用" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 美国：广泛使用 </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#中国不常见" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 中国：不常见 </a>  </li> </ul> </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#注意事项避坑指南" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 注意事项：避坑指南 </a> <ul class="translate-x-3"> <li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#对创始人" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 对创始人 </a> <ul class="translate-x-3"> <li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#1-估值上限不要设太低" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 1. 估值上限不要设太低 </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#2-警惕cap--折扣双重条款" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 2. 警惕「Cap + 折扣」双重条款 </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#3-safe-不是免费的钱" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 3. SAFE 不是「免费的钱」 </a>  </li> </ul> </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#对投资人" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 对投资人 </a> <ul class="translate-x-3"> <li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#1-safe-没有到期日" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 1. SAFE 没有到期日 </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#2-没有投票权" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 2. 没有投票权 </a>  </li> </ul> </li> </ul> </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#一句话总结" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 一句话总结 </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#延伸推荐" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 延伸推荐 </a>  </li> </ul> </nav> </details><article class="animate"> <p><img src="/images/blog/02-safe-timeline.png" alt="SAFE 融资流程"></p>
+<h2 id="从一个真实场景说起">从一个真实场景说起</h2>
+<p>2013 年，Y Combinator（全球最著名的创业孵化器）发现一个问题：</p>
+<blockquote>
+<p>早期创业融资太复杂了。</p>
+<p>创始人要花几周时间和投资人谈判估值，花几万块律师费起草协议，最后可能因为一个条款谈崩而错过融资窗口。</p>
+</blockquote>
+<p>YC 的合伙人 Carolynn Levy 想出了一个方案：</p>
+<blockquote>
+<p><strong>能不能做一个标准化的、5 页纸的融资协议？不用谈判估值，不用复杂条款，签完就拿钱。</strong></p>
+</blockquote>
+<p>这就是 <strong>SAFE（Simple Agreement for Future Equity）</strong> 的诞生背景。</p>
+<p><strong>到今天，SAFE 已经成为硅谷早期创业最流行的融资工具。</strong> Airbnb、Dropbox、Reddit 早期都用过类似工具。</p>
+<hr>
+<h2 id="safe-是什么">SAFE 是什么？</h2>
+<h3 id="一句话解释">一句话解释</h3>
+<blockquote>
+<p>投资人现在给你钱，未来融资时按<strong>更优惠的价格</strong>自动转换成股份。</p>
+</blockquote>
+<h3 id="拆解理解">拆解理解</h3>
+<p>把 SAFE 拆成三部分理解：</p>
+<p><strong>1. Simple（简单）</strong></p>
+<ul>
+<li>标准模板 5-6 页</li>
+<li>律师费极低（甚至可以用 YC 的免费模板）</li>
+<li>签约到打款最快 1 周</li>
+</ul>
+<p><strong>2. Agreement（协议）</strong></p>
+<ul>
+<li>不是股份，不是债券，是一份「未来换股的协议」</li>
+<li>投资人现在不是股东，没有投票权</li>
+<li>公司没有还款义务</li>
+</ul>
+<p><strong>3. Future Equity（未来股权）</strong></p>
+<ul>
+<li>股份不是现在给的，是未来融资时自动转换的</li>
+<li>转换价格比下一轮投资人更优惠（通过估值上限或折扣率）</li>
+</ul>
+<h3 id="完整流程">完整流程</h3>
+<pre class="astro-code css-variables" style="background-color:var(--astro-code-background);color:var(--astro-code-foreground); overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>时间线：</span></span>
+<span class="line"><span>│</span></span>
+<span class="line"><span>── T0：签 SAFE</span></span>
+<span class="line"><span>│   ├── 投资人给公司 100 万</span></span>
+<span class="line"><span>│   ├── 公司不给股份，只给一份协议</span></span>
+<span class="line"><span>│   └── 投资人不是股东，是「未来的股东」</span></span>
+<span class="line"><span>│</span></span>
+<span class="line"><span>── T1：下一轮融资（比如 A 轮）</span></span>
+<span class="line"><span>│   ├── 公司估值 5000 万</span></span>
+<span class="line"><span>│   ├── SAFE 自动转换为股份</span></span>
+<span class="line"><span>│   └── 转换价格 = min(估值上限, 折扣后价格)</span></span>
+<span class="line"><span>│</span></span>
+<span class="line"><span>── T2：投资人成为正式股东</span></span>
+<span class="line"><span>    ├── 有投票权</span></span>
+<span class="line"><span>    ├── 有分红权</span></span>
+<span class="line"><span>    └── 可以参与后续决策</span></span></code></pre>
+<hr>
+<h2 id="为什么创始人喜欢-safe">为什么创始人喜欢 SAFE？</h2>
+<h3 id="1-延迟估值不用现在纠结公司值多少">1. 延迟估值——不用现在纠结「公司值多少」</h3>
+<p><strong>早期估值的困境：</strong></p>
+<ul>
+<li>创始人觉得公司值 1 亿（毕竟未来市场很大）</li>
+<li>投资人觉得公司值 3000 万（毕竟还没收入）</li>
+<li>双方僵持，融资搁置</li>
+</ul>
+<p><strong>SAFE 的解决方案：</strong></p>
+<blockquote>
+<p>现在不谈估值，等下一轮有专业投资人定价时再算。</p>
+</blockquote>
+<h3 id="2-文件简单律师费从-5-万降到-5000">2. 文件简单——律师费从 5 万降到 5000</h3>
+<p><strong>传统融资协议：</strong></p>
+<ul>
+<li>20-30 页</li>
+<li>律师费 3-5 万</li>
+<li>谈判周期 2-4 周</li>
+</ul>
+<p><strong>SAFE：</strong></p>
+<ul>
+<li>5-6 页</li>
+<li>律师费 3000-5000</li>
+<li>签约周期 3-7 天</li>
+</ul>
+<h3 id="3-快速成交不错过融资窗口">3. 快速成交——不错过融资窗口</h3>
+<p>创业融资有个「窗口期」：</p>
+<ul>
+<li>投资人对你感兴趣 → 必须在 2-4 周内成交</li>
+<li>拖久了 → 投资人兴趣下降 → 融资失败</li>
+</ul>
+<p><strong>SAFE 让你能在窗口期内快速成交。</strong></p>
+<h3 id="4-无到期日没有还不了钱的压力">4. 无到期日——没有「还不了钱」的压力</h3>
+<p>和可转债不同，SAFE 没有到期日。公司不会因为「到期还不了钱」而被迫清算。</p>
+<hr>
+<h2 id="为什么投资人喜欢-safe">为什么投资人喜欢 SAFE？</h2>
+<h3 id="1-低价入场通过折扣率或估值上限拿更便宜的股份">1. 低价入场——通过折扣率或估值上限拿更便宜的股份</h3>
+<p><strong>估值上限机制：</strong></p>
+<pre class="astro-code css-variables" style="background-color:var(--astro-code-background);color:var(--astro-code-foreground); overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>举例：</span></span>
+<span class="line"><span>SAFE 估值上限 = $500 万</span></span>
+<span class="line"><span>下一轮估值 = $1000 万</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>投资人按 $500 万估值转换 → 获得 2 倍股份</span></span>
+<span class="line"><span>（同样的钱，拿到比下一轮投资人多一倍的股份）</span></span></code></pre>
+<p><strong>折扣率机制：</strong></p>
+<pre class="astro-code css-variables" style="background-color:var(--astro-code-background);color:var(--astro-code-foreground); overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>举例：</span></span>
+<span class="line"><span>折扣率 = 20%</span></span>
+<span class="line"><span>下一轮股价 = $1/股</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>SAFE 投资人按 $0.8/股转换 → 同样金额多拿 25% 股份</span></span></code></pre>
+<h3 id="2-简单高效不用做复杂尽调">2. 简单高效——不用做复杂尽调</h3>
+<p>早期投资的风险本身就高，做 3 个月尽调没必要。SAFE 让投资人可以快速决策。</p>
+<h3 id="3-自动转换不需要额外操作">3. 自动转换——不需要额外操作</h3>
+<p>下一轮融资时，SAFE 自动变成股份，投资人不需要再做任何事。</p>
+<hr>
+<h2 id="safe-vs-可转债到底有什么区别">SAFE vs 可转债：到底有什么区别？</h2>
+<p>这是最常见的问题。两者看起来很像，但有几个关键区别：</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>维度</th><th>SAFE</th><th>可转债</th></tr></thead><tbody><tr><td><strong>到期日</strong></td><td><svg style="display:inline-block;vertical-align:-2px" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> 没有</td><td><svg style="display:inline-block;vertical-align:-2px" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg> 有（通常 18-24 个月）</td></tr><tr><td><strong>利息</strong></td><td><svg style="display:inline-block;vertical-align:-2px" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> 没有</td><td><svg style="display:inline-block;vertical-align:-2px" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg> 有（通常 5-8%）</td></tr><tr><td><strong>还款义务</strong></td><td><svg style="display:inline-block;vertical-align:-2px" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> 没有</td><td><svg style="display:inline-block;vertical-align:-2px" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg> 到期必须还本付息</td></tr><tr><td><strong>破产清算顺序</strong></td><td>排在债权人之后</td><td>本身就是债权人，优先级更高</td></tr><tr><td><strong>风险</strong></td><td>如果公司永不融资，投资人可能血本无归</td><td>即使不融资，到期也要还钱</td></tr></tbody></table>
+<h3 id="一句话总结区别">一句话总结区别</h3>
+<blockquote>
+<p><strong>SAFE 是「赌未来」，可转债是「保底 + 赌未来」。</strong></p>
+</blockquote>
+<ul>
+<li>如果你对公司未来非常有信心 → SAFE（成本低）</li>
+<li>如果你想给投资人一些保障 → 可转债（有利息和到期日）</li>
+</ul>
+<hr>
+<h2 id="关键参数详解">关键参数详解</h2>
+<h3 id="1-估值上限valuation-cap">1. 估值上限（Valuation Cap）</h3>
+<p><strong>定义：</strong> 投资人能获得的<strong>最高估值</strong>。</p>
+<p><strong>为什么重要：</strong></p>
+<ul>
+<li>估值上限越低 → 投资人转换时拿的股份越多 → 创始人稀释越多</li>
+<li>估值上限越高 → 投资人收益越小 → 创始人稀释越少</li>
+</ul>
+<p><strong>举例：</strong></p>
+<pre class="astro-code css-variables" style="background-color:var(--astro-code-background);color:var(--astro-code-foreground); overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>SAFE 投资：100 万</span></span>
+<span class="line"><span>估值上限：500 万</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>下一轮融资估值：2000 万</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>投资人转换股份 = 100 万 / 500 万 = 20%</span></span>
+<span class="line"><span>（而不是 100 万 / 2000 万 = 5%）</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>投资人以 500 万估值拿到 20% 股份，而不是 5%。</span></span></code></pre>
+<p><strong>谈判建议：</strong></p>
+<ul>
+<li>创始人：估值上限设为当前合理估值的 1.3-1.5 倍</li>
+<li>投资人：估值上限设为当前合理估值的 0.8-1 倍</li>
+</ul>
+<h3 id="2-折扣率discount-rate">2. 折扣率（Discount Rate）</h3>
+<p><strong>定义：</strong> 投资人比下一轮投资者<strong>少付的百分比</strong>。</p>
+<p><strong>举例：</strong></p>
+<pre class="astro-code css-variables" style="background-color:var(--astro-code-background);color:var(--astro-code-foreground); overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>折扣率：20%</span></span>
+<span class="line"><span>下一轮股价：$1/股</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>SAFE 投资人按 $0.8/股转换</span></span>
+<span class="line"><span>同样 100 万投资：</span></span>
+<span class="line"><span>- 下一轮投资人：拿到 100 万股</span></span>
+<span class="line"><span>- SAFE 投资人：拿到 125 万股（多 25%）</span></span></code></pre>
+<h3 id="3-四种结构哪种对你最有利">3. 四种结构——哪种对你最有利？</h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>结构</th><th>说明</th><th>对谁更有利</th></tr></thead><tbody><tr><td><strong>仅估值上限</strong></td><td>只有 Cap，没有折扣</td><td>投资人（高增长时收益大）</td></tr><tr><td><strong>仅折扣率</strong></td><td>只有折扣，没有 Cap</td><td>创始人（限制投资人收益）</td></tr><tr><td><strong>Cap + 折扣</strong></td><td>两者都有，取更优者</td><td>投资人（双重保护）</td></tr><tr><td><strong>MFN 条款</strong></td><td>Most Favored Nation：后续给更好条件时，早期投资人自动匹配</td><td>投资人（保底权益）</td></tr></tbody></table>
+<p><strong>创始人建议：</strong></p>
+<blockquote>
+<p>争取「仅折扣率」或「仅估值上限」，避免「Cap + 折扣」双重条款。</p>
+</blockquote>
+<hr>
+<h2 id="转换场景什么时候-safe-会变成股份">转换场景：什么时候 SAFE 会变成股份？</h2>
+<h3 id="场景一下一轮融资最常见">场景一：下一轮融资（最常见）</h3>
+<pre class="astro-code css-variables" style="background-color:var(--astro-code-background);color:var(--astro-code-foreground); overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>触发条件：公司完成股权融资（通常 > 估值上限）</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>转换方式：</span></span>
+<span class="line"><span>SAFE 自动转换为优先股</span></span>
+<span class="line"><span>转换价格 = min(估值上限对应价格, 折扣后价格)</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>举例：</span></span>
+<span class="line"><span>估值上限 = $500 万，折扣 = 20%</span></span>
+<span class="line"><span>下一轮估值 = $1000 万，股价 = $1/股</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>按估值上限：$0.5/股</span></span>
+<span class="line"><span>按折扣：$0.8/股</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>取更优者（对投资人）：$0.5/股</span></span></code></pre>
+<h3 id="场景二公司被收购">场景二：公司被收购</h3>
+<pre class="astro-code css-variables" style="background-color:var(--astro-code-background);color:var(--astro-code-foreground); overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>触发条件：公司被并购，但不做 IPO</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>投资人选择：</span></span>
+<span class="line"><span>A. 拿现金退出（本金 + 约定回报，通常 1-2 倍）</span></span>
+<span class="line"><span>B. 转换为普通股参与分配</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>建议：选 A（现金落袋为安）</span></span></code></pre>
+<h3 id="场景三公司清算倒闭">场景三：公司清算/倒闭</h3>
+<pre class="astro-code css-variables" style="background-color:var(--astro-code-background);color:var(--astro-code-foreground); overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>触发条件：公司破产清算</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>清偿顺序：</span></span>
+<span class="line"><span>1. 债权人（银行、供应商）</span></span>
+<span class="line"><span>2. SAFE 投资人（通常无优先权）</span></span>
+<span class="line"><span>3. 普通股股东（创始人）</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>现实：SAFE 投资人通常血本无归</span></span></code></pre>
+<hr>
+<h2 id="在中国能用吗">在中国能用吗？</h2>
+<h3 id="美国广泛使用">美国：广泛使用</h3>
+<ul>
+<li>YC 标准模板，法律框架成熟</li>
+<li>投资人熟悉，创始人熟悉</li>
+<li>法院有判例支持</li>
+</ul>
+<h3 id="中国不常见">中国：不常见</h3>
+<p><strong>原因：</strong></p>
+<ul>
+<li>法律框架不完善（SAFE 在中国法律体系下定位模糊）</li>
+<li>投资人不熟悉</li>
+<li>工商登记不方便</li>
+</ul>
+<p><strong>中国创业者的替代方案：</strong></p>
+<blockquote>
+<p><strong>用「可转债 + 估值上限」模拟 SAFE 效果</strong></p>
+<p>设定一个合理的到期日（18-24 个月）和利率（5-8%），同时加入估值上限条款。</p>
+</blockquote>
+<p>这样既给了投资人保障（到期还钱），又实现了 SAFE 的核心功能（延迟估值）。</p>
+<hr>
+<h2 id="注意事项避坑指南">注意事项：避坑指南</h2>
+<h3 id="对创始人">对创始人</h3>
+<h4 id="1-估值上限不要设太低">1. 估值上限不要设太低</h4>
+<p><strong>错误做法：</strong> 为了快速拿到钱，接受很低的估值上限。
+<strong>后果：</strong> 公司估值暴涨后，投资人以极低成本拿大量股份 → 创始人被严重稀释。</p>
+<p><strong>建议：</strong> 估值上限比当前合理估值高 30-50%。</p>
+<h4 id="2-警惕cap--折扣双重条款">2. 警惕「Cap + 折扣」双重条款</h4>
+<p><strong>问题：</strong> 投资人两头占便宜——估值上限保护下限，折扣率保证额外收益。
+<strong>建议：</strong> 谈判时争取只保留一个。</p>
+<h4 id="3-safe-不是免费的钱">3. SAFE 不是「免费的钱」</h4>
+<p><strong>误解：</strong> SAFE 没有到期日、没有利息 = 免费。
+<strong>真相：</strong> 只是延迟了估值讨论。下一轮融资时，所有 SAFE 会一起转换，可能造成大幅稀释。</p>
+<p><strong>举例：</strong></p>
+<pre class="astro-code css-variables" style="background-color:var(--astro-code-background);color:var(--astro-code-foreground); overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>公司发了 5 个 SAFE，总共 500 万</span></span>
+<span class="line"><span>估值上限都是 500 万</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>下一轮融资估值 5000 万</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>5 个 SAFE 一起转换 = 500 万 / 500 万 = 100% 股份？？</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>不对！是 500 万 / (5000 万 + 500 万) = 9.1%</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>但创始人可能以为只稀释了 5-10%，结果发现稀释了 20%+</span></span></code></pre>
+<h3 id="对投资人">对投资人</h3>
+<h4 id="1-safe-没有到期日">1. SAFE 没有到期日</h4>
+<p><strong>风险：</strong> 如果公司一直不融资，你的钱可能永远「悬在空中」。
+<strong>建议：</strong> 加入「到期自动转换」或「回购条款」。</p>
+<h4 id="2-没有投票权">2. 没有投票权</h4>
+<p><strong>风险：</strong> 转换前不是股东，对公司决策无影响力。
+<strong>建议：</strong> 完全依赖创始人的诚信和能力——所以要投对人。</p>
+<hr>
+<h2 id="一句话总结">一句话总结</h2>
+<blockquote>
+<p><strong>SAFE 让早期融资变得简单，但「简单」的代价是「模糊」——估值、稀释、退出都在未来才清晰。</strong></p>
+<p><strong>创始人：用 SAFE 快速拿到钱，但要注意估值上限和稀释计算。</strong></p>
+<p><strong>投资人：用 SAFE 快速下注，但要确保有退出保障。</strong></p>
+</blockquote>
+<hr>
+<h2 id="延伸推荐">延伸推荐</h2>
+<ul>
+<li><a href="/blog/01-convertible-bonds/">可转债 vs 可转换优先股</a> — 另一种早期融资工具</li>
+<li><a href="/blog/04-funding-rounds/">天使轮·A 轮·B 轮·C 轮</a> — 完整融资路线图</li>
+<li><a href="/blog/00-mau-arr-pmf/">MAU、ARR、PMF</a> — 投资人最关注的 3 个指标</li>
+</ul> <div class="mt-8"> <div class="share-buttons flex items-center gap-2 pt-4" data-astro-cid-zllr3mxm> <span class="text-sm text-muted-fg mr-1" data-astro-cid-zllr3mxm>分享</span> <!-- Twitter/X --> <a href="https://twitter.com/intent/tweet?text=SAFE%20%E8%9E%8D%E8%B5%84%E5%B7%A5%E5%85%B7%E8%AF%A6%E8%A7%A3%EF%BC%9AY%20Combinator%20%E7%9A%84%E6%96%B0%E5%9E%8B%E8%9E%8D%E8%B5%84%E6%96%B9%E6%A1%88&url=https%3A%2F%2Fwww.jayzzhang.online%2Fblog%2F02-safe-financing%2F" target="_blank" rel="noopener noreferrer" class="share-btn flex items-center justify-center w-8 h-8 rounded-lg border border-border text-muted-fg hover:text-primary hover:border-primary/30 transition-colors duration-200" aria-label="分享到 X" data-astro-cid-zllr3mxm> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-astro-cid-zllr3mxm> <path d="M4 4l11.733 16h4.267l-11.733 -16z" data-astro-cid-zllr3mxm></path><path d="M4 20l6.768 -6.768m2.46 -2.46l6.772 -6.772" data-astro-cid-zllr3mxm></path> </svg> </a> <!-- Facebook --> <a href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fwww.jayzzhang.online%2Fblog%2F02-safe-financing%2F" target="_blank" rel="noopener noreferrer" class="share-btn flex items-center justify-center w-8 h-8 rounded-lg border border-border text-muted-fg hover:text-primary hover:border-primary/30 transition-colors duration-200" aria-label="分享到 Facebook" data-astro-cid-zllr3mxm> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-astro-cid-zllr3mxm> <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" data-astro-cid-zllr3mxm></path> </svg> </a> <!-- LinkedIn --> <a href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fwww.jayzzhang.online%2Fblog%2F02-safe-financing%2F" target="_blank" rel="noopener noreferrer" class="share-btn flex items-center justify-center w-8 h-8 rounded-lg border border-border text-muted-fg hover:text-primary hover:border-primary/30 transition-colors duration-200" aria-label="分享到 LinkedIn" data-astro-cid-zllr3mxm> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-astro-cid-zllr3mxm> <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" data-astro-cid-zllr3mxm></path><rect width="4" height="12" x="2" y="9" data-astro-cid-zllr3mxm></rect><circle cx="4" cy="4" r="2" data-astro-cid-zllr3mxm></circle> </svg> </a> <!-- WhatsApp --> <a href="https://wa.me/?text=SAFE%20%E8%9E%8D%E8%B5%84%E5%B7%A5%E5%85%B7%E8%AF%A6%E8%A7%A3%EF%BC%9AY%20Combinator%20%E7%9A%84%E6%96%B0%E5%9E%8B%E8%9E%8D%E8%B5%84%E6%96%B9%E6%A1%88%20https%3A%2F%2Fwww.jayzzhang.online%2Fblog%2F02-safe-financing%2F" target="_blank" rel="noopener noreferrer" class="share-btn flex items-center justify-center w-8 h-8 rounded-lg border border-border text-muted-fg hover:text-primary hover:border-primary/30 transition-colors duration-200" aria-label="分享到 WhatsApp" data-astro-cid-zllr3mxm> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-astro-cid-zllr3mxm> <path d="M3 21l1.65-3.8a9 9 0 1 1 3.4 2.9L3 21" data-astro-cid-zllr3mxm></path><path d="M9 10a.5.5 0 0 0 1 0V9a.5.5 0 0 0-1 0v1a5 5 0 0 0 5 5h1a.5.5 0 0 0 0-1h-1a.5.5 0 0 0 0 1" data-astro-cid-zllr3mxm></path> </svg> </a> <!-- Weibo --> <a href="https://service.weibo.com/share/share.php?url=https%3A%2F%2Fwww.jayzzhang.online%2Fblog%2F02-safe-financing%2F&title=SAFE%20%E8%9E%8D%E8%B5%84%E5%B7%A5%E5%85%B7%E8%AF%A6%E8%A7%A3%EF%BC%9AY%20Combinator%20%E7%9A%84%E6%96%B0%E5%9E%8B%E8%9E%8D%E8%B5%84%E6%96%B9%E6%A1%88" target="_blank" rel="noopener noreferrer" class="share-btn flex items-center justify-center w-8 h-8 rounded-lg border border-border text-muted-fg hover:text-primary hover:border-primary/30 transition-colors duration-200" aria-label="分享到微博" data-astro-cid-zllr3mxm> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-astro-cid-zllr3mxm> <path d="M10.098 20.323c-3.977.391-7.414-1.406-7.672-4.02-.259-2.609 2.759-5.047 6.74-5.441 3.979-.394 7.413 1.404 7.671 4.018.259 2.6-2.759 5.049-6.739 5.443z" data-astro-cid-zllr3mxm></path> <circle cx="9.05" cy="17.219" r="1.2" data-astro-cid-zllr3mxm></circle> <path d="M17.66 11.649c-.346-.105-.578-.18-.405-.635.384-1.013.423-1.894.008-2.522-.776-1.17-2.902-1.109-5.341-.033" data-astro-cid-zllr3mxm></path> </svg> </a> <!-- WeChat - Modal Trigger --> <button id="wechat-share-btn" class="share-btn flex items-center justify-center w-8 h-8 rounded-lg border border-border text-muted-fg hover:text-primary hover:border-primary/30 transition-colors duration-200" aria-label="分享到微信" data-astro-cid-zllr3mxm> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-astro-cid-zllr3mxm> <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" data-astro-cid-zllr3mxm></path> </svg> </button> <!-- Copy Link --> <button id="copy-link-btn" class="share-btn flex items-center justify-center w-8 h-8 rounded-lg border border-border text-muted-fg hover:text-primary hover:border-primary/30 transition-colors duration-200" aria-label="复制链接" data-astro-cid-zllr3mxm> <svg class="icon-link" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-astro-cid-zllr3mxm> <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" data-astro-cid-zllr3mxm></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" data-astro-cid-zllr3mxm></path> </svg> <svg class="icon-check hidden" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-astro-cid-zllr3mxm> <polyline points="20 6 9 17 4 12" data-astro-cid-zllr3mxm></polyline> </svg> </button> </div> <!-- WeChat QR Modal --> <div id="wechat-modal" class="fixed inset-0 z-[100] hidden items-center justify-center" data-astro-cid-zllr3mxm> <div class="modal-backdrop absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="closeWechatModal()" data-astro-cid-zllr3mxm></div> <div class="modal-content relative z-10 flex flex-col items-center p-6 rounded-2xl border border-border bg-background shadow-2xl animate-modal-in" data-astro-cid-zllr3mxm> <button class="absolute top-3 right-3 text-muted-fg hover:text-foreground transition-colors" onclick="closeWechatModal()" data-astro-cid-zllr3mxm> <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-astro-cid-zllr3mxm> <line x1="18" y1="6" x2="6" y2="18" data-astro-cid-zllr3mxm></line><line x1="6" y1="6" x2="18" y2="18" data-astro-cid-zllr3mxm></line> </svg> </button> <img id="wechat-qr-img" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https%3A%2F%2Fwww.jayzzhang.online%2Fblog%2F02-safe-financing%2F&bgcolor=0b0f1a&color=4ade80&qzone=1" alt="微信扫码分享" width="200" height="200" class="rounded-xl" data-astro-cid-zllr3mxm> <p class="text-sm text-foreground mt-4 font-medium" data-astro-cid-zllr3mxm>微信扫码分享</p> <p class="text-xs text-muted-fg mt-1" data-astro-cid-zllr3mxm>打开微信扫描二维码</p> </div> </div> <script>
+  // Copy link
+  document.getElementById('copy-link-btn')?.addEventListener('click', function() {
+    navigator.clipboard.writeText('{url}').then(() => {
+      this.querySelector('.icon-link').classList.add('hidden');
+      this.querySelector('.icon-check').classList.remove('hidden');
+      setTimeout(() => {
+        this.querySelector('.icon-link').classList.remove('hidden');
+        this.querySelector('.icon-check').classList.add('hidden');
+      }, 2000);
+    });
+  });
+
+  // WeChat modal
+  const modal = document.getElementById('wechat-modal');
+  document.getElementById('wechat-share-btn')?.addEventListener('click', () => {
+    modal?.classList.remove('hidden');
+    modal?.classList.add('flex');
+  });
+
+  function closeWechatModal() {
+    modal?.classList.add('hidden');
+    modal?.classList.remove('flex');
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeWechatModal();
+  });
+</script>  </div> <div class="mt-16 pt-8 border-t border-border"> <div class="grid grid-cols-2 gap-3 sm:gap-6"> <a href="/blog/03-overseas-promotion" rel="prefetch" class="group relative flex flex-nowrap rounded-lg border border-border bg-secondary/20 px-4 py-4 pl-10 text-muted-fg no-underline transition-colors duration-300 ease-in-out hover:border-primary/30 hover:text-primary"> <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="absolute left-2.5 top-1/2 size-4 -translate-y-1/2 fill-none stroke-current stroke-2 pointer-events-none"> <polyline points="15 18 9 12 15 6"></polyline> </svg> <div class="flex flex-col"> <span class="text-xs text-muted-fg mb-1">上一篇</span> <div class="text-sm leading-snug">海外社媒推广指南：7 大平台搭建出海流量矩阵</div> </div> </a> <a href="/blog/01-convertible-bonds" rel="prefetch" class="group relative flex grow flex-row-reverse flex-nowrap rounded-lg border border-border bg-secondary/20 px-4 py-4 pr-10 text-muted-fg no-underline transition-colors duration-300 ease-in-out hover:border-primary/30 hover:text-primary"> <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="absolute right-2.5 top-1/2 size-4 -translate-y-1/2 fill-none stroke-current stroke-2 pointer-events-none"> <polyline points="9 18 15 12 9 6"></polyline> </svg> <div class="flex flex-col text-right"> <span class="text-xs text-muted-fg mb-1">下一篇</span> <div class="text-sm leading-snug">可转债 vs 可转换优先股：两种融资工具的核心区别</div> </div> </a> </div> <div class="mt-16 pt-8 border-t border-border"><h3 class="text-xl font-semibold text-foreground mb-6">相关文章</h3><div class="grid md:grid-cols-3 gap-6"><a href="/blog/01-convertible-bonds/" class="group block rounded-xl border border-border overflow-hidden hover:border-primary/30 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/5"><div class="aspect-[16/9] bg-secondary overflow-hidden"><img src="/og/01-convertible-bonds.png" alt="可转债 vs 可转换优先股：两种融资工具的核心区别" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"></div><div class="p-4 space-y-2"><h4 class="text-sm font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2">可转债 vs 可转换优先股：两种融资工具的核心区别</h4><div class="flex items-center gap-2 text-xs text-muted-fg"><time datetime="2025-07-03T00:00:00.000Z"> 2025年7月03日 </time></div></div></a><a href="/blog/00-mau-arr-pmf/" class="group block rounded-xl border border-border overflow-hidden hover:border-primary/30 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/5"><div class="aspect-[16/9] bg-secondary overflow-hidden"><img src="/og/00-mau-arr-pmf.png" alt="MAU、ARR、PMF：初创公司必懂的 3 个核心指标" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"></div><div class="p-4 space-y-2"><h4 class="text-sm font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2">MAU、ARR、PMF：初创公司必懂的 3 个核心指标</h4><div class="flex items-center gap-2 text-xs text-muted-fg"><time datetime="2025-06-12T00:00:00.000Z"> 2025年6月12日 </time></div></div></a><a href="/blog/04-funding-rounds/" class="group block rounded-xl border border-border overflow-hidden hover:border-primary/30 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/5"><div class="aspect-[16/9] bg-secondary overflow-hidden"><img src="/og/04-funding-rounds.png" alt="天使轮·A 轮·B 轮·C 轮：一文搞懂创业融资全流程" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"></div><div class="p-4 space-y-2"><h4 class="text-sm font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2">天使轮·A 轮·B 轮·C 轮：一文搞懂创业融资全流程</h4><div class="flex items-center gap-2 text-xs text-muted-fg"><time datetime="2025-08-27T00:00:00.000Z"> 2025年8月27日 </time></div></div></a></div></div> </div> <div class="mt-12"> <div class="giscus mt-12"></div> <script>
+  function getGiscusTheme() {
+    const saved = localStorage.getItem('theme');
+    if (saved) return saved === 'light' ? 'light' : 'dark';
+    return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+  }
+
+  function loadGiscusScript() {
+    if (document.querySelector('.giscus script[src]')) return;
+    const script = document.createElement('script');
+    script.src = 'https://giscus.app/client.js';
+    script.setAttribute('data-repo', 'Jay-Z-zhang/Jay-Z-zhang.github.io');
+    script.setAttribute('data-repo-id', 'R_kgDOTgKuOA');
+    script.setAttribute('data-category', 'Announcements');
+    script.setAttribute('data-category-id', 'DIC_kwDOTgKuOM4DCxNB');
+    script.setAttribute('data-mapping', 'pathname');
+    script.setAttribute('data-strict', '1');
+    script.setAttribute('data-reactions-enabled', '1');
+    script.setAttribute('data-emit-metadata', '0');
+    script.setAttribute('data-input-position', 'bottom');
+    script.setAttribute('data-theme', getGiscusTheme());
+    script.setAttribute('data-lang', 'zh-CN');
+    script.setAttribute('crossorigin', 'anonymous');
+    script.async = true;
+    document.querySelector('.giscus')?.appendChild(script);
+  }
+
+  function updateGiscusTheme() {
+    const iframe = document.querySelector('iframe.giscus-frame');
+    if (!iframe) return;
+    const theme = getGiscusTheme();
+    iframe.contentWindow.postMessage({
+      giscus: { setConfig: { theme } }
+    }, 'https://giscus.app');
+  }
+
+  // Lazy load: only init when scrolled near comments
+  function lazyInitGiscus() {
+    const giscusEl = document.querySelector('.giscus');
+    if (!giscusEl) return;
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          loadGiscusScript();
+          observer.disconnect();
+        }
+      });
+    }, { rootMargin: '200px' });
+    observer.observe(giscusEl);
+  }
+
+  // Init lazy load
+  lazyInitGiscus();
+
+  // Listen for theme toggle
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('#theme-toggle')) {
+      setTimeout(updateGiscusTheme, 400);
+    }
+  });
+
+  // Astro client-side navigation
+  document.addEventListener('astro:after-swap', () => {
+    lazyInitGiscus();
+  });
+</script> </div> </article> </div>  </main> <footer class="animate"> <div class="max-w-6xl mx-auto px-6 flex items-center justify-between text-sm text-muted-fg"> <p>Copyright &copy; 2026 Jayz Zhang. All rights reserved.</p> <button id="back-to-top" class="group inline-flex items-center gap-1.5 text-sm text-muted-fg transition-colors duration-200 hover:text-primary"> <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="transition-transform duration-200 group-hover:-translate-y-0.5"> <polyline points="18 15 12 9 6 15"></polyline> </svg> <span>返回顶部</span> </button> </div> </footer> <aside data-pagefind-ignore> <div id="backdrop" class="invisible fixed left-0 top-0 z-50 flex h-screen w-full justify-center p-6" style="background: rgba(0,0,0,0.5); backdrop-filter: blur(8px);" data-astro-transition-persist="astro-3snakcvo-1"> <div id="pagefind-container" class="m-0 flex h-fit max-h-[80%] w-full max-w-(--breakpoint-sm) flex-col overflow-auto rounded-xl border border-border bg-secondary p-2 px-4 py-3 shadow-lg"> <div id="search" class="pagefind-ui pagefind-init" data-pagefind-ui data-bundle-path="/pagefind/" data-ui-options="{&#34;showImages&#34;:false,&#34;excerptLength&#34;:15,&#34;resetStyles&#34;:false}"></div> <script type="module" src="/_astro/Search.astro_astro_type_script_index_0_lang.DSe1Ey-Z.js"></script> <div class="mr-2 pb-1 pt-4 text-right text-xs text-muted-fg">
+按 <kbd class="rounded border border-border bg-background px-1.5 py-0.5 text-xs">Esc</kbd> 关闭
+</div> </div> </div> </aside> <script>
+  const magnifyingGlass = document.getElementById("magnifying-glass");
+  const backdrop = document.getElementById("backdrop");
+
+  function openPagefind() {
+    const searchDiv = document.getElementById("search");
+    const search = searchDiv.querySelector("input");
+    setTimeout(() => {
+      search.focus();
+    }, 0);
+    backdrop?.classList.remove("invisible");
+    backdrop?.classList.add("visible");
+  }
+
+  function closePagefind() {
+    const search = document.getElementById("search");
+    search.value = "";
+    backdrop?.classList.remove("visible");
+    backdrop?.classList.add("invisible");
+  }
+
+  magnifyingGlass?.addEventListener("click", () => {
+    openPagefind();
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "/") {
+      e.preventDefault();
+      openPagefind();
+    } else if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+      e.preventDefault();
+      openPagefind();
+    }
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      closePagefind();
+    }
+  });
+
+  document.addEventListener("click", (event) => {
+    if (event.target.classList.contains("pagefind-ui__result-link")) {
+      closePagefind();
+    }
+  });
+
+  backdrop?.addEventListener("click", (event) => {
+    if (!event.target.closest("#pagefind-container")) {
+      closePagefind();
+    }
+  });
+
+  const form = document.getElementById("form");
+  form?.addEventListener("submit", (event) => {
+    event.preventDefault();
+  });
+</script>  </body></html>

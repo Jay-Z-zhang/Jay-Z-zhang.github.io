@@ -1,0 +1,651 @@
+<!DOCTYPE html><html lang="zh-CN"> <head><!-- Global Metadata --><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><meta name="generator" content="Astro v5.13.9"><!-- Canonical URL --><link rel="canonical" href="https://www.jayzzhang.online/blog/07-growth-metrics/"><!-- Primary Meta Tags --><title>增长指标体系搭建：从虚荣指标到北极星指标 | Jayz Zhang</title><meta name="title" content="增长指标体系搭建：从虚荣指标到北极星指标 | Jayz Zhang"><meta name="description" content="DAU、留存率、转化率……这么多指标，到底该关注哪个？如何搭建适合你业务的增长指标体系。"><meta name="author" content="Jayz Zhang"><meta name="robots" content="index, follow, max-image-preview:large"><meta name="googlebot" content="index, follow"><!-- Open Graph / Facebook --><meta property="og:type" content="article"><meta property="og:url" content="https://www.jayzzhang.online/blog/07-growth-metrics/"><meta property="og:title" content="增长指标体系搭建：从虚荣指标到北极星指标 | Jayz Zhang"><meta property="og:description" content="DAU、留存率、转化率……这么多指标，到底该关注哪个？如何搭建适合你业务的增长指标体系。"><meta property="og:image" content="https://www.jayzzhang.online/og/07-growth-metrics.png"><meta property="og:site_name" content="Jayz Zhang"><meta property="og:locale" content="zh_CN"><meta property="article:published_time" content="2025-10-28T00:00:00.000Z"><meta property="article:author" content="https://www.jayzzhang.online"><!-- Twitter --><meta property="twitter:card" content="summary_large_image"><meta property="twitter:url" content="https://www.jayzzhang.online/blog/07-growth-metrics/"><meta property="twitter:title" content="增长指标体系搭建：从虚荣指标到北极星指标 | Jayz Zhang"><meta property="twitter:description" content="DAU、留存率、转化率……这么多指标，到底该关注哪个？如何搭建适合你业务的增长指标体系。"><meta property="twitter:image" content="https://www.jayzzhang.online/og/07-growth-metrics.png"><meta property="twitter:creator" content="@jayzzhang"><!-- JSON-LD Structured Data --><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","name":"增长指标体系搭建：从虚荣指标到北极星指标 | Jayz Zhang","description":"DAU、留存率、转化率……这么多指标，到底该关注哪个？如何搭建适合你业务的增长指标体系。","url":"https://www.jayzzhang.online/blog/07-growth-metrics/","author":{"@type":"Person","name":"Jayz Zhang","url":"https://www.jayzzhang.online"},"publisher":{"@type":"Person","name":"Jayz Zhang","url":"https://www.jayzzhang.online"},"datePublished":"2025-10-28T00:00:00.000Z","image":"https://www.jayzzhang.online/og/07-growth-metrics.png"}</script><!-- Performance: Preconnect --><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="preconnect" href="https://giscus.app"><!-- PageFind --><link href="/pagefind/pagefind-ui.css" rel="stylesheet"><script src="/pagefind/pagefind-ui.js"></script><script>
+  document.addEventListener("DOMContentLoaded", () => {
+    animate();
+    addCopyCodeButtons();
+
+    const backToPrev = document.getElementById("back-to-prev");
+    backToPrev?.addEventListener("click", () => window.history.back());
+
+    // Consolidated scroll handler (replaces 3 separate listeners)
+    initScrollHandlers();
+  });
+
+  // Astro client-side navigation: re-run animations on page swap
+  document.addEventListener("astro:after-swap", () => {
+    animate();
+    addCopyCodeButtons();
+  });
+
+  function animate() {
+    const animateElements = document.querySelectorAll(".animate");
+    if (!animateElements.length) return;
+
+    // 立即显示所有 .animate 元素（简单可靠，不依赖 IntersectionObserver）
+    animateElements.forEach((el) => {
+      el.classList.add("show");
+    });
+  }
+
+  function addCopyCodeButtons() {
+    let copyButtonLabel = "📋";
+    let codeBlocks = Array.from(document.querySelectorAll("pre"));
+
+    async function copyCode(codeBlock, copyButton) {
+      const codeText = codeBlock.innerText;
+      const buttonText = copyButton.innerText;
+      const textToCopy = codeText.replace(buttonText, "");
+
+      await navigator.clipboard.writeText(textToCopy);
+      copyButton.innerText = "✅";
+
+      setTimeout(() => {
+        copyButton.innerText = copyButtonLabel;
+      }, 2000);
+    }
+
+    for (let codeBlock of codeBlocks) {
+      const wrapper = document.createElement("div");
+      wrapper.style.position = "relative";
+
+      const copyButton = document.createElement("button");
+      copyButton.innerText = copyButtonLabel;
+      copyButton.classList = "copy-code";
+
+      codeBlock.setAttribute("tabindex", "0");
+      codeBlock.appendChild(copyButton);
+
+      codeBlock.parentNode.insertBefore(wrapper, codeBlock);
+      wrapper.appendChild(codeBlock);
+
+      copyButton?.addEventListener("click", async () => {
+        await copyCode(codeBlock, copyButton);
+      });
+    }
+  }
+
+  function initScrollHandlers() {
+    const progressBar = document.getElementById('reading-progress');
+    const nav = document.getElementById('nav');
+    const backToTopBtn = document.getElementById('back-to-top');
+    const isHome = window.location.pathname === '/' || window.location.pathname === '';
+    let ticking = false;
+
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          const scrollY = window.scrollY;
+
+          // 1. Reading progress bar
+          if (progressBar) {
+            const total = document.documentElement.scrollHeight - window.innerHeight;
+            const progress = total > 0 ? scrollY / total : 0;
+            progressBar.style.transform = `scaleX(${progress})`;
+          }
+
+          // 2. Nav background
+          if (nav) {
+            if (isHome) {
+              nav.classList.toggle('has-bg', scrollY > 20);
+            } else {
+              nav.classList.add('has-bg');
+            }
+          }
+
+          // 3. Back to top visibility
+          if (backToTopBtn) {
+            if (scrollY > 300) {
+              document.documentElement.classList.add('scrolled');
+            } else {
+              document.documentElement.classList.remove('scrolled');
+            }
+          }
+
+          ticking = false;
+        });
+        ticking = true;
+      }
+    }, { passive: true });
+
+    // Back to top click
+    backToTopBtn?.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+</script><link rel="stylesheet" href="/_astro/_id_.DX0r1tvC.css">
+<style>.animate-modal-in[data-astro-cid-zllr3mxm]{animation:modalIn .2s ease-out}@keyframes modalIn{0%{opacity:0;transform:scale(.95) translateY(8px)}to{opacity:1;transform:scale(1) translateY(0)}}
+</style></head> <body> <!-- Reading Progress Bar --> <div id="reading-progress" class="fixed top-0 left-0 h-1 bg-primary z-[60] origin-left scale-x-0 transition-transform duration-100"></div> <noscript> <style>
+        .animate, .scroll-section {
+          opacity: 1;
+          transform: none;
+        }
+      </style> </noscript> <header id="nav" class="fixed top-0 left-0 right-0 z-50 py-4 transition-all duration-300 has-bg"> <div class="max-w-6xl mx-auto px-6 flex items-center justify-between"> <a href="/" class="text-lg font-bold text-primary"> Jayz Zhang </a> <div class="flex items-center gap-5"> <a href="/" class="text-sm font-medium text-muted-fg hover:text-primary transition-colors" rel="prefetch">首页</a> <a href="/blog" class="text-sm font-medium text-muted-fg hover:text-primary transition-colors" rel="prefetch">博客</a> <a href="/projects" class="text-sm font-medium text-muted-fg hover:text-primary transition-colors" rel="prefetch">作品</a> <a href="https://github.com/Jay-Z-zhang" target="_blank" rel="noopener noreferrer" class="flex items-center gap-1.5 text-sm font-medium text-muted-fg hover:text-primary transition-colors" aria-label="GitHub"> <svg height="16" width="16" viewBox="0 0 16 16" fill="currentColor"> <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path> </svg>
+GitHub
+</a> <!-- Theme Toggle --> <button id="theme-toggle" class="theme-toggle" aria-label="切换主题"> <svg id="theme-icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><circle cx="12" cy="12" r="5"></circle><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path></svg> <svg id="theme-icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg> </button> <button id="magnifying-glass" aria-label="Search" class="flex items-center rounded-sm border border-border bg-secondary px-2 py-1 text-xs text-muted-fg transition-colors duration-300 ease-in-out hover:text-primary"> <svg height="14" stroke-linejoin="round" viewBox="0 0 16 16" width="14" style="color: currentcolor;"> <path fill-rule="evenodd" clip-rule="evenodd" d="M3.5 7C3.5 5.067 5.067 3.5 7 3.5C8.933 3.5 10.5 5.067 10.5 7C10.5 7.88461 10.1718 8.69256 9.63058 9.30876L9.30876 9.63058C8.69256 10.1718 7.88461 10.5 7 10.5C5.067 10.5 3.5 8.933 3.5 7ZM9.96544 11.0261C9.13578 11.6382 8.11014 12 7 12C4.23858 12 2 9.76142 2 7C2 4.23858 4.23858 2 7 2C9.76142 2 12 4.23858 12 7C12 8.11014 11.6382 9.13578 11.0261 9.96544L14.0303 12.9697L14.5607 13.5L13.5 14.5607L12.9697 14.0303L9.96544 11.0261Z" fill="currentColor"></path> </svg> </button> </div> </div> </header> <script>
+  const nav = document.getElementById('nav');
+
+  function isHomepage() {
+    return window.location.pathname === '/' || window.location.pathname === '';
+  }
+
+  // Theme toggle
+  const themeToggle = document.getElementById('theme-toggle');
+  const sunIcon = document.getElementById('theme-icon-sun');
+  const moonIcon = document.getElementById('theme-icon-moon');
+
+  function setTheme(theme) {
+    if (theme === 'light') {
+      document.documentElement.classList.add('light');
+      if (sunIcon) sunIcon.style.display = 'none';
+      if (moonIcon) moonIcon.style.display = 'block';
+    } else {
+      document.documentElement.classList.remove('light');
+      if (sunIcon) sunIcon.style.display = 'block';
+      if (moonIcon) moonIcon.style.display = 'none';
+    }
+    localStorage.setItem('theme', theme);
+  }
+
+  // Init theme
+  const saved = localStorage.getItem('theme');
+  if (saved) { setTheme(saved); }
+  else if (window.matchMedia('(prefers-color-scheme: light)').matches) { setTheme('light'); }
+
+  themeToggle?.addEventListener('click', () => {
+    setTheme(document.documentElement.classList.contains('light') ? 'dark' : 'light');
+  });
+
+  // Nav background
+  if (isHomepage()) {
+    nav.classList.remove('has-bg');
+  } else {
+    nav.classList.add('has-bg');
+  }
+</script> <main class="has-nav-padding">  <div class="mx-auto max-w-6xl px-6"> <div class="flex items-center gap-3 mb-6"> <a href="/blog" class="group inline-flex items-center gap-1.5 text-sm text-muted-fg transition-colors duration-200 hover:text-primary"> <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="transition-transform duration-200 group-hover:-translate-x-0.5"> <polyline points="15 18 9 12 15 6"></polyline> </svg> <span>返回博客</span> </a> </div> <div class="my-10 space-y-1"> <div class="flex items-center gap-1.5 text-muted-fg"> <div class="font-base text-sm"> <time datetime="2025-10-28T00:00:00.000Z"> 2025年10月28日 </time> </div>
+&bull;
+<div class="font-base text-sm"> 3 min read </div> </div> <h1 class="text-3xl font-semibold text-foreground"> 增长指标体系搭建：从虚荣指标到北极星指标 </h1> <div class="flex gap-2 pt-2"> <a href="/tags/增长" class="rounded-sm border border-border bg-secondary px-2 py-1 text-sm text-muted-fg transition-colors duration-300 ease-in-out hover:border-primary/30 hover:text-primary"> 增长 </a><a href="/tags/指标" class="rounded-sm border border-border bg-secondary px-2 py-1 text-sm text-muted-fg transition-colors duration-300 ease-in-out hover:border-primary/30 hover:text-primary"> 指标 </a><a href="/tags/数据分析" class="rounded-sm border border-border bg-secondary px-2 py-1 text-sm text-muted-fg transition-colors duration-300 ease-in-out hover:border-primary/30 hover:text-primary"> 数据分析 </a> </div> </div> <details open class="group rounded-lg border border-border bg-secondary/20"> <summary class="cursor-pointer rounded-t-lg px-3 py-1.5 font-medium text-muted-fg transition-colors hover:text-primary">目录</summary> <nav> <ul class="py-3"> <li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#从一个真实场景说起" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 从一个真实场景说起 </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#指标分层模型" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 指标分层模型 </a> <ul class="translate-x-3"> <li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#第一层北极星指标north-star-metric" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 第一层：北极星指标（North Star Metric） </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#第二层一级指标input-metrics" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 第二层：一级指标（Input Metrics） </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#第三层二级指标diagnostic-metrics" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 第三层：二级指标（Diagnostic Metrics） </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#第四层健康指标health-metrics" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 第四层：健康指标（Health Metrics） </a>  </li> </ul> </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#虚荣指标-vs-可操作指标" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 虚荣指标 vs 可操作指标 </a> <ul class="translate-x-3"> <li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#虚荣指标vanity-metrics" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 虚荣指标（Vanity Metrics） </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#可操作指标actionable-metrics" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 可操作指标（Actionable Metrics） </a>  </li> </ul> </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#如何搭建指标体系" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 如何搭建指标体系？ </a> <ul class="translate-x-3"> <li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#step-1定义用户核心价值" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> Step 1：定义用户核心价值 </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#step-2选择北极星指标" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> Step 2：选择北极星指标 </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#step-3拆解一级指标" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> Step 3：拆解一级指标 </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#step-4定义健康指标" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> Step 4：定义健康指标 </a>  </li> </ul> </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#不同阶段的指标重点" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 不同阶段的指标重点 </a> <ul class="translate-x-3"> <li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#0-1-阶段产品验证期" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 0-1 阶段（产品验证期） </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#1-10-阶段增长期" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 1-10 阶段（增长期） </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#10-100-阶段规模期" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 10-100 阶段（规模期） </a>  </li> </ul> </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#常见错误" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 常见错误 </a> <ul class="translate-x-3"> <li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#1-指标太多" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 1. 指标太多 </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#2-只看结果指标" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 2. 只看结果指标 </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#3-忽略健康指标" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 3. 忽略健康指标 </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#4-对标错误" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 4. 对标错误 </a>  </li> </ul> </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#行动清单" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 行动清单 </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#一句话总结" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 一句话总结 </a>  </li><li class="list-inside list-disc px-6 py-1.5 text-sm"> <a href="#延伸推荐" target="_self" class="inline-block decoration-primary/30 hover:decoration-primary/50 text-current hover:text-primary transition-colors duration-300 ease-in-out underline underline-offset-[3px]"> 延伸推荐 </a>  </li> </ul> </nav> </details><article class="animate"> <p><img src="/images/blog/07-metrics-pyramid.png" alt="增长指标分层模型"></p>
+<h2 id="从一个真实场景说起">从一个真实场景说起</h2>
+<p>某创业公司的周会上：</p>
+<ul>
+<li><strong>老板</strong>：「DAU 怎么又降了？」</li>
+<li><strong>产品</strong>：「留存率提升了啊！」</li>
+<li><strong>市场</strong>：「转化率创新高！」</li>
+<li><strong>运营</strong>：「活跃用户数在增长！」</li>
+</ul>
+<p><strong>每个人看的指标不同，得出的结论也不同。</strong></p>
+<p>这就是没有统一指标体系的后果：<strong>团队各自为战，决策冲突。</strong></p>
+<p>增长指标体系的作用：<strong>让全公司对「什么是成功」达成共识</strong>。</p>
+<hr>
+<h2 id="指标分层模型">指标分层模型</h2>
+<h3 id="第一层北极星指标north-star-metric">第一层：北极星指标（North Star Metric）</h3>
+<p><strong>定义：唯一最重要的指标，反映产品核心价值。</strong></p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>公司</th><th>北极星指标</th><th>为什么选这个</th></tr></thead><tbody><tr><td><strong>Facebook</strong></td><td>月活跃用户数（MAU）</td><td>社交网络的价值在于有多少人用</td></tr><tr><td><strong>Uber</strong></td><td>周订单数</td><td>出行平台的价值在于完成多少订单</td></tr><tr><td><strong>Airbnb</strong></td><td>预订间夜数</td><td>住宿平台的价值在于多少间夜被预订</td></tr><tr><td><strong>Spotify</strong></td><td>听歌时长</td><td>音乐平台的价值在于用户听了多久</td></tr></tbody></table>
+<p><strong>选择标准：</strong></p>
+<ul>
+<li>反映用户获得的核心价值</li>
+<li>可操作（团队能影响它）</li>
+<li>可衡量（能准确计算）</li>
+</ul>
+<h3 id="第二层一级指标input-metrics">第二层：一级指标（Input Metrics）</h3>
+<p><strong>定义：直接影响北极星指标的关键驱动因素。</strong></p>
+<p><strong>以 Uber 为例：</strong></p>
+<pre class="astro-code css-variables" style="background-color:var(--astro-code-background);color:var(--astro-code-foreground); overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>北极星指标 = 周订单数</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>一级指标：</span></span>
+<span class="line"><span>── 司机供给：活跃司机数</span></span>
+<span class="line"><span>├── 用户需求：叫车请求数</span></span>
+<span class="line"><span>└── 匹配效率：接单率</span></span></code></pre>
+<p><strong>为什么这些是一级指标？</strong></p>
+<ul>
+<li>活跃司机数 ↑ → 接单率 ↑ → 订单数 ↑</li>
+<li>叫车请求数 ↑ → 订单数 ↑</li>
+<li>接单率 ↑ → 订单数 ↑</li>
+</ul>
+<h3 id="第三层二级指标diagnostic-metrics">第三层：二级指标（Diagnostic Metrics）</h3>
+<p><strong>定义：帮助定位问题的诊断指标。</strong></p>
+<pre class="astro-code css-variables" style="background-color:var(--astro-code-background);color:var(--astro-code-foreground); overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>一级指标 = 接单率下降</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>二级指标：</span></span>
+<span class="line"><span>├── 司机端：在线时长、拒单率</span></span>
+<span class="line"><span>── 用户端：等待时长、取消率</span></span>
+<span class="line"><span>└── 系统端：派单算法成功率</span></span></code></pre>
+<h3 id="第四层健康指标health-metrics">第四层：健康指标（Health Metrics）</h3>
+<p><strong>定义：确保增长不损害用户体验的 guardrail 指标。</strong></p>
+<pre class="astro-code css-variables" style="background-color:var(--astro-code-background);color:var(--astro-code-foreground); overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>增长动作 = 增加推送次数</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>健康指标：</span></span>
+<span class="line"><span>├── 退订率 &#x3C; 5%</span></span>
+<span class="line"><span>├── 投诉率 &#x3C; 0.1%</span></span>
+<span class="line"><span>└── 日活不受影响</span></span></code></pre>
+<hr>
+<h2 id="虚荣指标-vs-可操作指标">虚荣指标 vs 可操作指标</h2>
+<h3 id="虚荣指标vanity-metrics">虚荣指标（Vanity Metrics）</h3>
+<blockquote>
+<p>看起来很好，但不能指导行动。</p>
+</blockquote>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>虚荣指标</th><th>为什么虚荣</th><th>更好的替代</th></tr></thead><tbody><tr><td><strong>累计注册数</strong></td><td>不反映活跃和留存</td><td>月活跃用户数（MAU）</td></tr><tr><td><strong>页面浏览量（PV）</strong></td><td>不反映用户价值</td><td>核心功能使用率</td></tr><tr><td><strong>下载量</strong></td><td>不反映激活和留存</td><td>7 日留存率</td></tr></tbody></table>
+<h3 id="可操作指标actionable-metrics">可操作指标（Actionable Metrics）</h3>
+<blockquote>
+<p>能告诉你「接下来该做什么」。</p>
+</blockquote>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>可操作指标</th><th>价值</th><th>行动指导</th></tr></thead><tbody><tr><td><strong>7 日留存率</strong></td><td>反映产品粘性</td><td>&#x3C; 30% → 优化 onboarding</td></tr><tr><td><strong>激活率</strong></td><td>反映 onboarding 效果</td><td>&#x3C; 50% → 简化首次使用流程</td></tr><tr><td><strong>付费转化率</strong></td><td>反映变现能力</td><td>&#x3C; 5% → 优化定价或功能</td></tr></tbody></table>
+<hr>
+<h2 id="如何搭建指标体系">如何搭建指标体系？</h2>
+<h3 id="step-1定义用户核心价值">Step 1：定义用户核心价值</h3>
+<p><strong>问自己：</strong></p>
+<blockquote>
+<p>用户用我们的产品，最重要的「啊哈时刻」是什么？</p>
+</blockquote>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>产品</th><th>啊哈时刻</th><th>说明</th></tr></thead><tbody><tr><td><strong>Facebook</strong></td><td>添加 10 个好友</td><td>有足够多好友才能看到有趣内容</td></tr><tr><td><strong>Uber</strong></td><td>第一次成功叫到车</td><td>体验到「随叫随到」的便利</td></tr><tr><td><strong>Slack</strong></td><td>团队发送 2000 条消息</td><td>深度使用后才离不开</td></tr></tbody></table>
+<h3 id="step-2选择北极星指标">Step 2：选择北极星指标</h3>
+<p><strong>公式：</strong></p>
+<pre class="astro-code css-variables" style="background-color:var(--astro-code-background);color:var(--astro-code-foreground); overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>北极星指标 = 用户获得核心价值的频率</span></span></code></pre>
+<p><strong>示例：</strong></p>
+<ul>
+<li>Facebook：周活跃用户（反映社交频率）</li>
+<li>Uber：周订单数（反映出行频率）</li>
+<li>Slack：团队消息数（反映协作频率）</li>
+</ul>
+<h3 id="step-3拆解一级指标">Step 3：拆解一级指标</h3>
+<p><strong>方法：用户旅程地图</strong></p>
+<pre class="astro-code css-variables" style="background-color:var(--astro-code-background);color:var(--astro-code-foreground); overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>用户旅程：注册 → 激活 → 留存 → 付费 → 推荐</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>对应一级指标：</span></span>
+<span class="line"><span>├── 注册转化率</span></span>
+<span class="line"><span>├── 激活率（完成啊哈时刻）</span></span>
+<span class="line"><span>├── 7 日/30 日留存率</span></span>
+<span class="line"><span>── 付费转化率</span></span>
+<span class="line"><span>└── K 因子（推荐系数）</span></span></code></pre>
+<h3 id="step-4定义健康指标">Step 4：定义健康指标</h3>
+<p><strong>原则：</strong></p>
+<blockquote>
+<p>每个增长动作，都要有对应的健康指标约束。</p>
+</blockquote>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>增长动作</th><th>健康指标</th><th>阈值</th></tr></thead><tbody><tr><td><strong>增加推送</strong></td><td>退订率</td><td>&#x3C; 5%</td></tr><tr><td><strong>提高价格</strong></td><td>流失率</td><td>&#x3C; 10%</td></tr><tr><td><strong>扩大投放</strong></td><td>CAC</td><td>&#x3C; LTV/3</td></tr></tbody></table>
+<hr>
+<h2 id="不同阶段的指标重点">不同阶段的指标重点</h2>
+<h3 id="0-1-阶段产品验证期">0-1 阶段（产品验证期）</h3>
+<p><strong>核心指标：留存率</strong></p>
+<pre class="astro-code css-variables" style="background-color:var(--astro-code-background);color:var(--astro-code-foreground); overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>目标：证明有人愿意持续用</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>关键指标：</span></span>
+<span class="line"><span>- 7 日留存 > 40%</span></span>
+<span class="line"><span>- 用户访谈 NPS > 50</span></span>
+<span class="line"><span>- 自然增长占比 > 30%</span></span></code></pre>
+<p><strong>为什么留存最重要？</strong></p>
+<blockquote>
+<p>如果用户来了就走，说明产品没价值。这时候做任何增长都是浪费。</p>
+</blockquote>
+<h3 id="1-10-阶段增长期">1-10 阶段（增长期）</h3>
+<p><strong>核心指标：获客效率</strong></p>
+<pre class="astro-code css-variables" style="background-color:var(--astro-code-background);color:var(--astro-code-foreground); overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>目标：找到可复制的获客渠道</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>关键指标：</span></span>
+<span class="line"><span>- CAC &#x3C; LTV/3</span></span>
+<span class="line"><span>- 渠道 ROI > 1</span></span>
+<span class="line"><span>- 月增长 > 20%</span></span></code></pre>
+<p><strong>为什么获客效率最重要？</strong></p>
+<blockquote>
+<p>产品已经验证，现在要快速获客。但获客成本不能太高，否则规模越大亏越多。</p>
+</blockquote>
+<h3 id="10-100-阶段规模期">10-100 阶段（规模期）</h3>
+<p><strong>核心指标：单位经济模型</strong></p>
+<pre class="astro-code css-variables" style="background-color:var(--astro-code-background);color:var(--astro-code-foreground); overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>目标：证明规模化后仍能盈利</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>关键指标：</span></span>
+<span class="line"><span>- LTV/CAC > 3</span></span>
+<span class="line"><span>- 回本周期 &#x3C; 12 个月</span></span>
+<span class="line"><span>- 毛利率 > 60%</span></span></code></pre>
+<p><strong>为什么单位经济模型最重要？</strong></p>
+<blockquote>
+<p>规模化需要大量资金。如果单位经济模型不健康，融越多钱亏越多。</p>
+</blockquote>
+<hr>
+<h2 id="常见错误">常见错误</h2>
+<h3 id="1-指标太多">1. 指标太多</h3>
+<blockquote>
+<p><strong>聚焦 3-5 个核心指标，而不是看 30 个仪表盘。</strong></p>
+</blockquote>
+<p><strong>为什么？</strong></p>
+<ul>
+<li>指标太多 → 注意力分散 → 不知道优先做什么</li>
+<li>3-5 个指标 → 全公司对齐 → 高效执行</li>
+</ul>
+<h3 id="2-只看结果指标">2. 只看结果指标</h3>
+<blockquote>
+<p><strong>结果指标（如收入）告诉你「发生了什么」，但不告诉你「为什么」。</strong></p>
+</blockquote>
+<p><strong>举例：</strong></p>
+<ul>
+<li>收入下降（结果）→ 为什么？</li>
+<li>因为转化率下降（过程）→ 为什么？</li>
+<li>因为落地页加载慢（诊断）→ 优化！</li>
+</ul>
+<p><strong>必须搭配过程指标和诊断指标。</strong></p>
+<h3 id="3-忽略健康指标">3. 忽略健康指标</h3>
+<blockquote>
+<p><strong>增长不能以牺牲用户体验为代价。</strong></p>
+</blockquote>
+<p><strong>举例：</strong></p>
+<ul>
+<li>推送多了 → 活跃可能上升，但退订率也会上升</li>
+<li>价格高了 → 收入可能上升，但流失率也会上升</li>
+</ul>
+<p><strong>每个增长动作都要有健康指标约束。</strong></p>
+<h3 id="4-对标错误">4. 对标错误</h3>
+<blockquote>
+<p><strong>不要盲目对标大公司的指标。</strong></p>
+</blockquote>
+<p><strong>举例：</strong></p>
+<ul>
+<li>Facebook 的 DAU 对你没有参考价值</li>
+<li>你的阶段、产品、用户都不同</li>
+</ul>
+<p><strong>正确做法：</strong></p>
+<ul>
+<li>找同阶段、同赛道的公司对标</li>
+<li>或者和自己的历史数据对标</li>
+</ul>
+<hr>
+<h2 id="行动清单">行动清单</h2>
+<ul class="contains-task-list">
+<li class="task-list-item"><input type="checkbox" disabled> 定义产品的「啊哈时刻」</li>
+<li class="task-list-item"><input type="checkbox" disabled> 确定北极星指标</li>
+<li class="task-list-item"><input type="checkbox" disabled> 拆解 3-5 个一级指标</li>
+<li class="task-list-item"><input type="checkbox" disabled> 为每个增长动作定义健康指标</li>
+<li class="task-list-item"><input type="checkbox" disabled> 每周 review 指标，调整策略</li>
+</ul>
+<hr>
+<h2 id="一句话总结">一句话总结</h2>
+<blockquote>
+<p><strong>好的指标体系让全公司对齐目标，坏的指标体系让团队各自为战。</strong></p>
+</blockquote>
+<hr>
+<h2 id="延伸推荐">延伸推荐</h2>
+<ul>
+<li><a href="/blog/06-ltv-cac/">LTV/CAC > 3？</a> — 获客效率怎么衡量</li>
+<li><a href="/blog/00-mau-arr-pmf/">MAU、ARR、PMF</a> — 投资人最关注的指标</li>
+<li><a href="/blog/08-overseas-channels/">海外推广渠道全攻略</a> — 获客渠道怎么选</li>
+</ul> <div class="mt-8"> <div class="share-buttons flex items-center gap-2 pt-4" data-astro-cid-zllr3mxm> <span class="text-sm text-muted-fg mr-1" data-astro-cid-zllr3mxm>分享</span> <!-- Twitter/X --> <a href="https://twitter.com/intent/tweet?text=%E5%A2%9E%E9%95%BF%E6%8C%87%E6%A0%87%E4%BD%93%E7%B3%BB%E6%90%AD%E5%BB%BA%EF%BC%9A%E4%BB%8E%E8%99%9A%E8%8D%A3%E6%8C%87%E6%A0%87%E5%88%B0%E5%8C%97%E6%9E%81%E6%98%9F%E6%8C%87%E6%A0%87&url=https%3A%2F%2Fwww.jayzzhang.online%2Fblog%2F07-growth-metrics%2F" target="_blank" rel="noopener noreferrer" class="share-btn flex items-center justify-center w-8 h-8 rounded-lg border border-border text-muted-fg hover:text-primary hover:border-primary/30 transition-colors duration-200" aria-label="分享到 X" data-astro-cid-zllr3mxm> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-astro-cid-zllr3mxm> <path d="M4 4l11.733 16h4.267l-11.733 -16z" data-astro-cid-zllr3mxm></path><path d="M4 20l6.768 -6.768m2.46 -2.46l6.772 -6.772" data-astro-cid-zllr3mxm></path> </svg> </a> <!-- Facebook --> <a href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fwww.jayzzhang.online%2Fblog%2F07-growth-metrics%2F" target="_blank" rel="noopener noreferrer" class="share-btn flex items-center justify-center w-8 h-8 rounded-lg border border-border text-muted-fg hover:text-primary hover:border-primary/30 transition-colors duration-200" aria-label="分享到 Facebook" data-astro-cid-zllr3mxm> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-astro-cid-zllr3mxm> <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" data-astro-cid-zllr3mxm></path> </svg> </a> <!-- LinkedIn --> <a href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fwww.jayzzhang.online%2Fblog%2F07-growth-metrics%2F" target="_blank" rel="noopener noreferrer" class="share-btn flex items-center justify-center w-8 h-8 rounded-lg border border-border text-muted-fg hover:text-primary hover:border-primary/30 transition-colors duration-200" aria-label="分享到 LinkedIn" data-astro-cid-zllr3mxm> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-astro-cid-zllr3mxm> <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" data-astro-cid-zllr3mxm></path><rect width="4" height="12" x="2" y="9" data-astro-cid-zllr3mxm></rect><circle cx="4" cy="4" r="2" data-astro-cid-zllr3mxm></circle> </svg> </a> <!-- WhatsApp --> <a href="https://wa.me/?text=%E5%A2%9E%E9%95%BF%E6%8C%87%E6%A0%87%E4%BD%93%E7%B3%BB%E6%90%AD%E5%BB%BA%EF%BC%9A%E4%BB%8E%E8%99%9A%E8%8D%A3%E6%8C%87%E6%A0%87%E5%88%B0%E5%8C%97%E6%9E%81%E6%98%9F%E6%8C%87%E6%A0%87%20https%3A%2F%2Fwww.jayzzhang.online%2Fblog%2F07-growth-metrics%2F" target="_blank" rel="noopener noreferrer" class="share-btn flex items-center justify-center w-8 h-8 rounded-lg border border-border text-muted-fg hover:text-primary hover:border-primary/30 transition-colors duration-200" aria-label="分享到 WhatsApp" data-astro-cid-zllr3mxm> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-astro-cid-zllr3mxm> <path d="M3 21l1.65-3.8a9 9 0 1 1 3.4 2.9L3 21" data-astro-cid-zllr3mxm></path><path d="M9 10a.5.5 0 0 0 1 0V9a.5.5 0 0 0-1 0v1a5 5 0 0 0 5 5h1a.5.5 0 0 0 0-1h-1a.5.5 0 0 0 0 1" data-astro-cid-zllr3mxm></path> </svg> </a> <!-- Weibo --> <a href="https://service.weibo.com/share/share.php?url=https%3A%2F%2Fwww.jayzzhang.online%2Fblog%2F07-growth-metrics%2F&title=%E5%A2%9E%E9%95%BF%E6%8C%87%E6%A0%87%E4%BD%93%E7%B3%BB%E6%90%AD%E5%BB%BA%EF%BC%9A%E4%BB%8E%E8%99%9A%E8%8D%A3%E6%8C%87%E6%A0%87%E5%88%B0%E5%8C%97%E6%9E%81%E6%98%9F%E6%8C%87%E6%A0%87" target="_blank" rel="noopener noreferrer" class="share-btn flex items-center justify-center w-8 h-8 rounded-lg border border-border text-muted-fg hover:text-primary hover:border-primary/30 transition-colors duration-200" aria-label="分享到微博" data-astro-cid-zllr3mxm> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-astro-cid-zllr3mxm> <path d="M10.098 20.323c-3.977.391-7.414-1.406-7.672-4.02-.259-2.609 2.759-5.047 6.74-5.441 3.979-.394 7.413 1.404 7.671 4.018.259 2.6-2.759 5.049-6.739 5.443z" data-astro-cid-zllr3mxm></path> <circle cx="9.05" cy="17.219" r="1.2" data-astro-cid-zllr3mxm></circle> <path d="M17.66 11.649c-.346-.105-.578-.18-.405-.635.384-1.013.423-1.894.008-2.522-.776-1.17-2.902-1.109-5.341-.033" data-astro-cid-zllr3mxm></path> </svg> </a> <!-- WeChat - Modal Trigger --> <button id="wechat-share-btn" class="share-btn flex items-center justify-center w-8 h-8 rounded-lg border border-border text-muted-fg hover:text-primary hover:border-primary/30 transition-colors duration-200" aria-label="分享到微信" data-astro-cid-zllr3mxm> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-astro-cid-zllr3mxm> <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" data-astro-cid-zllr3mxm></path> </svg> </button> <!-- Copy Link --> <button id="copy-link-btn" class="share-btn flex items-center justify-center w-8 h-8 rounded-lg border border-border text-muted-fg hover:text-primary hover:border-primary/30 transition-colors duration-200" aria-label="复制链接" data-astro-cid-zllr3mxm> <svg class="icon-link" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-astro-cid-zllr3mxm> <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" data-astro-cid-zllr3mxm></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" data-astro-cid-zllr3mxm></path> </svg> <svg class="icon-check hidden" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-astro-cid-zllr3mxm> <polyline points="20 6 9 17 4 12" data-astro-cid-zllr3mxm></polyline> </svg> </button> </div> <!-- WeChat QR Modal --> <div id="wechat-modal" class="fixed inset-0 z-[100] hidden items-center justify-center" data-astro-cid-zllr3mxm> <div class="modal-backdrop absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="closeWechatModal()" data-astro-cid-zllr3mxm></div> <div class="modal-content relative z-10 flex flex-col items-center p-6 rounded-2xl border border-border bg-background shadow-2xl animate-modal-in" data-astro-cid-zllr3mxm> <button class="absolute top-3 right-3 text-muted-fg hover:text-foreground transition-colors" onclick="closeWechatModal()" data-astro-cid-zllr3mxm> <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-astro-cid-zllr3mxm> <line x1="18" y1="6" x2="6" y2="18" data-astro-cid-zllr3mxm></line><line x1="6" y1="6" x2="18" y2="18" data-astro-cid-zllr3mxm></line> </svg> </button> <img id="wechat-qr-img" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https%3A%2F%2Fwww.jayzzhang.online%2Fblog%2F07-growth-metrics%2F&bgcolor=0b0f1a&color=4ade80&qzone=1" alt="微信扫码分享" width="200" height="200" class="rounded-xl" data-astro-cid-zllr3mxm> <p class="text-sm text-foreground mt-4 font-medium" data-astro-cid-zllr3mxm>微信扫码分享</p> <p class="text-xs text-muted-fg mt-1" data-astro-cid-zllr3mxm>打开微信扫描二维码</p> </div> </div> <script>
+  // Copy link
+  document.getElementById('copy-link-btn')?.addEventListener('click', function() {
+    navigator.clipboard.writeText('{url}').then(() => {
+      this.querySelector('.icon-link').classList.add('hidden');
+      this.querySelector('.icon-check').classList.remove('hidden');
+      setTimeout(() => {
+        this.querySelector('.icon-link').classList.remove('hidden');
+        this.querySelector('.icon-check').classList.add('hidden');
+      }, 2000);
+    });
+  });
+
+  // WeChat modal
+  const modal = document.getElementById('wechat-modal');
+  document.getElementById('wechat-share-btn')?.addEventListener('click', () => {
+    modal?.classList.remove('hidden');
+    modal?.classList.add('flex');
+  });
+
+  function closeWechatModal() {
+    modal?.classList.add('hidden');
+    modal?.classList.remove('flex');
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeWechatModal();
+  });
+</script>  </div> <div class="mt-16 pt-8 border-t border-border"> <div class="grid grid-cols-2 gap-3 sm:gap-6"> <a href="/blog/08-overseas-channels" rel="prefetch" class="group relative flex flex-nowrap rounded-lg border border-border bg-secondary/20 px-4 py-4 pl-10 text-muted-fg no-underline transition-colors duration-300 ease-in-out hover:border-primary/30 hover:text-primary"> <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="absolute left-2.5 top-1/2 size-4 -translate-y-1/2 fill-none stroke-current stroke-2 pointer-events-none"> <polyline points="15 18 9 12 15 6"></polyline> </svg> <div class="flex flex-col"> <span class="text-xs text-muted-fg mb-1">上一篇</span> <div class="text-sm leading-snug">海外推广渠道全攻略：Reddit·Twitter·ProductHunt 实战</div> </div> </a> <a href="/blog/06-ltv-cac" rel="prefetch" class="group relative flex grow flex-row-reverse flex-nowrap rounded-lg border border-border bg-secondary/20 px-4 py-4 pr-10 text-muted-fg no-underline transition-colors duration-300 ease-in-out hover:border-primary/30 hover:text-primary"> <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="absolute right-2.5 top-1/2 size-4 -translate-y-1/2 fill-none stroke-current stroke-2 pointer-events-none"> <polyline points="9 18 15 12 9 6"></polyline> </svg> <div class="flex flex-col text-right"> <span class="text-xs text-muted-fg mb-1">下一篇</span> <div class="text-sm leading-snug">LTV/CAC &gt; 3？详解单位经济模型的健康度</div> </div> </a> </div> <div class="mt-16 pt-8 border-t border-border"><h3 class="text-xl font-semibold text-foreground mb-6">相关文章</h3><div class="grid md:grid-cols-3 gap-6"><a href="/blog/00-mau-arr-pmf/" class="group block rounded-xl border border-border overflow-hidden hover:border-primary/30 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/5"><div class="aspect-[16/9] bg-secondary overflow-hidden"><img src="/og/00-mau-arr-pmf.png" alt="MAU、ARR、PMF：初创公司必懂的 3 个核心指标" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"></div><div class="p-4 space-y-2"><h4 class="text-sm font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2">MAU、ARR、PMF：初创公司必懂的 3 个核心指标</h4><div class="flex items-center gap-2 text-xs text-muted-fg"><time datetime="2025-06-12T00:00:00.000Z"> 2025年6月12日 </time></div></div></a><a href="/blog/08-overseas-channels/" class="group block rounded-xl border border-border overflow-hidden hover:border-primary/30 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/5"><div class="aspect-[16/9] bg-secondary overflow-hidden"><img src="/og/08-overseas-channels.png" alt="海外推广渠道全攻略：Reddit·Twitter·ProductHunt 实战" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"></div><div class="p-4 space-y-2"><h4 class="text-sm font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2">海外推广渠道全攻略：Reddit·Twitter·ProductHunt 实战</h4><div class="flex items-center gap-2 text-xs text-muted-fg"><time datetime="2025-11-19T00:00:00.000Z"> 2025年11月19日 </time></div></div></a><a href="/blog/06-ltv-cac/" class="group block rounded-xl border border-border overflow-hidden hover:border-primary/30 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/5"><div class="aspect-[16/9] bg-secondary overflow-hidden"><img src="/og/06-ltv-cac.png" alt="LTV/CAC > 3？详解单位经济模型的健康度" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"></div><div class="p-4 space-y-2"><h4 class="text-sm font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2">LTV/CAC &gt; 3？详解单位经济模型的健康度</h4><div class="flex items-center gap-2 text-xs text-muted-fg"><time datetime="2025-10-06T00:00:00.000Z"> 2025年10月06日 </time></div></div></a></div></div> </div> <div class="mt-12"> <div class="giscus mt-12"></div> <script>
+  function getGiscusTheme() {
+    const saved = localStorage.getItem('theme');
+    if (saved) return saved === 'light' ? 'light' : 'dark';
+    return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+  }
+
+  function loadGiscusScript() {
+    if (document.querySelector('.giscus script[src]')) return;
+    const script = document.createElement('script');
+    script.src = 'https://giscus.app/client.js';
+    script.setAttribute('data-repo', 'Jay-Z-zhang/Jay-Z-zhang.github.io');
+    script.setAttribute('data-repo-id', 'R_kgDOTgKuOA');
+    script.setAttribute('data-category', 'Announcements');
+    script.setAttribute('data-category-id', 'DIC_kwDOTgKuOM4DCxNB');
+    script.setAttribute('data-mapping', 'pathname');
+    script.setAttribute('data-strict', '1');
+    script.setAttribute('data-reactions-enabled', '1');
+    script.setAttribute('data-emit-metadata', '0');
+    script.setAttribute('data-input-position', 'bottom');
+    script.setAttribute('data-theme', getGiscusTheme());
+    script.setAttribute('data-lang', 'zh-CN');
+    script.setAttribute('crossorigin', 'anonymous');
+    script.async = true;
+    document.querySelector('.giscus')?.appendChild(script);
+  }
+
+  function updateGiscusTheme() {
+    const iframe = document.querySelector('iframe.giscus-frame');
+    if (!iframe) return;
+    const theme = getGiscusTheme();
+    iframe.contentWindow.postMessage({
+      giscus: { setConfig: { theme } }
+    }, 'https://giscus.app');
+  }
+
+  // Lazy load: only init when scrolled near comments
+  function lazyInitGiscus() {
+    const giscusEl = document.querySelector('.giscus');
+    if (!giscusEl) return;
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          loadGiscusScript();
+          observer.disconnect();
+        }
+      });
+    }, { rootMargin: '200px' });
+    observer.observe(giscusEl);
+  }
+
+  // Init lazy load
+  lazyInitGiscus();
+
+  // Listen for theme toggle
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('#theme-toggle')) {
+      setTimeout(updateGiscusTheme, 400);
+    }
+  });
+
+  // Astro client-side navigation
+  document.addEventListener('astro:after-swap', () => {
+    lazyInitGiscus();
+  });
+</script> </div> </article> </div>  </main> <footer class="animate"> <div class="max-w-6xl mx-auto px-6 flex items-center justify-between text-sm text-muted-fg"> <p>Copyright &copy; 2026 Jayz Zhang. All rights reserved.</p> <button id="back-to-top" class="group inline-flex items-center gap-1.5 text-sm text-muted-fg transition-colors duration-200 hover:text-primary"> <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="transition-transform duration-200 group-hover:-translate-y-0.5"> <polyline points="18 15 12 9 6 15"></polyline> </svg> <span>返回顶部</span> </button> </div> </footer> <aside data-pagefind-ignore> <div id="backdrop" class="invisible fixed left-0 top-0 z-50 flex h-screen w-full justify-center p-6" style="background: rgba(0,0,0,0.5); backdrop-filter: blur(8px);" data-astro-transition-persist="astro-3snakcvo-1"> <div id="pagefind-container" class="m-0 flex h-fit max-h-[80%] w-full max-w-(--breakpoint-sm) flex-col overflow-auto rounded-xl border border-border bg-secondary p-2 px-4 py-3 shadow-lg"> <div id="search" class="pagefind-ui pagefind-init" data-pagefind-ui data-bundle-path="/pagefind/" data-ui-options="{&#34;showImages&#34;:false,&#34;excerptLength&#34;:15,&#34;resetStyles&#34;:false}"></div> <script type="module" src="/_astro/Search.astro_astro_type_script_index_0_lang.DSe1Ey-Z.js"></script> <div class="mr-2 pb-1 pt-4 text-right text-xs text-muted-fg">
+按 <kbd class="rounded border border-border bg-background px-1.5 py-0.5 text-xs">Esc</kbd> 关闭
+</div> </div> </div> </aside> <script>
+  const magnifyingGlass = document.getElementById("magnifying-glass");
+  const backdrop = document.getElementById("backdrop");
+
+  function openPagefind() {
+    const searchDiv = document.getElementById("search");
+    const search = searchDiv.querySelector("input");
+    setTimeout(() => {
+      search.focus();
+    }, 0);
+    backdrop?.classList.remove("invisible");
+    backdrop?.classList.add("visible");
+  }
+
+  function closePagefind() {
+    const search = document.getElementById("search");
+    search.value = "";
+    backdrop?.classList.remove("visible");
+    backdrop?.classList.add("invisible");
+  }
+
+  magnifyingGlass?.addEventListener("click", () => {
+    openPagefind();
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "/") {
+      e.preventDefault();
+      openPagefind();
+    } else if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+      e.preventDefault();
+      openPagefind();
+    }
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      closePagefind();
+    }
+  });
+
+  document.addEventListener("click", (event) => {
+    if (event.target.classList.contains("pagefind-ui__result-link")) {
+      closePagefind();
+    }
+  });
+
+  backdrop?.addEventListener("click", (event) => {
+    if (!event.target.closest("#pagefind-container")) {
+      closePagefind();
+    }
+  });
+
+  const form = document.getElementById("form");
+  form?.addEventListener("submit", (event) => {
+    event.preventDefault();
+  });
+</script>  </body></html>
