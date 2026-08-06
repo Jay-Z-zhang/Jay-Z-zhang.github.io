@@ -164,6 +164,11 @@ article {
   @apply prose-a:text-primary prose-a:no-underline;
   @apply prose-strong:text-foreground;
   @apply prose-code:text-accent;
+  @apply prose-p:text-foreground/90;
+  @apply prose-li:text-foreground/90;
+  @apply prose-td:text-foreground/85;
+  @apply prose-th:text-foreground;
+  @apply prose-blockquote:text-muted-fg;
 }
 
 article a {
