@@ -106,6 +106,12 @@ const {
     initScrollHandlers();
   });
 
+  // Astro client-side navigation: re-run animations on page swap
+  document.addEventListener("astro:after-swap", () => {
+    animate();
+    addCopyCodeButtons();
+  });
+
   function animate() {
     const animateElements = document.querySelectorAll(".animate");
     if (!animateElements.length) return;
