@@ -1,0 +1,57 @@
+---
+import { type CollectionEntry, getCollection } from "astro:content";
+import FormattedDate from "@components/FormattedDate.astro";
+
+interface Props {
+  currentPostId: string;
+  tags: string[];
+}
+
+const { currentPostId, tags } = Astro.props;
+
+// Get all published posts
+const allPosts = (await getCollection("blog"))
+  .filter((post) => !post.data.draft);
+
+// Find posts with matching tags
+const relatedPosts = allPosts
+  .filter((post) => {
+    if (post.id === currentPostId) return false;
+    if (!post.data.tags || !tags) return false;
+    return post.data.tags.some((tag) => tags.includes(tag));
+  })
+  .slice(0, 3);
+---
+
+{relatedPosts.length > 0 && (
+  <div class="mt-16 pt-8 border-t border-border">
+    <h3 class="text-xl font-semibold text-foreground mb-6">相关文章</h3>
+    <div class="grid md:grid-cols-3 gap-6">
+      {relatedPosts.map((post) => (
+        <a
+          href={`/blog/${post.id}/`}
+          class="group block rounded-xl border border-border overflow-hidden hover:border-primary/30 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/5"
+        >
+          {post.data.image && (
+            <div class="aspect-[16/9] bg-secondary overflow-hidden">
+              <img
+                src={post.data.image}
+                alt={post.data.title}
+                loading="lazy"
+                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              />
+            </div>
+          )}
+          <div class="p-4 space-y-2">
+            <h4 class="text-sm font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2">
+              {post.data.title}
+            </h4>
+            <div class="flex items-center gap-2 text-xs text-muted-fg">
+              <FormattedDate date={post.data.date} />
+            </div>
+          </div>
+        </a>
+      ))}
+    </div>
+  </div>
+)}
