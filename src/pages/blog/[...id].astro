@@ -22,26 +22,23 @@ export async function getStaticPaths() {
 }
 type Props = CollectionEntry<"blog">;
 
-const posts = (await getCollection("blog"))
+// For prev/next nav: fetch once at module level
+const allPosts = (await getCollection("blog"))
   .filter((post) => !post.data.draft)
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 
 function getNextPost() {
-  let postIndex;
-  for (const post of posts) {
-    if (post.id === Astro.params.id) {
-      postIndex = posts.indexOf(post);
-      return posts[postIndex + 1];
+  for (let i = 0; i < allPosts.length; i++) {
+    if (allPosts[i].id === Astro.params.id) {
+      return allPosts[i + 1];
     }
   }
 }
 
 function getPrevPost() {
-  let postIndex;
-  for (const post of posts) {
-    if (post.id === Astro.params.id) {
-      postIndex = posts.indexOf(post);
-      return posts[postIndex - 1];
+  for (let i = 0; i < allPosts.length; i++) {
+    if (allPosts[i].id === Astro.params.id) {
+      return allPosts[i - 1];
     }
   }
 }

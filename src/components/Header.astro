@@ -21,9 +21,9 @@ const { hasHero = false } = Astro.props;
       {SITE.TITLE}
     </a>
     <div class="flex items-center gap-5">
-      <a href="/" class="text-sm font-medium text-muted-fg hover:text-primary transition-colors">首页</a>
-      <a href="/blog" class="text-sm font-medium text-muted-fg hover:text-primary transition-colors">博客</a>
-      <a href="/projects" class="text-sm font-medium text-muted-fg hover:text-primary transition-colors">作品</a>
+      <a href="/" class="text-sm font-medium text-muted-fg hover:text-primary transition-colors" rel="prefetch">首页</a>
+      <a href="/blog" class="text-sm font-medium text-muted-fg hover:text-primary transition-colors" rel="prefetch">博客</a>
+      <a href="/projects" class="text-sm font-medium text-muted-fg hover:text-primary transition-colors" rel="prefetch">作品</a>
       <a
         href="https://github.com/Jay-Z-zhang"
         target="_blank"
@@ -94,12 +94,4 @@ const { hasHero = false } = Astro.props;
   } else {
     nav.classList.add('has-bg');
   }
-
-  window.addEventListener('scroll', function () {
-    if (isHomepage()) {
-      nav.classList.toggle('has-bg', window.scrollY > 20);
-    } else {
-      nav.classList.add('has-bg');
-    }
-  });
 </script>

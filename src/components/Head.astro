@@ -99,28 +99,28 @@ const {
     animate();
     addCopyCodeButtons();
 
-    const backToTop = document.getElementById("back-to-top");
-    backToTop?.addEventListener("click", (event) => scrollToTop(event));
-
     const backToPrev = document.getElementById("back-to-prev");
     backToPrev?.addEventListener("click", () => window.history.back());
+
+    // Consolidated scroll handler (replaces 3 separate listeners)
+    initScrollHandlers();
   });
 
   function animate() {
     const animateElements = document.querySelectorAll(".animate");
-    animateElements.forEach((element, index) => {
-      setTimeout(() => {
-        element.classList.add("show");
-      }, index * 100);
-    });
-  }
+    if (!animateElements.length) return;
 
-  function scrollToTop(event) {
-    event.preventDefault();
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
+    // Use IntersectionObserver for scroll-triggered animations
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("show");
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+    animateElements.forEach((el) => observer.observe(el));
   }
 
   function addCopyCodeButtons() {
@@ -158,5 +158,55 @@ const {
         await copyCode(codeBlock, copyButton);
       });
     }
+  }
+
+  function initScrollHandlers() {
+    const progressBar = document.getElementById('reading-progress');
+    const nav = document.getElementById('nav');
+    const backToTopBtn = document.getElementById('back-to-top');
+    const isHome = window.location.pathname === '/' || window.location.pathname === '';
+    let ticking = false;
+
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          const scrollY = window.scrollY;
+
+          // 1. Reading progress bar
+          if (progressBar) {
+            const total = document.documentElement.scrollHeight - window.innerHeight;
+            const progress = total > 0 ? scrollY / total : 0;
+            progressBar.style.transform = `scaleX(${progress})`;
+          }
+
+          // 2. Nav background
+          if (nav) {
+            if (isHome) {
+              nav.classList.toggle('has-bg', scrollY > 20);
+            } else {
+              nav.classList.add('has-bg');
+            }
+          }
+
+          // 3. Back to top visibility
+          if (backToTopBtn) {
+            if (scrollY > 300) {
+              document.documentElement.classList.add('scrolled');
+            } else {
+              document.documentElement.classList.remove('scrolled');
+            }
+          }
+
+          ticking = false;
+        });
+        ticking = true;
+      }
+    }, { passive: true });
+
+    // Back to top click
+    backToTopBtn?.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
   }
 </script>

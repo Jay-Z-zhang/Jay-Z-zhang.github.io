@@ -7,6 +7,7 @@ const { prevPost, nextPost } = Astro.props;
     prevPost?.id ? (
       <a
         href={`/blog/${prevPost?.id}`}
+        rel="prefetch"
         class="group relative flex flex-nowrap rounded-lg border border-border bg-secondary/20 px-4 py-4 pl-10 text-muted-fg no-underline transition-colors duration-300 ease-in-out hover:border-primary/30 hover:text-primary"
       >
         <svg
@@ -30,6 +31,7 @@ const { prevPost, nextPost } = Astro.props;
     nextPost?.id ? (
       <a
         href={`/blog/${nextPost?.id}`}
+        rel="prefetch"
         class="group relative flex grow flex-row-reverse flex-nowrap rounded-lg border border-border bg-secondary/20 px-4 py-4 pr-10 text-muted-fg no-underline transition-colors duration-300 ease-in-out hover:border-primary/30 hover:text-primary"
       >
         <svg

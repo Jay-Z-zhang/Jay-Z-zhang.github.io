@@ -126,6 +126,7 @@
       var isLight = document.documentElement.classList.contains('light');
       var charColor = isLight ? '#15803d' : '#4ade80';
 
+      var animFrameId = null;
       function animate() {
         ctx.clearRect(0, 0, W, H);
 
@@ -182,10 +183,28 @@
         }
 
         ctx.globalAlpha = 1;
-        requestAnimationFrame(animate);
+        animFrameId = requestAnimationFrame(animate);
       }
 
-      animate();
+      // Viewport-aware animation: pause when canvas is not visible
+      function startAnimation() {
+        if (!animFrameId) animFrameId = requestAnimationFrame(animate);
+      }
+      function stopAnimation() {
+        if (animFrameId) {
+          cancelAnimationFrame(animFrameId);
+          animFrameId = null;
+        }
+      }
+
+      var observer = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          entry.isIntersecting ? startAnimation() : stopAnimation();
+        });
+      }, { threshold: 0 });
+      observer.observe(canvas);
+
+      startAnimation();
     });
   }
 

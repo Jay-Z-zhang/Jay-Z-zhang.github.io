@@ -78,6 +78,8 @@ const projects: CollectionEntry<"projects">[] = (
               <img
                 src={`/images/${project.id}.svg`}
                 alt={project.data.title}
+                loading="lazy"
+                decoding="async"
                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 onerror="this.src=`https://placehold.co/800x500/131928/22c55e?text=${encodeURIComponent(project.data.title)}`"
               >

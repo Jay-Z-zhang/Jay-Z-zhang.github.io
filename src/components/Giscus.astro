@@ -7,7 +7,8 @@
     return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
   }
 
-  function initGiscus() {
+  function loadGiscusScript() {
+    if (document.querySelector('.giscus script[src]')) return;
     const script = document.createElement('script');
     script.src = 'https://giscus.app/client.js';
     script.setAttribute('data-repo', 'Jay-Z-zhang/Jay-Z-zhang.github.io');
@@ -35,8 +36,23 @@
     }, 'https://giscus.app');
   }
 
-  // Init
-  initGiscus();
+  // Lazy load: only init when scrolled near comments
+  function lazyInitGiscus() {
+    const giscusEl = document.querySelector('.giscus');
+    if (!giscusEl) return;
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          loadGiscusScript();
+          observer.disconnect();
+        }
+      });
+    }, { rootMargin: '200px' });
+    observer.observe(giscusEl);
+  }
+
+  // Init lazy load
+  lazyInitGiscus();
 
   // Listen for theme toggle
   document.addEventListener('click', (e) => {
@@ -47,6 +63,6 @@
 
   // Astro client-side navigation
   document.addEventListener('astro:after-swap', () => {
-    initGiscus();
+    lazyInitGiscus();
   });
 </script>
