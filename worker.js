@@ -45,7 +45,7 @@ export default {
         },
         body: JSON.stringify({
           ...body,
-          model: body.model || 'deepseek-chat',
+          model: body.model || 'deepseek-v4-flash',
           max_tokens: Math.min(body.max_tokens || 2000, 4000), // Cap token usage
         }),
       });

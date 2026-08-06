@@ -1490,7 +1490,7 @@ window.runAIPolish = function() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'deepseek-chat',
+        model: 'deepseek-v4-flash',
         messages: [
           { role: 'system', content: '你是资深简历顾问，擅长用 STAR 法则优化简历、提升 ATS 通过率。回答要具体、可操作、分点列出。' },
           { role: 'user', content: prompt }
@@ -1508,7 +1508,7 @@ window.runAIPolish = function() {
         'Authorization': 'Bearer ' + apiKey
       },
       body: JSON.stringify({
-        model: 'deepseek-chat',
+        model: 'deepseek-v4-flash',
         messages: [
           { role: 'system', content: '你是资深简历顾问，擅长用 STAR 法则优化简历、提升 ATS 通过率。回答要具体、可操作、分点列出。' },
           { role: 'user', content: prompt }
@@ -1627,7 +1627,7 @@ window.sendAIRequest = function() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'deepseek-chat',
+        model: 'deepseek-v4-flash',
         messages: [
           { role: 'system', content: '你是资深简历顾问，擅长用 STAR 法则优化简历、提升 ATS 通过率。回答要具体、可操作、分点列出。' },
           { role: 'user', content: prompt }
@@ -1646,7 +1646,7 @@ window.sendAIRequest = function() {
         'Authorization': 'Bearer ' + apiKey
       },
       body: JSON.stringify({
-        model: 'deepseek-chat',
+        model: 'deepseek-v4-flash',
         messages: [
           { role: 'system', content: '你是资深简历顾问，擅长用 STAR 法则优化简历、提升 ATS 通过率。回答要具体、可操作、分点列出。' },
           { role: 'user', content: prompt }
