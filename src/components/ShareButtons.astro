@@ -17,7 +17,7 @@ const encodedUrl = encodeURIComponent(url);
     href={`https://twitter.com/intent/tweet?text=${encodedTitle}&url=${encodedUrl}`}
     target="_blank"
     rel="noopener noreferrer"
-    class="flex items-center justify-center w-8 h-8 rounded-lg border border-border text-muted-fg hover:text-primary hover:border-primary/30 transition-colors duration-200"
+    class="share-btn flex items-center justify-center w-8 h-8 rounded-lg border border-border text-muted-fg hover:text-primary hover:border-primary/30 transition-colors duration-200"
     aria-label="分享到 X"
   >
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -30,7 +30,7 @@ const encodedUrl = encodeURIComponent(url);
     href={`https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`}
     target="_blank"
     rel="noopener noreferrer"
-    class="flex items-center justify-center w-8 h-8 rounded-lg border border-border text-muted-fg hover:text-primary hover:border-primary/30 transition-colors duration-200"
+    class="share-btn flex items-center justify-center w-8 h-8 rounded-lg border border-border text-muted-fg hover:text-primary hover:border-primary/30 transition-colors duration-200"
     aria-label="分享到 Facebook"
   >
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -43,7 +43,7 @@ const encodedUrl = encodeURIComponent(url);
     href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`}
     target="_blank"
     rel="noopener noreferrer"
-    class="flex items-center justify-center w-8 h-8 rounded-lg border border-border text-muted-fg hover:text-primary hover:border-primary/30 transition-colors duration-200"
+    class="share-btn flex items-center justify-center w-8 h-8 rounded-lg border border-border text-muted-fg hover:text-primary hover:border-primary/30 transition-colors duration-200"
     aria-label="分享到 LinkedIn"
   >
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -56,7 +56,7 @@ const encodedUrl = encodeURIComponent(url);
     href={`https://wa.me/?text=${encodedTitle}%20${encodedUrl}`}
     target="_blank"
     rel="noopener noreferrer"
-    class="flex items-center justify-center w-8 h-8 rounded-lg border border-border text-muted-fg hover:text-primary hover:border-primary/30 transition-colors duration-200"
+    class="share-btn flex items-center justify-center w-8 h-8 rounded-lg border border-border text-muted-fg hover:text-primary hover:border-primary/30 transition-colors duration-200"
     aria-label="分享到 WhatsApp"
   >
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -69,7 +69,7 @@ const encodedUrl = encodeURIComponent(url);
     href={`https://service.weibo.com/share/share.php?url=${encodedUrl}&title=${encodedTitle}`}
     target="_blank"
     rel="noopener noreferrer"
-    class="flex items-center justify-center w-8 h-8 rounded-lg border border-border text-muted-fg hover:text-primary hover:border-primary/30 transition-colors duration-200"
+    class="share-btn flex items-center justify-center w-8 h-8 rounded-lg border border-border text-muted-fg hover:text-primary hover:border-primary/30 transition-colors duration-200"
     aria-label="分享到微博"
   >
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -79,31 +79,21 @@ const encodedUrl = encodeURIComponent(url);
     </svg>
   </a>
 
-  <!-- WeChat -->
+  <!-- WeChat - Modal Trigger -->
   <button
-    class="share-wechat-btn flex items-center justify-center w-8 h-8 rounded-lg border border-border text-muted-fg hover:text-primary hover:border-primary/30 transition-colors duration-200 relative"
-    onclick="this.querySelector('.qr-popup').classList.toggle('hidden')"
+    id="wechat-share-btn"
+    class="share-btn flex items-center justify-center w-8 h-8 rounded-lg border border-border text-muted-fg hover:text-primary hover:border-primary/30 transition-colors duration-200"
     aria-label="分享到微信"
   >
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
     </svg>
-    <div class="qr-popup hidden absolute bottom-full right-0 mb-3 w-[200px] p-3 rounded-xl border border-border bg-background shadow-2xl z-50">
-      <img
-        src={`https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodedUrl}&bgcolor=0b0f1a&color=4ade80`}
-        alt="微信扫码分享"
-        width="160"
-        height="160"
-        class="rounded-lg mx-auto block"
-      />
-      <p class="text-xs text-muted-fg text-center mt-2 whitespace-nowrap">微信扫码分享</p>
-    </div>
   </button>
 
   <!-- Copy Link -->
   <button
     id="copy-link-btn"
-    class="flex items-center justify-center w-8 h-8 rounded-lg border border-border text-muted-fg hover:text-primary hover:border-primary/30 transition-colors duration-200"
+    class="share-btn flex items-center justify-center w-8 h-8 rounded-lg border border-border text-muted-fg hover:text-primary hover:border-primary/30 transition-colors duration-200"
     aria-label="复制链接"
   >
     <svg class="icon-link" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -115,7 +105,30 @@ const encodedUrl = encodeURIComponent(url);
   </button>
 </div>
 
+<!-- WeChat QR Modal -->
+<div id="wechat-modal" class="fixed inset-0 z-[100] hidden items-center justify-center">
+  <div class="modal-backdrop absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="closeWechatModal()"></div>
+  <div class="modal-content relative z-10 flex flex-col items-center p-6 rounded-2xl border border-border bg-background shadow-2xl animate-modal-in">
+    <button class="absolute top-3 right-3 text-muted-fg hover:text-foreground transition-colors" onclick="closeWechatModal()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+      </svg>
+    </button>
+    <img
+      id="wechat-qr-img"
+      src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodedUrl}&bgcolor=0b0f1a&color=4ade80&qzone=1`}
+      alt="微信扫码分享"
+      width="200"
+      height="200"
+      class="rounded-xl"
+    />
+    <p class="text-sm text-foreground mt-4 font-medium">微信扫码分享</p>
+    <p class="text-xs text-muted-fg mt-1">打开微信扫描二维码</p>
+  </div>
+</div>
+
 <script is:inline>
+  // Copy link
   document.getElementById('copy-link-btn')?.addEventListener('click', function() {
     navigator.clipboard.writeText('{url}').then(() => {
       this.querySelector('.icon-link').classList.add('hidden');
@@ -127,9 +140,29 @@ const encodedUrl = encodeURIComponent(url);
     });
   });
 
-  document.addEventListener('click', (e) => {
-    if (!e.target.closest('[aria-label="分享到微信"]')) {
-      document.querySelectorAll('.qr-popup').forEach(el => el.classList.add('hidden'));
-    }
+  // WeChat modal
+  const modal = document.getElementById('wechat-modal');
+  document.getElementById('wechat-share-btn')?.addEventListener('click', () => {
+    modal?.classList.remove('hidden');
+    modal?.classList.add('flex');
+  });
+
+  function closeWechatModal() {
+    modal?.classList.add('hidden');
+    modal?.classList.remove('flex');
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeWechatModal();
   });
 </script>
+
+<style>
+  .animate-modal-in {
+    animation: modalIn 0.2s ease-out;
+  }
+  @keyframes modalIn {
+    from { opacity: 0; transform: scale(0.95) translateY(8px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+</style>
