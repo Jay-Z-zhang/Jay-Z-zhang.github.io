@@ -35,7 +35,26 @@ body{background:var(--app-bg);color:var(--app-text);font-family:'Inter','Noto Sa
 .btn-pdf{background:rgba(239,68,68,.1);color:#f87171;border-color:rgba(239,68,68,.25);}
 .btn-pdf:hover{background:rgba(239,68,68,.2);}
 .btn-demo{background:rgba(16,185,129,.1);color:#34d399;border-color:rgba(16,185,129,.25);}
-.btn-demo:hover{background:rgba(16,185,129,.2);}/* ── Layout ── */
+.btn-demo:hover{background:rgba(16,185,129,.2);}/* ── AI Polish Dialog ── */
+.ai-dialog-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);z-index:100;display:flex;align-items:center;justify-content:center;animation:fadeIn .2s ease;}
+.ai-dialog{background:var(--app-surface);border:1px solid var(--app-border);border-radius:16px;width:520px;max-height:80vh;display:flex;flex-direction:column;box-shadow:0 24px 80px rgba(0,0,0,.5);animation:slideUp .25s ease;}
+.ai-dialog-header{padding:18px 22px 14px;border-bottom:1px solid var(--app-border);display:flex;align-items:center;justify-content:space-between;}
+.ai-dialog-header h3{font-size:15px;font-weight:600;display:flex;align-items:center;gap:8px;}
+.ai-dialog-close{background:none;border:none;color:var(--app-muted);font-size:20px;cursor:pointer;padding:4px 8px;border-radius:6px;transition:all .15s;}
+.ai-dialog-close:hover{color:var(--app-text);background:rgba(255,255,255,.08);}
+.ai-dialog-body{padding:18px 22px;overflow-y:auto;flex:1;}
+.ai-options{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
+.ai-option{display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid var(--app-border);border-radius:8px;cursor:pointer;font-size:12px;color:var(--app-text);transition:all .15s;background:rgba(15,17,23,.4);}
+.ai-option:hover{border-color:#3a3f4e;background:rgba(99,102,241,.06);}
+.ai-option.selected{border-color:var(--app-accent);background:var(--app-accent-dim);}
+.ai-option input[type=checkbox]{width:auto;margin:0;}
+.ai-dialog-actions{display:flex;gap:8px;margin-top:14px;}
+.ai-dialog-actions .btn{flex:1;padding:9px;font-size:13px;}
+.ai-result{background:rgba(15,17,23,.6);border:1px solid var(--app-border);border-radius:10px;padding:14px;font-size:13px;line-height:1.7;color:var(--app-text);max-height:350px;overflow-y:auto;white-space:pre-wrap;margin-top:12px;}
+.ai-result::-webkit-scrollbar{width:4px;}
+.ai-result::-webkit-scrollbar-thumb{background:#2a2f3e;border-radius:2px;}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}/* ── Layout ── */
 .app-body{flex:1;display:flex;overflow:hidden;}
 /* ── Sidebar (left panel) ── */
 .sidebar{width:380px;flex-shrink:0;background:var(--app-surface);border-right:1px solid var(--app-border);overflow-y:auto;display:flex;flex-direction:column;}
@@ -136,6 +155,10 @@ select option{background:#181b23;}
   <div class="topbar-actions">
     <button class="btn btn-demo" onclick="fillDemoData()">✦ 模板预览</button>
     <button class="btn btn-ghost" onclick="resetAll()">重置</button>
+    <button class="btn btn-primary" id="aiPolishBtn" onclick="openAIPolish()" style="background:rgba(168,85,247,.15);color:#c084fc;border-color:rgba(168,85,247,.3);">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block;vertical-align:-2px;margin-right:4px;"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      AI 润色
+    </button>
     <button class="btn btn-pdf" onclick="exportPDF()">⬇ 导出 PDF</button>
     <button class="btn btn-primary" onclick="downloadHTML()">⬇ 下载 HTML</button>
   </div>
@@ -502,6 +525,63 @@ select option{background:#181b23;}
 <div class="preview-wrap">
   <div id="resume-preview"></div>
 </div>
+</div><!-- end app-body -->
+
+<!-- ════ AI 润色对话框 ════ -->
+<div id="aiPolishDialog" class="ai-dialog-overlay" style="display:none;">
+  <div class="ai-dialog">
+    <div class="ai-dialog-header">
+      <h3><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c084fc" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg> AI 润色</h3>
+      <button class="ai-dialog-close" onclick="closeAIPolish()">×</button>
+    </div>
+    <div class="ai-dialog-body">
+      <!-- 润色选项 -->
+      <div style="font-size:12px;color:var(--app-muted);margin-bottom:10px;">选择润色维度：</div>
+      <div class="ai-options">
+        <label class="ai-option selected" onclick="toggleOption(this)">
+          <input type="checkbox" checked> 文案质量（STAR 法则）
+        </label>
+        <label class="ai-option selected" onclick="toggleOption(this)">
+          <input type="checkbox" checked> ATS 关键词匹配
+        </label>
+        <label class="ai-option selected" onclick="toggleOption(this)">
+          <input type="checkbox" checked> 语法/拼写检查
+        </label>
+        <label class="ai-option" onclick="toggleOption(this)">
+          <input type="checkbox"> 精简篇幅
+        </label>
+      </div>
+
+      <!-- 目标岗位 -->
+      <div class="field" style="margin-bottom:12px;">
+        <label style="font-size:11px;color:var(--app-muted);margin-bottom:4px;display:block;">目标岗位 JD（可选）</label>
+        <textarea id="aiPolishJd" rows="2" placeholder="粘贴职位描述，AI 会针对性优化..." style="width:100%;background:rgba(15,17,23,.6);border:1px solid var(--app-border);color:var(--app-text);border-radius:7px;padding:8px 10px;font-size:12px;font-family:inherit;resize:vertical;"></textarea>
+      </div>
+
+      <!-- 操作按钮 -->
+      <div class="ai-dialog-actions">
+        <button class="btn btn-ghost" onclick="closeAIPolish()">取消</button>
+        <button class="btn btn-primary" onclick="runAIPolish()" id="aiPolishRunBtn" style="background:rgba(168,85,247,.15);color:#c084fc;border-color:rgba(168,85,247,.3);">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block;vertical-align:-2px;margin-right:4px;"><path d="M22 2L11 13"/><path d="M22 2L15 22l-4-9-9-4 20-7z"/></svg>
+          开始润色
+        </button>
+      </div>
+
+      <!-- 结果展示 -->
+      <div id="aiPolishResult" style="display:none;">
+        <div style="font-size:12px;color:var(--app-muted);margin-top:14px;margin-bottom:6px;">润色建议：</div>
+        <div id="aiPolishResultContent" class="ai-result"></div>
+      </div>
+
+      <!-- 加载状态 -->
+      <div id="aiPolishLoading" style="display:none;text-align:center;padding:20px;">
+        <div style="display:inline-block;width:22px;height:22px;border:2px solid var(--app-border);border-top-color:#c084fc;border-radius:50%;animation:spin .8s linear infinite;"></div>
+        <div style="font-size:12px;color:var(--app-muted);margin-top:10px;">AI 正在分析你的简历...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
 </div><!-- end app-body -->
 
 <script>(function(){
@@ -1311,7 +1391,168 @@ window.exportPDF=_tx;
 window.resetAll=_ty;
 window.fillDemoData=_tz;
 
-/* ════ AI 修改建议 ════ */
+/* ════ AI 润色对话框 ════ */
+// 打开对话框
+window.openAIPolish = function() {
+  document.getElementById('aiPolishDialog').style.display = 'flex';
+  document.getElementById('aiPolishResult').style.display = 'none';
+  document.getElementById('aiPolishLoading').style.display = 'none';
+  var btn = document.getElementById('aiPolishRunBtn');
+  btn.disabled = false;
+  btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block;vertical-align:-2px;margin-right:4px;"><path d="M22 2L11 13"/><path d="M22 2L15 22l-4-9-9-4 20-7z"/></svg>开始润色';
+};
+
+// 关闭对话框
+window.closeAIPolish = function() {
+  document.getElementById('aiPolishDialog').style.display = 'none';
+};
+
+// 切换选项选中状态
+window.toggleOption = function(el) {
+  var cb = el.querySelector('input[type=checkbox]');
+  cb.checked = !cb.checked;
+  el.classList.toggle('selected', cb.checked);
+};
+
+// 执行 AI 润色
+window.runAIPolish = function() {
+  var workerUrl = document.getElementById('aiWorkerUrl')?.value.trim() || '';
+  var apiKey = document.getElementById('aiApiKey')?.value.trim() || '';
+  var jd = document.getElementById('aiPolishJd').value.trim();
+
+  var dims = [];
+  var options = document.querySelectorAll('#aiPolishDialog .ai-option');
+  options.forEach(function(opt) {
+    var cb = opt.querySelector('input[type=checkbox]');
+    if (cb.checked) {
+      var text = opt.textContent.trim();
+      if (text.includes('STAR')) dims.push('1. 文案质量优化：用 STAR 法则重写经历描述，确保每段经历都有量化成果（数据/百分比），动词开头，去掉废话');
+      else if (text.includes('ATS')) dims.push('2. ATS 关键词匹配：提取 JD 中的关键词，对比简历中是否包含，给出补充建议');
+      else if (text.includes('语法')) dims.push('3. 语法/拼写检查：找出错别字、语法错误、用词不当、标点问题');
+      else if (text.includes('精简')) dims.push('4. 精简篇幅：压缩冗余描述，控制在合理长度，突出重点');
+    }
+  });
+
+  if (!dims.length) { alert('请至少选择一个润色维度'); return; }
+  if (!apiKey && !workerUrl) { alert('请先在左侧「AI 修改建议」中填写 API Key 或 Worker 地址'); return; }
+
+  var resumeText = [];
+  var nameEl = document.getElementById('name');
+  if (nameEl && nameEl.value) resumeText.push('姓名：' + nameEl.value);
+  var jobTitleEl = document.getElementById('jobTitle');
+  if (jobTitleEl && jobTitleEl.value) resumeText.push('求职意向：' + jobTitleEl.value);
+  var summaryEl = document.getElementById('summary');
+  if (summaryEl && summaryEl.value) resumeText.push('【自我评价】\n' + summaryEl.value);
+
+  if (S.workEntries && S.workEntries.length) {
+    S.workEntries.forEach(function(e, i) {
+      var w = '【工作经历 ' + (i+1) + '】\n' + (e.data.company||'') + ' | ' + (e.data.role||'') + ' | ' + (e.data.period||'');
+      if (e.data.desc) w += '\n' + e.data.desc;
+      resumeText.push(w);
+    });
+  }
+
+  if (S.eduEntries && S.eduEntries.length) {
+    S.eduEntries.forEach(function(e, i) {
+      var ed = '【教育经历 ' + (i+1) + '】\n' + (e.data.school||'') + ' | ' + (e.data.degree||'') + ' | ' + (e.data.period||'');
+      resumeText.push(ed);
+    });
+  }
+
+  if (S.projectEntries && S.projectEntries.length) {
+    S.projectEntries.forEach(function(e, i) {
+      var p = '【项目经历 ' + (i+1) + '】\n' + (e.data.name||'');
+      if (e.data.desc) p += '\n' + e.data.desc;
+      resumeText.push(p);
+    });
+  }
+
+  if (!resumeText.length) { alert('请先填写简历内容'); return; }
+
+  var prompt = '你是一位资深简历顾问。请对以下简历内容进行润色并给出修改建议。\n\n';
+  prompt += '## 润色维度\n' + dims.join('\n') + '\n\n';
+  prompt += '## 简历内容\n' + resumeText.join('\n\n') + '\n\n';
+  if (jd) prompt += '## 目标岗位 JD\n' + jd + '\n\n';
+  prompt += '请按维度分点给出具体、可操作的修改建议。直接给出建议，不要废话。';
+
+  document.getElementById('aiPolishResult').style.display = 'none';
+  document.getElementById('aiPolishLoading').style.display = 'block';
+  var btn = document.getElementById('aiPolishRunBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block;vertical-align:-2px;margin-right:4px;animation:spin 1s linear infinite;"><circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-dashoffset="12"/></svg>分析中...';
+
+  var fetchOptions;
+  var targetUrl;
+
+  if (workerUrl) {
+    targetUrl = workerUrl.replace(/\/$/, '');
+    fetchOptions = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'deepseek-chat',
+        messages: [
+          { role: 'system', content: '你是资深简历顾问，擅长用 STAR 法则优化简历、提升 ATS 通过率。回答要具体、可操作、分点列出。' },
+          { role: 'user', content: prompt }
+        ],
+        max_tokens: 2000,
+        temperature: 0.7
+      })
+    };
+  } else {
+    targetUrl = 'https://api.deepseek.com/chat/completions';
+    fetchOptions = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + apiKey
+      },
+      body: JSON.stringify({
+        model: 'deepseek-chat',
+        messages: [
+          { role: 'system', content: '你是资深简历顾问，擅长用 STAR 法则优化简历、提升 ATS 通过率。回答要具体、可操作、分点列出。' },
+          { role: 'user', content: prompt }
+        ],
+        max_tokens: 2000,
+        temperature: 0.7
+      })
+    };
+  }
+
+  fetch(targetUrl, fetchOptions)
+  .then(function(res) {
+    if (!res.ok) throw new Error('API 请求失败：' + res.status);
+    return res.json();
+  })
+  .then(function(data) {
+    document.getElementById('aiPolishLoading').style.display = 'none';
+    document.getElementById('aiPolishResult').style.display = 'block';
+    var text = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
+    document.getElementById('aiPolishResultContent').textContent = text || '未获取到结果';
+    btn.disabled = false;
+    btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block;vertical-align:-2px;margin-right:4px;"><path d="M22 2L11 13"/><path d="M22 2L15 22l-4-9-9-4 20-7z"/></svg>开始润色';
+  })
+  .catch(function(err) {
+    document.getElementById('aiPolishLoading').style.display = 'none';
+    document.getElementById('aiPolishResult').style.display = 'block';
+    document.getElementById('aiPolishResultContent').textContent = '请求失败：' + err.message + '\n\n请检查：\n1. API Key 或 Worker 地址是否正确\n2. DeepSeek 账户余额是否充足\n3. 网络连接是否正常';
+    btn.disabled = false;
+    btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block;vertical-align:-2px;margin-right:4px;"><path d="M22 2L11 13"/><path d="M22 2L15 22l-4-9-9-4 20-7z"/></svg>重新尝试';
+  });
+};
+
+// 点击对话框外部关闭
+document.addEventListener('click', function(e) {
+  var dialog = document.getElementById('aiPolishDialog');
+  if (e.target === dialog) closeAIPolish();
+});
+
+// ESC 关闭对话框
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeAIPolish();
+});
+
+/* ════ AI 修改建议（左侧栏） ════ */
 // 从当前简历数据填充文本框
 window.fillFromResume = function() {
   var parts = [];
