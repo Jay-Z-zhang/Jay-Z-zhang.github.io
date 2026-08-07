@@ -7,6 +7,7 @@ tags:
   - 指标
   - 融资
 image: "/og/00-mau-arr-pmf.png"
+series: "融资知识拆解"
 ---
 
 ![PMF → MAU → ARR 增长飞轮](/images/blog/00-growth-flywheel.png)

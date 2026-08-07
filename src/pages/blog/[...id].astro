@@ -27,24 +27,21 @@ const allPosts = (await getCollection("blog"))
   .filter((post) => !post.data.draft)
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 
-function getNextPost() {
-  for (let i = 0; i < allPosts.length; i++) {
-    if (allPosts[i].id === Astro.params.id) {
-      return allPosts[i + 1];
+// 优先在同专栏内找上/下篇;找不到再回退到全站
+function getNeighbors(currentId: string, series: string | undefined) {
+  const list = series
+    ? allPosts.filter((p) => p.data.series === series)
+    : allPosts;
+  for (let i = 0; i < list.length; i++) {
+    if (list[i].id === currentId) {
+      return { prev: list[i - 1], next: list[i + 1] };
     }
   }
+  return { prev: undefined, next: undefined };
 }
 
-function getPrevPost() {
-  for (let i = 0; i < allPosts.length; i++) {
-    if (allPosts[i].id === Astro.params.id) {
-      return allPosts[i - 1];
-    }
-  }
-}
-
-const nextPost = getNextPost();
-const prevPost = getPrevPost();
+const nextPost = getNeighbors(Astro.params.id!, Astro.props.data.series).next;
+const prevPost = getNeighbors(Astro.params.id!, Astro.props.data.series).prev;
 
 const post = Astro.props;
 const { Content, headings } = await render(post);
@@ -63,7 +60,15 @@ const { Content, headings } = await render(post);
       <Breadcrumb current={post.data.title} />
     </div>
     <div class="my-10 space-y-1">
-      <div class="flex items-center gap-1.5 text-muted-fg">
+      <div class="flex items-center gap-2 flex-wrap">
+        {post.data.series && (
+          <span class="inline-flex items-center gap-1.5 text-xs font-medium text-primary bg-primary/10 border border-primary/20 px-2.5 py-0.5 rounded-full">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            {post.data.series}
+          </span>
+        )}
+      </div>
+      <div class="flex items-center gap-1.5 text-muted-fg pt-2">
         <div class="font-base text-sm">
           <FormattedDate date={post.data.date} />
         </div>
@@ -98,6 +103,24 @@ const { Content, headings } = await render(post);
       <div class="mt-8">
         <ShareButtons title={post.data.title} url={Astro.url.href} />
       </div>
+
+      <!-- Author card + subscription CTA -->
+      <div class="mt-12 rounded-xl border border-border bg-secondary/20 p-6">
+        <div class="flex items-start gap-4">
+          <div class="w-12 h-12 rounded-full bg-primary/15 border border-primary/25 flex items-center justify-center text-primary font-bold text-lg shrink-0">
+            J
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="text-sm font-semibold text-foreground">Jayz Zhang</div>
+            <div class="text-xs text-muted-fg mt-0.5">Growth PM @ Trip &amp; TrainPal · 增长方法论深度信作者</div>
+            <p class="text-sm text-muted-fg leading-relaxed mt-3">
+              喜欢这篇内容? 每周一封增长方法论深度信,
+              <a href="/#subscribe-form" class="text-primary hover:underline">订阅永远免费</a>。
+            </p>
+          </div>
+        </div>
+      </div>
+
       <div class="mt-16 pt-8 border-t border-border">
         <PostNavigation prevPost={prevPost} nextPost={nextPost} />
         <RelatedPosts currentPostId={post.id} tags={post.data.tags || []} />

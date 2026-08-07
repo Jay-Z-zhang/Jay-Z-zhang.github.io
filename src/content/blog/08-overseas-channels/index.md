@@ -7,6 +7,7 @@ tags:
   - 营销
   - 增长
 image: "/og/08-overseas-channels.png"
+series: "出海实战"
 ---
 
 ![渠道组合策略](/images/blog/08-channel-strategy.png)

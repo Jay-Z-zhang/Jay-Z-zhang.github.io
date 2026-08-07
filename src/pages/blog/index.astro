@@ -10,20 +10,35 @@ const data = (await getCollection("blog"))
   .filter((post) => !post.data.draft)
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 
-type Acc = {
-  [year: string]: CollectionEntry<"blog">[];
-};
-
-const posts = data.reduce((acc: Acc, post) => {
+// 按年
+type YearAcc = { [year: string]: CollectionEntry<"blog">[] };
+const byYear = data.reduce((acc: YearAcc, post) => {
   const year = post.data.date.getFullYear().toString();
-  if (!acc[year]) {
-    acc[year] = [];
-  }
-  acc[year].push(post);
+  (acc[year] ||= []).push(post);
   return acc;
 }, {});
+const years = Object.keys(byYear).sort((a, b) => parseInt(b) - parseInt(a));
 
-const years = Object.keys(posts).sort((a, b) => parseInt(b) - parseInt(a));
+// 按专栏
+type SeriesAcc = { [series: string]: CollectionEntry<"blog">[] };
+const bySeries = data.reduce((acc: SeriesAcc, post) => {
+  const s = post.data.series || "其他";
+  (acc[s] ||= []).push(post);
+  return acc;
+}, {});
+// 排序:专栏内按日期倒序,专栏之间按文章数量倒序
+const seriesList = Object.keys(bySeries)
+  .filter((s) => s !== "其他")
+  .sort((a, b) => bySeries[b].length - bySeries[a].length);
+if (bySeries["其他"]) seriesList.push("其他");
+
+const seriesDescriptions: Record<string, string> = {
+  融资知识拆解: "从 MAU/ARR/PMF 到可转债、SAFE、A/B/C 轮,把创业融资的关键概念讲清楚",
+  增长方法论: "LTV/CAC、指标体系、增长实验 —— 增长产品经理的核心工作方法",
+  出海实战: "Reddit、Twitter、ProductHunt 等海外增长渠道的实操指南",
+  产品落地: "从需求到上线,产品经理需要跑通的每个动作",
+  其他: "暂未归类的文章",
+};
 ---
 
 <Layout title={BLOG.TITLE} description={BLOG.DESCRIPTION}>
@@ -33,16 +48,50 @@ const years = Object.keys(posts).sort((a, b) => parseInt(b) - parseInt(a));
     </div>
     <aside data-pagefind-ignore>
       <div class="space-y-8">
-        <h1 class="page-title">{BLOG.TITLE}</h1>
-        <div class="space-y-8">
+        <div class="flex items-end justify-between gap-4 flex-wrap">
+          <h1 class="page-title">{BLOG.TITLE}</h1>
+
+          <!-- 视图切换 -->
+          <div class="inline-flex items-center gap-1 p-1 rounded-lg border border-border bg-secondary/30 text-xs font-medium">
+            <button data-view="series" class="view-btn active px-3 py-1.5 rounded-md transition-colors">按专栏</button>
+            <button data-view="year" class="view-btn px-3 py-1.5 rounded-md transition-colors">按时间</button>
+          </div>
+        </div>
+
+        <!-- 按专栏 -->
+        <div id="view-series" class="space-y-10">
+          {
+            seriesList.map((series) => (
+              <section class="space-y-4">
+                <header class="space-y-1">
+                  <div class="flex items-baseline gap-3">
+                    <h2 class="text-lg font-semibold text-foreground">{series}</h2>
+                    <span class="text-xs text-muted-fg">{bySeries[series].length} 篇</span>
+                  </div>
+                  <p class="text-sm text-muted-fg">
+                    {seriesDescriptions[series] ?? ""}
+                  </p>
+                </header>
+                <ul class="not-prose">
+                  {bySeries[series].map((post) => (
+                    <li>
+                      <ArrowCard entry={post} />
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ))
+          }
+        </div>
+
+        <!-- 按年份 -->
+        <div id="view-year" class="space-y-8" style="display:none;">
           {
             years.map((year) => (
               <section class="space-y-1">
-                <div class="text-sm font-medium text-muted-fg mb-4">
-                  {year}
-                </div>
+                <div class="text-sm font-medium text-muted-fg mb-4">{year}</div>
                 <ul class="not-prose">
-                  {posts[year].map((post) => (
+                  {byYear[year].map((post) => (
                     <li>
                       <ArrowCard entry={post} />
                     </li>
@@ -56,3 +105,50 @@ const years = Object.keys(posts).sort((a, b) => parseInt(b) - parseInt(a));
     </aside>
   </Container>
 </Layout>
+
+<style>
+  .view-btn {
+    color: var(--color-muted-fg);
+  }
+  .view-btn:hover {
+    color: var(--color-foreground);
+  }
+  .view-btn.active {
+    background: var(--color-primary);
+    color: var(--color-primary-fg);
+  }
+</style>
+
+<script is:inline>
+  (function () {
+    function init() {
+      const btns = document.querySelectorAll(".view-btn");
+      const viewSeries = document.getElementById("view-series");
+      const viewYear = document.getElementById("view-year");
+      if (!btns.length || !viewSeries || !viewYear) return;
+      // 恢复上次选择
+      let cur = "series";
+      try {
+        cur = localStorage.getItem("blog-view") || "series";
+      } catch (e) {}
+      applyView(cur);
+      btns.forEach((b) => {
+        b.addEventListener("click", () => {
+          const v = b.getAttribute("data-view");
+          if (!v) return;
+          applyView(v);
+          try {
+            localStorage.setItem("blog-view", v);
+          } catch (e) {}
+        });
+      });
+      function applyView(v) {
+        btns.forEach((b) => b.classList.toggle("active", b.getAttribute("data-view") === v));
+        viewSeries.style.display = v === "series" ? "" : "none";
+        viewYear.style.display = v === "year" ? "" : "none";
+      }
+    }
+    document.addEventListener("DOMContentLoaded", init);
+    document.addEventListener("astro:after-swap", init);
+  })();
+</script>

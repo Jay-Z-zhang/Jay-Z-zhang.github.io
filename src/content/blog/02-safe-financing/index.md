@@ -7,6 +7,7 @@ tags:
   - 创业
   - 股权
 image: "/og/02-safe-financing.png"
+series: "融资知识拆解"
 ---
 
 ![SAFE 融资流程](/images/blog/02-safe-timeline.png)

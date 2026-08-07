@@ -7,6 +7,7 @@ tags:
   - 创业
   - 股权
 image: "/og/04-funding-rounds.png"
+series: "融资知识拆解"
 ---
 
 ![创业融资路线图](/images/blog/04-funding-stairs.png)

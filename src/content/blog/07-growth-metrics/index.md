@@ -7,6 +7,7 @@ tags:
   - 指标
   - 数据分析
 image: "/og/07-growth-metrics.png"
+series: "增长方法论"
 ---
 
 ![增长指标分层模型](/images/blog/07-metrics-pyramid.png)

@@ -7,6 +7,7 @@ tags:
   - 创业
   - 股权
 image: "/og/01-convertible-bonds.png"
+series: "融资知识拆解"
 ---
 
 ![可转债 vs 可转换优先股对比](/images/blog/01-bonds-vs-stock.png)

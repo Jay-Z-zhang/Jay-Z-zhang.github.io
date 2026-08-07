@@ -7,6 +7,7 @@ tags:
   - 运维
   - 上线
 image: "/og/05-prelaunch-checklist.png"
+series: "产品落地"
 ---
 
 ![上线前五大维度自查](/images/blog/05-checklist.png)

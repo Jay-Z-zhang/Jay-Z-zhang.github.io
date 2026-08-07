@@ -53,10 +53,41 @@ const {
       </style>
     </noscript>
     <Header hasHero={noNavPadding} />
-    <main class:list={[!noNavPadding && "has-nav-padding"]}>
+    <main class:list={[!noNavPadding && "has-nav-padding"]} data-page-type={type}>
       <slot />
     </main>
     <Footer />
     <Pagefind />
+
+    <script is:inline>
+      // 阅读进度条 - 仅 article 页有效
+      (function () {
+        function initProgress() {
+          const bar = document.getElementById("reading-progress");
+          const main = document.querySelector("main[data-page-type]");
+          if (!bar || !main || main.getAttribute("data-page-type") !== "article") {
+            if (bar) bar.style.display = "none";
+            return;
+          }
+          bar.style.display = "";
+          function update() {
+            const doc = document.documentElement;
+            const scrollTop = window.scrollY || doc.scrollTop || 0;
+            const totalScrollable = (doc.scrollHeight || 0) - window.innerHeight;
+            if (totalScrollable <= 0) {
+              bar.style.transform = "scaleX(1)";
+              return;
+            }
+            const ratio = Math.min(Math.max(scrollTop / totalScrollable, 0), 1);
+            bar.style.transform = "scaleX(" + ratio.toFixed(3) + ")";
+          }
+          window.addEventListener("scroll", update, { passive: true });
+          window.addEventListener("resize", update);
+          update();
+        }
+        document.addEventListener("DOMContentLoaded", initProgress);
+        document.addEventListener("astro:after-swap", initProgress);
+      })();
+    </script>
   </body>
 </html>

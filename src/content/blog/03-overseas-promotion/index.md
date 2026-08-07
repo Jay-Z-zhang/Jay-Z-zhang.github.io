@@ -7,6 +7,7 @@ tags:
   - 营销
   - 社交媒体
 image: "/og/03-overseas-promotion.png"
+series: "出海实战"
 ---
 
 ![海外社媒流量矩阵](/images/blog/03-social-matrix.png)

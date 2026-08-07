@@ -7,6 +7,7 @@ tags:
   - 融资
   - 指标
 image: "/og/06-ltv-cac.png"
+series: "增长方法论"
 ---
 
 ![LTV/CAC 单位经济模型](/images/blog/06-ltv-cac.png)
