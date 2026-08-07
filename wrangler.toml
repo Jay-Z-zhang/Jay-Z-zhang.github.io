@@ -2,5 +2,9 @@ name = "deepseek-proxy"
 main = "worker.js"
 compatibility_date = "2024-01-01"
 
+[[kv_namespaces]]
+binding = "RATE_LIMIT"
+id = "b42c82bd7e3845b5bc4c23c5f0dbd461"
+
 # Deploy: npx wrangler deploy
 # Set secret: npx wrangler secret put DEEPSEEK_API_KEY

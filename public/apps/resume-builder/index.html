@@ -889,7 +889,7 @@ function _tg(hex, amt) {
 const {r,g,b} = _tf(hex);
 return `rgb(${Math.min(255,r+amt)},${Math.min(255,g+amt)},${Math.min(255,b+amt)})`;
 }
-function _th(hex, a) { const {r,g,b} = _tf(hex); return `_th(${r},${g},${b},${a})`; }
+function _th(hex, a) { const {r,g,b} = _tf(hex); return `rgba(${r},${g},${b},${a})`; }
 function _ti(hex) { const {r,g,b} = _tf(hex); return (r*299+g*587+b*114)/1000 < 140; }
 function _tj(text) {
 if (!text) return '';
@@ -1481,90 +1481,6 @@ document.addEventListener('keydown', function(e) {
   if (e.key === 'Escape') closeAIPolish();
 });
 
-/* ════ AI 修改建议（左侧栏） ════ */
-  // 构建分析维度
-  var dims = [];
-  if (document.getElementById('dimQuality').checked) dims.push('1. 文案质量优化：用 STAR 法则重写经历描述，确保每段经历都有量化成果（数据/百分比），动词开头，去掉废话和空泛描述');
-  if (document.getElementById('dimATS').checked) dims.push('2. ATS 关键词匹配：提取 JD 中的关键词，对比简历中是否包含，给出补充建议');
-  if (document.getElementById('dimGrammar').checked) dims.push('3. 语法/拼写检查：找出错别字、语法错误、用词不当、标点问题');
-  if (document.getElementById('dimTargeted').checked && jobDesc) dims.push('4. 岗位针对性建议：根据目标 JD，建议突出哪些经历、弱化哪些内容、补充哪些技能');
-  if (!dims.length) { alert('请至少选择一个分析维度'); return; }
-
-  // 构建 prompt
-  var prompt = '你是一位资深简历顾问。请对以下简历内容进行分析并给出修改建议。\n\n';
-  prompt += '## 分析维度\n' + dims.join('\n') + '\n\n';
-  prompt += '## 简历内容\n' + resumeText + '\n\n';
-  if (jobDesc) prompt += '## 目标岗位 JD\n' + jobDesc + '\n\n';
-  prompt += '请按维度分点给出具体、可操作的修改建议。直接给出建议，不要废话。';
-
-  // 显示加载状态
-  resultDiv.style.display = 'none';
-  loadingDiv.style.display = 'block';
-
-  // 保存配置到 localStorage
-  try {
-    if (apiKey) localStorage.setItem('deepseek_api_key', apiKey);
-    if (workerUrl) localStorage.setItem('deepseek_worker_url', workerUrl);
-  } catch(e) {}
-
-  // 构建请求
-  var fetchOptions;
-  var targetUrl;
-
-  if (workerUrl) {
-    // Worker 代理模式：key 在服务端，前端不传
-    targetUrl = workerUrl.replace(/\/$/, '');
-    fetchOptions = {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'deepseek-v4-flash',
-        messages: [
-          { role: 'system', content: '你是资深简历顾问，擅长用 STAR 法则优化简历、提升 ATS 通过率。回答要具体、可操作、分点列出。' },
-          { role: 'user', content: prompt }
-        ],
-        max_tokens: 2000,
-        temperature: 0.7
-      })
-    };
-  } else {
-    // 直接调用模式：前端传 key
-    targetUrl = 'https://api.deepseek.com/chat/completions';
-    fetchOptions = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + apiKey
-      },
-      body: JSON.stringify({
-        model: 'deepseek-v4-flash',
-        messages: [
-          { role: 'system', content: '你是资深简历顾问，擅长用 STAR 法则优化简历、提升 ATS 通过率。回答要具体、可操作、分点列出。' },
-          { role: 'user', content: prompt }
-        ],
-        max_tokens: 2000,
-        temperature: 0.7
-      })
-    };
-  }
-
-  fetch(targetUrl, fetchOptions)
-  .then(function(res) {
-    if (!res.ok) throw new Error('API 请求失败：' + res.status);
-    return res.json();
-  })
-  .then(function(data) {
-    loadingDiv.style.display = 'none';
-    resultDiv.style.display = 'block';
-    var text = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
-    resultContent.textContent = text || '未获取到结果';
-  })
-  .catch(function(err) {
-    loadingDiv.style.display = 'none';
-    resultDiv.style.display = 'block';
-    resultContent.textContent = '请求失败：' + err.message + '\n\n请检查：\n1. API Key 或 Worker 地址是否正确\n2. DeepSeek 账户余额是否充足\n3. 网络连接是否正常';
-  });
-};
 
 // 页面加载时恢复 API Key 和 Worker URL
 (function() {
