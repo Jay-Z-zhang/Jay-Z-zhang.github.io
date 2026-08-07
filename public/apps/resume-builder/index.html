@@ -145,6 +145,45 @@ select option{background:#181b23;}
 .typo-color{width:24px;height:24px;border:2px solid var(--app-border);border-radius:5px;padding:0;cursor:pointer;background:none;outline:none;}
 .typo-color::-webkit-color-swatch-wrapper{padding:2px;}
 .typo-color::-webkit-color-swatch{border:none;border-radius:2px;}
+
+/* ══ Mobile 适配（≤ 768px，不影响 PC）══ */
+@media (max-width:768px){
+  body{height:auto;overflow:auto;}
+  .app-body{flex-direction:column;overflow:visible;}
+
+  /* Preview 置顶：让用户先看到简历 */
+  .sidebar{order:2;}
+  .preview-wrap{order:1;}
+
+  /* Topbar 收缩 */
+  .topbar{height:auto;min-height:48px;padding:8px 12px;flex-wrap:wrap;gap:6px;}
+  .topbar-logo{font-size:13px;}
+  .topbar-logo strong{max-width:96px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  #topbar-tagline{display:none;}
+  .topbar-actions{margin-left:0;width:100%;justify-content:space-between;gap:4px;flex-wrap:wrap;}
+  .topbar-actions .btn{padding:5px 8px;font-size:11px;flex:1 1 auto;min-width:0;white-space:nowrap;}
+  .topbar-actions .btn svg{width:11px;height:11px;}
+
+  /* Sidebar 全宽 */
+  .sidebar{width:100%;max-height:none;overflow:visible;border-right:none;border-bottom:1px solid var(--app-border);}
+  .sb-section-head{padding:12px 14px;}
+  .sb-section-body{padding:4px 14px 14px;}
+
+  /* 表单双列改单列 */
+  .field-row{grid-template-columns:1fr;}
+
+  /* Preview 缩放到屏宽 */
+  .preview-wrap{padding:12px 8px;justify-content:center;align-items:flex-start;overflow:visible;flex:none;min-height:0;}
+  #resume-preview{zoom:0.44;-moz-transform:scale(0.44);-moz-transform-origin:top left;box-shadow:0 2px 12px rgba(0,0,0,.25);}
+
+  /* AI 对话框全宽 */
+  .ai-dialog{width:calc(100vw - 20px);max-width:100%;max-height:88vh;}
+  .ai-options{grid-template-columns:1fr;}
+
+  /* 模板卡片、字体标签留 2 列即可 */
+  .tpl-grid{grid-template-columns:1fr 1fr;}
+  .font-options{gap:5px;}
+}
 </style>
 </head>
 <body>
