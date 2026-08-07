@@ -54,7 +54,34 @@ body{background:var(--app-bg);color:var(--app-text);font-family:'Inter','Noto Sa
 .ai-result::-webkit-scrollbar{width:4px;}
 .ai-result::-webkit-scrollbar-thumb{background:#2a2f3e;border-radius:2px;}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-@keyframes slideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}/* ── Layout ── */
+@keyframes slideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── Onboarding overlay ── */
+.onboard-overlay{position:fixed;inset:0;background:rgba(15,17,23,.92);backdrop-filter:blur(8px);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;}
+.onboard{max-width:720px;width:100%;text-align:center;}
+.onboard h2{font-size:24px;font-weight:700;color:var(--app-text);margin-bottom:8px;}
+.onboard p{font-size:13px;color:var(--app-muted);margin-bottom:28px;}
+.onboard-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.onboard-card{background:var(--app-surface);border:1px solid var(--app-border);border-radius:12px;padding:22px 16px;cursor:pointer;transition:all .18s;text-align:left;}
+.onboard-card:hover{border-color:var(--app-accent);background:rgba(99,102,241,.08);transform:translateY(-2px);}
+.onboard-card .icon{width:36px;height:36px;border-radius:10px;background:rgba(99,102,241,.15);display:flex;align-items:center;justify-content:center;margin-bottom:12px;font-size:18px;}
+.onboard-card h3{font-size:14px;font-weight:600;color:var(--app-text);margin-bottom:6px;}
+.onboard-card .desc{font-size:11px;color:var(--app-muted);line-height:1.55;}
+.onboard-card.recommend{border-color:rgba(168,85,247,.35);}
+.onboard-card.recommend .icon{background:rgba(168,85,247,.15);color:#c084fc;}
+.onboard-card .badge{display:inline-block;font-size:9px;font-weight:700;color:#c084fc;background:rgba(168,85,247,.15);padding:2px 6px;border-radius:4px;letter-spacing:.05em;margin-left:6px;vertical-align:middle;}
+
+/* ── Import dialog additions ── */
+.import-drop{border:2px dashed var(--app-border);border-radius:10px;padding:20px;text-align:center;transition:all .18s;background:rgba(15,17,23,.4);}
+.import-drop:hover, .import-drop.dragover{border-color:var(--app-accent);background:rgba(99,102,241,.06);}
+.import-drop .hint{font-size:11px;color:var(--app-muted);margin-top:6px;}
+.import-drop input[type=file]{display:none;}
+
+@media (max-width:768px){
+  .onboard-cards{grid-template-columns:1fr;}
+  .onboard{padding:16px;}
+  .onboard h2{font-size:20px;}
+}/* ── Layout ── */
 .app-body{flex:1;display:flex;overflow:hidden;}
 /* ── Sidebar (left panel) ── */
 .sidebar{width:380px;flex-shrink:0;background:var(--app-surface);border-right:1px solid var(--app-border);overflow-y:auto;display:flex;flex-direction:column;}
@@ -194,6 +221,7 @@ select option{background:#181b23;}
   <span id="saveStatus" style="font-size:10px;color:#10b981;margin-left:6px;opacity:0;transition:opacity .3s;">✓ 已保存</span>
   <div class="topbar-actions">
     <button class="btn btn-demo" onclick="fillDemoData()">✦ 模板预览</button>
+    <button class="btn btn-ghost" onclick="openImportDialog()">↑ 导入旧简历</button>
     <button class="btn btn-ghost" onclick="resetAll()">重置</button>
     <button class="btn btn-primary" id="aiPolishBtn" onclick="openAIPolish()" style="background:rgba(168,85,247,.15);color:#c084fc;border-color:rgba(168,85,247,.3);">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block;vertical-align:-2px;margin-right:4px;"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
@@ -546,6 +574,73 @@ select option{background:#181b23;}
       <div id="aiPolishLoading" style="display:none;text-align:center;padding:20px;">
         <div style="display:inline-block;width:22px;height:22px;border:2px solid var(--app-border);border-top-color:#c084fc;border-radius:50%;animation:spin .8s linear infinite;"></div>
         <div style="font-size:12px;color:var(--app-muted);margin-top:10px;">AI 正在分析你的简历...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ 首次访问引导 ════ -->
+<div id="onboardOverlay" class="onboard-overlay" style="display:none;">
+  <div class="onboard">
+    <h2>开始制作你的简历</h2>
+    <p>选择一个起点，30 秒内看到简历初稿</p>
+    <div class="onboard-cards">
+      <div class="onboard-card" onclick="onboardChoose('demo')">
+        <div class="icon">📋</div>
+        <h3>从模板开始</h3>
+        <div class="desc">用示例数据快速上手，看清结构后替换成自己的内容</div>
+      </div>
+      <div class="onboard-card recommend" onclick="onboardChoose('import')">
+        <div class="icon">📄</div>
+        <h3>导入旧简历 <span class="badge">AI</span></h3>
+        <div class="desc">粘贴或上传旧简历，AI 自动拆解成结构化字段</div>
+      </div>
+      <div class="onboard-card" onclick="onboardChoose('blank')">
+        <div class="icon">✏️</div>
+        <h3>从零开始</h3>
+        <div class="desc">空白模板，一步步填写你的信息</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ 导入旧简历对话框 ════ -->
+<div id="importDialog" class="ai-dialog-overlay" style="display:none;">
+  <div class="ai-dialog">
+    <div class="ai-dialog-header">
+      <h3>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c084fc" stroke-width="2"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+        导入旧简历
+      </h3>
+      <button class="ai-dialog-close" onclick="closeImportDialog()">×</button>
+    </div>
+    <div class="ai-dialog-body">
+      <div style="font-size:12px;color:var(--app-muted);margin-bottom:10px;">粘贴简历文本，或拖入 .txt / .md 文件，AI 会自动拆解成结构化字段。</div>
+
+      <label class="import-drop" id="importDrop">
+        <input type="file" id="importFile" accept=".txt,.md,text/plain">
+        <div style="font-size:12px;color:var(--app-text);">📁 点击选择文件 或 拖拽到此处</div>
+        <div class="hint">支持 .txt / .md，PDF 请复制文本后粘贴</div>
+      </label>
+
+      <div style="font-size:11px;color:var(--app-muted);margin:12px 0 4px;">或直接粘贴：</div>
+      <textarea id="importText" rows="6" placeholder="粘贴你的旧简历内容,支持中英文..." style="width:100%;background:rgba(15,17,23,.6);border:1px solid var(--app-border);color:var(--app-text);border-radius:7px;padding:8px 10px;font-size:12px;font-family:inherit;resize:vertical;"></textarea>
+
+      <div class="ai-dialog-actions">
+        <button class="btn btn-ghost" onclick="closeImportDialog()">取消</button>
+        <button class="btn btn-primary" id="importRunBtn" onclick="runImport()" style="background:rgba(168,85,247,.15);color:#c084fc;border-color:rgba(168,85,247,.3);">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block;vertical-align:-2px;margin-right:4px;"><path d="M22 2L11 13"/><path d="M22 2L15 22l-4-9-9-4 20-7z"/></svg>
+          开始导入
+        </button>
+      </div>
+
+      <div id="importLoading" style="display:none;text-align:center;padding:20px;">
+        <div style="display:inline-block;width:22px;height:22px;border:2px solid var(--app-border);border-top-color:#c084fc;border-radius:50%;animation:spin .8s linear infinite;"></div>
+        <div style="font-size:12px;color:var(--app-muted);margin-top:10px;">AI 正在解析你的简历...</div>
+      </div>
+
+      <div id="importResult" style="display:none;margin-top:12px;">
+        <div id="importResultContent" class="ai-result"></div>
       </div>
     </div>
   </div>
@@ -1461,13 +1556,13 @@ _t7(('e'+'du'));
 _t7(('wo'+'rk'));
 _tb();
 _tu();
-// 有保存数据 → 恢复；没有 → 加载 demo
+// 有保存数据 → 恢复；没有 → 显示引导页
 if (_restore()) {
   ['edu','work','project','award','pub'].forEach(t => _t9(t));
   _tb();
   _tu();
 } else {
-  _tz();
+  document.getElementById('onboardOverlay').style.display = 'flex';
 }
 window.toggleSection=_t0;
 window.setLang=_t1;
@@ -1482,6 +1577,177 @@ window.downloadHTML=_tw;
 window.exportPDF=_tx;
 window.resetAll=_ty;
 window.fillDemoData=_tz;
+
+/* ════ 首次访问引导 ════ */
+window.onboardChoose = function(choice) {
+  document.getElementById('onboardOverlay').style.display = 'none';
+  if (choice === 'demo') _tz();
+  else if (choice === 'import') openImportDialog();
+  else if (choice === 'blank') { _tu(); _save(); }
+};
+
+/* ════ 导入旧简历对话框 ════ */
+window.openImportDialog = function() {
+  document.getElementById('importDialog').style.display = 'flex';
+  document.getElementById('importResult').style.display = 'none';
+  document.getElementById('importLoading').style.display = 'none';
+  var btn = document.getElementById('importRunBtn');
+  btn.disabled = false;
+  btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block;vertical-align:-2px;margin-right:4px;"><path d="M22 2L11 13"/><path d="M22 2L15 22l-4-9-9-4 20-7z"/></svg>开始导入';
+};
+window.closeImportDialog = function() {
+  document.getElementById('importDialog').style.display = 'none';
+};
+
+// 文件选择/拖拽
+(function initImportDrop(){
+  var drop = document.getElementById('importDrop');
+  var fileInput = document.getElementById('importFile');
+  var textarea = document.getElementById('importText');
+  if (!drop || !fileInput) return;
+  function readFile(file) {
+    if (!file) return;
+    if (file.size > 500 * 1024) { alert('文件太大 (>500KB)，请截取核心内容后粘贴'); return; }
+    var reader = new FileReader();
+    reader.onload = function(e) { textarea.value = e.target.result; };
+    reader.readAsText(file, 'utf-8');
+  }
+  fileInput.addEventListener('change', function(){ readFile(this.files[0]); });
+  drop.addEventListener('dragover', function(e){ e.preventDefault(); drop.classList.add('dragover'); });
+  drop.addEventListener('dragleave', function(){ drop.classList.remove('dragover'); });
+  drop.addEventListener('drop', function(e){
+    e.preventDefault();
+    drop.classList.remove('dragover');
+    if (e.dataTransfer.files.length) readFile(e.dataTransfer.files[0]);
+  });
+})();
+
+// 执行导入：调 Worker 让 AI 解析
+window.runImport = function() {
+  var text = document.getElementById('importText').value.trim();
+  if (!text) { alert('请先粘贴简历内容或选择文件'); return; }
+  if (text.length < 50) { alert('内容太短，请粘贴完整简历'); return; }
+
+  var workerUrl = document.getElementById('aiWorkerUrl')?.value.trim() || '';
+  var apiKey = document.getElementById('aiApiKey')?.value.trim() || '';
+
+  var schema = '{\n' +
+    '  "name": "姓名",\n' +
+    '  "nameEn": "英文名(如有)",\n' +
+    '  "jobTitle": "求职意向/目标岗位",\n' +
+    '  "phone": "手机号",\n' +
+    '  "email": "邮箱",\n' +
+    '  "city": "城市",\n' +
+    '  "linkedin": "LinkedIn URL(如有)",\n' +
+    '  "summary": "自我评价/个人简介",\n' +
+    '  "skillTools": "专业技能,用逗号分隔",\n' +
+    '  "skillLang": "语言能力",\n' +
+    '  "skillCerts": "证书资质",\n' +
+    '  "edu": [{"school":"","degree":"","period":"","gpa":""}],\n' +
+    '  "work": [{"company":"","role":"","period":"","desc":"用换行分隔的成就项,每项以•开头"}],\n' +
+    '  "project": [{"name":"","role":"","period":"","link":"","desc":"用换行分隔的项目描述"}],\n' +
+    '  "award": [{"name":"","org":"","year":""}]\n' +
+    '}';
+
+  var prompt = '你是简历解析助手。请从下面的简历原文提取结构化信息,严格按 JSON schema 输出,只输出 JSON,不要任何 markdown 代码块标记或说明文字。\n\n' +
+    '## JSON Schema\n' + schema + '\n\n' +
+    '## 规则\n' +
+    '- 找不到的字段用空字符串 "" 或空数组 []\n' +
+    '- 数组类字段(edu/work/project/award)按简历中的时间倒序\n' +
+    '- work.desc / project.desc 每条成就前加 "• "，用 \\n 分隔\n' +
+    '- period 保持简历原文格式,不要重排\n\n' +
+    '## 简历原文\n' + text;
+
+  document.getElementById('importLoading').style.display = 'block';
+  document.getElementById('importResult').style.display = 'none';
+  var btn = document.getElementById('importRunBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block;vertical-align:-2px;margin-right:4px;animation:spin 1s linear infinite;"><circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-dashoffset="12"/></svg>解析中...';
+
+  var controller = new AbortController();
+  var timeoutId = setTimeout(function(){ controller.abort(); }, 30000);
+  var targetUrl, fetchOptions;
+  var payload = {
+    model: 'deepseek-chat',
+    messages: [
+      { role: 'system', content: '你是精准的简历解析器,只输出 JSON,不解释。' },
+      { role: 'user', content: prompt }
+    ],
+    max_tokens: 3000,
+    temperature: 0.2,
+    signal: controller.signal
+  };
+  if (workerUrl) {
+    targetUrl = workerUrl.replace(/\/$/, '');
+    fetchOptions = { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload), signal: controller.signal };
+  } else {
+    targetUrl = 'https://api.deepseek.com/chat/completions';
+    fetchOptions = { method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+apiKey}, body: JSON.stringify(payload), signal: controller.signal };
+  }
+
+  fetch(targetUrl, fetchOptions)
+  .then(function(res){
+    clearTimeout(timeoutId);
+    if (!res.ok) throw new Error('API 请求失败: ' + res.status);
+    return res.json();
+  })
+  .then(function(data){
+    var raw = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
+    if (!raw) throw new Error('AI 未返回结果');
+    // 去 markdown 包裹
+    raw = raw.replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim();
+    var parsed;
+    try { parsed = JSON.parse(raw); } catch(e) {
+      // 尝试提取第一个 { 到最后一个 }
+      var m = raw.match(/\{[\s\S]*\}/);
+      if (m) parsed = JSON.parse(m[0]);
+      else throw new Error('AI 返回内容无法解析为 JSON');
+    }
+    applyImportedData(parsed);
+    document.getElementById('importLoading').style.display = 'none';
+    closeImportDialog();
+  })
+  .catch(function(err){
+    clearTimeout(timeoutId);
+    document.getElementById('importLoading').style.display = 'none';
+    document.getElementById('importResult').style.display = 'block';
+    var isNet = err.name === 'AbortError' || /Failed to fetch|NetworkError|ERR_TIMED_OUT/i.test(err.message);
+    var el = document.getElementById('importResultContent');
+    if (isNet) {
+      el.innerHTML = '<div style="color:#f59e0b;font-weight:600;margin-bottom:8px;">⚠️ 无法连接到 AI 服务</div>' +
+        '<div style="color:#e8eaf0;line-height:1.7;">导入功能依赖 Cloudflare Workers,公司/校园/部分家庭宽带可能无法访问。</div>' +
+        '<div style="color:#94a3b8;margin-top:10px;line-height:1.7;">你可以:</div>' +
+        '<div style="color:#e8eaf0;line-height:1.9;margin-top:4px;">• 切换手机热点后重试<br>• 或使用其他网络后重试<br>• 或点"取消"手动填写</div>';
+    } else {
+      el.textContent = '解析失败: ' + err.message;
+    }
+    btn.disabled = false;
+    btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block;vertical-align:-2px;margin-right:4px;"><path d="M22 2L11 13"/><path d="M22 2L15 22l-4-9-9-4 20-7z"/></svg>重新导入';
+  });
+};
+
+// 将 AI 返回的 JSON 填入表单
+function applyImportedData(d) {
+  d = d || {};
+  var setV = function(id, v) { var el = document.getElementById(id); if (el && v != null) el.value = v; };
+  var setChk = function(id, v) { var el = document.getElementById(id); if (el) el.checked = !!v; };
+  setV('name', d.name); setV('nameEn', d.nameEn); setV('jobTitle', d.jobTitle);
+  setV('phone', d.phone); setV('email', d.email); setV('city', d.city); setV('linkedin', d.linkedin);
+  if (d.summary) { setChk('showSummary', true); setV('summary', d.summary); document.getElementById('summaryBody').style.display = ''; }
+  if (d.skillTools || d.skillLang || d.skillCerts) {
+    setChk('showSkills', true);
+    setV('skillTools', d.skillTools); setV('skillLang', d.skillLang); setV('skillCerts', d.skillCerts);
+  }
+  S.eduEntries = (d.edu || []).map(function(e, i){ return {id: Date.now()+i, data: e}; });
+  S.workEntries = (d.work || []).map(function(e, i){ return {id: Date.now()+100+i, data: e}; });
+  S.projectEntries = (d.project || []).map(function(e, i){ return {id: Date.now()+200+i, data: e}; });
+  if (S.projectEntries.length) setChk('showProject', true);
+  S.awardEntries = (d.award || []).map(function(e, i){ return {id: Date.now()+300+i, data: e}; });
+  if (S.awardEntries.length) setChk('showAwards', true);
+  ['edu','work','project','award','pub'].forEach(function(t){ _t9(t); });
+  _tu();
+}
+window._applyImportedData = applyImportedData;
 
 /* ════ AI 润色对话框 ════ */
 // 打开对话框
