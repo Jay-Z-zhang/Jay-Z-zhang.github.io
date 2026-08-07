@@ -216,19 +216,19 @@ select option{background:#181b23;}
 <body>
 <!-- Top bar -->
 <div class="topbar">
-  <div class="topbar-logo">📄 <strong>简历生成器</strong> <span>BETA</span></div>
+  <div class="topbar-logo"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity:.75"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><strong>简历生成器</strong> <span>BETA</span></div>
   <div id="topbar-tagline" style="font-size:11px;color:var(--app-muted)">实时预览 · 4套模板 · 中英双语</div>
-  <span id="saveStatus" style="font-size:10px;color:#10b981;margin-left:6px;opacity:0;transition:opacity .3s;">✓ 已保存</span>
+  <span id="saveStatus" style="font-size:10px;color:#10b981;margin-left:6px;opacity:0;transition:opacity .3s;">已保存</span>
   <div class="topbar-actions">
-    <button class="btn btn-demo" onclick="fillDemoData()">✦ 模板预览</button>
-    <button class="btn btn-ghost" onclick="openImportDialog()">↑ 导入旧简历</button>
+    <button class="btn btn-demo" onclick="fillDemoData()">模板预览</button>
+    <button class="btn btn-ghost" onclick="openImportDialog()">导入旧简历</button>
     <button class="btn btn-ghost" onclick="resetAll()">重置</button>
     <button class="btn btn-primary" id="aiPolishBtn" onclick="openAIPolish()" style="background:rgba(168,85,247,.15);color:#c084fc;border-color:rgba(168,85,247,.3);">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block;vertical-align:-2px;margin-right:4px;"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
       AI 润色
     </button>
-    <button class="btn btn-pdf" onclick="exportPDF()">⬇ 导出 PDF</button>
-    <button class="btn btn-primary" onclick="downloadHTML()">⬇ 下载 HTML</button>
+    <button class="btn btn-pdf" onclick="exportPDF()">导出 PDF</button>
+    <button class="btn btn-primary" onclick="downloadHTML()">下载 HTML</button>
   </div>
 </div>
 <div class="app-body">
@@ -399,12 +399,12 @@ select option{background:#181b23;}
       <div class="hint good" data-i18n="hJobTitle">建议 8-16 字，精准描述目标岗位</div>
     </div>
     <div class="field-row">
-      <div class="field"><label data-i18n="lPhone">📞 手机</label><input type="tel" id="phone" data-i18n-ph="phPhone" placeholder="+86 138 0000 0000" oninput="render()"></div>
-      <div class="field"><label data-i18n="lEmail">📧 邮箱</label><input type="email" id="email" placeholder="name@example.com" oninput="render()"></div>
+      <div class="field"><label data-i18n="lPhone">手机</label><input type="tel" id="phone" data-i18n-ph="phPhone" placeholder="+86 138 0000 0000" oninput="render()"></div>
+      <div class="field"><label data-i18n="lEmail">邮箱</label><input type="email" id="email" placeholder="name@example.com" oninput="render()"></div>
     </div>
     <div class="field-row">
-      <div class="field"><label data-i18n="lCity">🏙 城市</label><input type="text" id="city" data-i18n-ph="phCity" placeholder="上海" oninput="render()"></div>
-      <div class="field"><label>💼 LinkedIn</label><input type="text" id="linkedin" placeholder="linkedin.com/in/username" oninput="render()"></div>
+      <div class="field"><label data-i18n="lCity">城市</label><input type="text" id="city" data-i18n-ph="phCity" placeholder="上海" oninput="render()"></div>
+      <div class="field"><label>LinkedIn</label><input type="text" id="linkedin" placeholder="linkedin.com/in/username" oninput="render()"></div>
     </div>
     <div class="toggle-field">
       <label data-i18n="lWechat">显示微信号</label>
@@ -586,17 +586,17 @@ select option{background:#181b23;}
     <p>选择一个起点，30 秒内看到简历初稿</p>
     <div class="onboard-cards">
       <div class="onboard-card" onclick="onboardChoose('demo')">
-        <div class="icon">📋</div>
+        <div class="icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></div>
         <h3>从模板开始</h3>
         <div class="desc">用示例数据快速上手，看清结构后替换成自己的内容</div>
       </div>
       <div class="onboard-card recommend" onclick="onboardChoose('import')">
-        <div class="icon">📄</div>
+        <div class="icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
         <h3>导入旧简历 <span class="badge">AI</span></h3>
         <div class="desc">粘贴或上传旧简历，AI 自动拆解成结构化字段</div>
       </div>
       <div class="onboard-card" onclick="onboardChoose('blank')">
-        <div class="icon">✏️</div>
+        <div class="icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>
         <h3>从零开始</h3>
         <div class="desc">空白模板，一步步填写你的信息</div>
       </div>
@@ -619,7 +619,10 @@ select option{background:#181b23;}
 
       <label class="import-drop" id="importDrop">
         <input type="file" id="importFile" accept=".txt,.md,text/plain">
-        <div style="font-size:12px;color:var(--app-text);">📁 点击选择文件 或 拖拽到此处</div>
+        <div style="font-size:12px;color:var(--app-text);display:flex;align-items:center;justify-content:center;gap:8px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity:.7"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          点击选择文件 或 拖拽到此处
+        </div>
         <div class="hint">支持 .txt / .md，PDF 请复制文本后粘贴</div>
       </label>
 
@@ -723,7 +726,7 @@ _tu();
 const I18N = {
 zh: {
 tagline: '实时预览 · 4套模板 · 中英双语',
-btnDemo: '✦ 模板预览', btnReset: '重置', btnPdf: '⬇ 导出 PDF', btnHtml: '⬇ 下载 HTML',
+btnDemo: '模板预览', btnReset: '重置', btnPdf: '导出 PDF', btnHtml: '下载 HTML',
 sLang:'语言 / Language', sTpl:'模板风格', sBasic:'基本信息', sSummary:'自我评价',
 sEdu:'教育经历', sWork:'工作经历', sProject:'项目经历', sSkills:'技能',
 sAwards:'荣誉奖项', sPubs:'论文/作品',
@@ -731,9 +734,9 @@ lPhoto:'头像（右上角）', lPhotoUrl:'照片 URL', hPhoto:'建议证件照�
 lName:'姓名', lRequired:'必填',
 phName:'张三', phJobTitle:'增长产品经理 / Growth PM',
 lJobTitle:'求职意向', hJobTitle:'建议 8-16 字，精准描述目标岗位',
-lPhone:'📞 手机', phPhone:'+86 138 0000 0000',
-lEmail:'📧 邮箱',
-lCity:'🏙 城市', phCity:'上海',
+lPhone:'手机', phPhone:'+86 138 0000 0000',
+lEmail:'邮箱',
+lCity:'城市', phCity:'上海',
 lWechat:'显示微信号', lWechatId:'微信号',
 lShowModule:'显示此模块',
 lSummaryContent:'简介内容', phSummary:'专注增长方向的产品经理，擅长活动设计与数据分析...',
@@ -776,7 +779,7 @@ ecPubVenue:'期刊/会议/平台', ecPubVenuePh:'GitHub / ACM MM 2024', ecPubVen
 ecPubLink:'链接', ecPubLinkPh:'https://...', ecPubLinkHint:'',
 hintEmpty:(g,ok)=>`建议 ${g}-${ok} 字`,
 hintShort:(len,g)=>`当前 ${len} 字，稍短，建议补充到 ${g} 字`,
-hintGood:(len)=>`✓ 当前 ${len} 字，长度合适`,
+hintGood:(len)=>`当前 ${len} 字，长度合适`,
 hintLong:(len,ok)=>`当前 ${len} 字，稍长，建议精简到 ${ok} 字以内`,
 hintTooLong:(len)=>`当前 ${len} 字，过长！会溢出版面`,
 resetConfirm:'确认重置所有内容？',
@@ -784,11 +787,11 @@ rSummary:'自我评价', rEdu:'教育经历', rWork:'工作经历', rProject:'�
 rSkillsSection:'技能', rAwards:'荣誉奖项', rPubs:'论文/作品',
 rSkillTools:'专业技能', rSkillLang:'语言能力', rSkillCerts:'证书资质',
 rContact:'联系方式', rLangSide:'语言', rCertsSide:'证书',
-rWechat:'微信', rViewLink:'🔗 链接',
+rWechat:'微信', rViewLink:'查看',
 },
 en: {
 tagline: 'Live Preview · 4 Templates · Bilingual',
-btnDemo: '✦ Preview Demo', btnReset: ('Re'+'set'), btnPdf: '⬇ Export PDF', btnHtml: '⬇ Download HTML',
+btnDemo: 'Preview Demo', btnReset: ('Re'+'set'), btnPdf: 'Export PDF', btnHtml: 'Download HTML',
 sLang:'Language / 语言', sTpl:('Temp'+'late'), sBasic:'Personal Info', sSummary:('Sum'+'mary'),
 sEdu:('Educ'+'ation'), sWork:('Exper'+'ience'), sProject:('Proj'+'ects'), sSkills:('Ski'+'lls'),
 sAwards:('Awa'+'rds'), sPubs:('Public'+'ations'),
@@ -796,9 +799,9 @@ lPhoto:'Photo (top right)', lPhotoUrl:'Photo URL', hPhoto:'Passport-style prefer
 lName:'Full Name', lRequired:('requ'+'ired'),
 phName:'Alex Zhang', phJobTitle:'Growth Product Manager',
 lJobTitle:'Target Role', hJobTitle:'8-16 words, precise job title',
-lPhone:'📞 Phone', phPhone:'+1 (555) 000-0000',
-lEmail:'📧 Email',
-lCity:'🏙 City', phCity:'San Francisco',
+lPhone:'Phone', phPhone:'+1 (555) 000-0000',
+lEmail:'Email',
+lCity:'City', phCity:'San Francisco',
 lWechat:'Show WeChat', lWechatId:'WeChat ID',
 lShowModule:'Show this section',
 lSummaryContent:('Sum'+'mary'), phSummary:'Growth PM with 5+ years experience, specializing in user acquisition and retention...',
@@ -841,7 +844,7 @@ ecPubVenue:'Journal / Conference / Platform', ecPubVenuePh:'GitHub / ACM MM 2024
 ecPubLink:('Li'+'nk'), ecPubLinkPh:'https://...', ecPubLinkHint:'',
 hintEmpty:(g,ok)=>`Suggested ${g}-${ok} words`,
 hintShort:(len,g)=>`${len} chars — a bit short, aim for ${g}`,
-hintGood:(len)=>`✓ ${len} chars — looks good`,
+hintGood:(len)=>`${len} chars — looks good`,
 hintLong:(len,ok)=>`${len} chars — slightly long, try to keep under ${ok}`,
 hintTooLong:(len)=>`${len} chars — too long, may overflow the page`,
 resetConfirm:'Reset all content?',
@@ -849,7 +852,7 @@ rSummary:('Sum'+'mary'), rEdu:('Educ'+'ation'), rWork:('Exper'+'ience'), rProjec
 rSkillsSection:('Ski'+'lls'), rAwards:('Awa'+'rds'), rPubs:('Public'+'ations'),
 rSkillTools:('Ski'+'lls'), rSkillLang:('Lang'+'uages'), rSkillCerts:'Certifications',
 rContact:('Con'+'tact'), rLangSide:('Lang'+'uages'), rCertsSide:'Certifications',
-rWechat:('WeC'+'hat'), rViewLink:'🔗 View',
+rWechat:('WeC'+'hat'), rViewLink:'View',
 }
 };
 function _tb() {
@@ -930,7 +933,7 @@ const card = document.createElement(('d'+'iv'));
 card.className = ('entry'+'-card');
 card.innerHTML = `<div class="entry-card-head">
 <span>${cfg.title} ${idx+1}</span>
-<button class="entry-del" onclick="_t8('${type}',${entry.id})">✕</button>
+<button class="entry-del" onclick="_t8('${type}',${entry.id})" title="删除"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
 </div>`;
 cfg.fields.forEach(f => {
 const div = document.createElement(('d'+'iv'));
@@ -1167,7 +1170,7 @@ if (v.showSkills && (v.skillTools||v.skillLang||v.skillCerts)) {
 const tags = (v.skillTools||'').split(',').filter(s=>s.trim()).map(s=>`<span style="background:${_th(col,.15)};color:${col};border:1px solid ${_th(col,.3)};padding:2px 8px;border-radius:12px;font-size:${t.szBody}px;margin:2px;display:inline-block;">${s.trim()}</span>`).join('');
 sections.push(_tq(v.L.rSkillsSection, `<div>${tags}</div>${v.skillLang?`<div style="font-size:${t.szBody}px;color:#94a3b8;margin-top:6px;"><span style="color:${col};font-weight:600;">${v.L.rSkillLang} </span>${v.skillLang}</div>`:''}${v.skillCerts?`<div style="font-size:${t.szBody}px;color:#94a3b8;margin-top:3px;"><span style="color:${col};font-weight:600;">${v.L.rSkillCerts} </span>${v.skillCerts}</div>`:''}`, col, t));
 }
-if (v.showAwards && v.award.length) sections.push(_tq(v.L.rAwards, v.award.map(e=>`<div style="display:flex;justify-content:space-between;font-size:${t.szBody}px;margin-bottom:4px;color:#94a3b8;"><span>✦ <span style="color:${textLight}">${e.name||''}</span>${e.org?` · ${e.org}`:''}</span><span style="color:#64748b;">${e.year||''}</span></div>`).join(''), col, t));
+if (v.showAwards && v.award.length) sections.push(_tq(v.L.rAwards, v.award.map(e=>`<div style="display:flex;justify-content:space-between;font-size:${t.szBody}px;margin-bottom:4px;color:#94a3b8;"><span><span style="display:inline-block;width:4px;height:4px;border-radius:50%;background:${col};margin-right:8px;vertical-align:middle;"></span><span style="color:${textLight}">${e.name||''}</span>${e.org?` · ${e.org}`:''}</span><span style="color:#64748b;">${e.year||''}</span></div>`).join(''), col, t));
 if (v.showPubs && v.pub.length) sections.push(_tq(v.L.rPubs, v.pub.map(e=>`<div style="margin-bottom:6px;font-size:${t.szBody}px;color:#94a3b8;"><span style="color:${textLight}">${e.title||''}</span>${e.venue?` · <em>${e.venue}</em>`:''}${e.link?` · <a href="${e.link}" style="color:${col};">${e.link}</a>`:''}</div>`).join(''), col, t));
 return `<div style="font-family:${font};background:${bg};min-height:1123px;">
 <div style="background:linear-gradient(135deg,${col} 0%,${bg2} 60%);padding:28px 36px 20px;">
@@ -1338,7 +1341,7 @@ function _save() {
     localStorage.setItem(_STORAGE_KEY, JSON.stringify(_snapshotState()));
     const s = document.getElementById('saveStatus');
     if (s) {
-      s.textContent = '✓ 已保存';
+      s.textContent = '已保存';
       s.style.color = '#10b981';
       s.style.opacity = '1';
       clearTimeout(_save._fade);
@@ -1346,7 +1349,7 @@ function _save() {
     }
   } catch(e) {
     const s = document.getElementById('saveStatus');
-    if (s) { s.textContent = '⚠ 保存失败'; s.style.color = '#f59e0b'; s.style.opacity = '1'; }
+    if (s) { s.textContent = '保存失败'; s.style.color = '#f59e0b'; s.style.opacity = '1'; }
   }
 }
 function _scheduleSave() {
@@ -1714,7 +1717,7 @@ window.runImport = function() {
     var isNet = err.name === 'AbortError' || /Failed to fetch|NetworkError|ERR_TIMED_OUT/i.test(err.message);
     var el = document.getElementById('importResultContent');
     if (isNet) {
-      el.innerHTML = '<div style="color:#f59e0b;font-weight:600;margin-bottom:8px;">⚠️ 无法连接到 AI 服务</div>' +
+      el.innerHTML = '<div style="color:#f59e0b;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:6px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>无法连接到 AI 服务</div>' +
         '<div style="color:#e8eaf0;line-height:1.7;">导入功能依赖 Cloudflare Workers,公司/校园/部分家庭宽带可能无法访问。</div>' +
         '<div style="color:#94a3b8;margin-top:10px;line-height:1.7;">你可以:</div>' +
         '<div style="color:#e8eaf0;line-height:1.9;margin-top:4px;">• 切换手机热点后重试<br>• 或使用其他网络后重试<br>• 或点"取消"手动填写</div>';
@@ -1903,7 +1906,7 @@ window.runAIPolish = function() {
     var resultEl = document.getElementById('aiPolishResultContent');
     if (isNetworkErr) {
       resultEl.innerHTML =
-        '<div style="color:#f59e0b;font-weight:600;margin-bottom:8px;">⚠️ 无法连接到 AI 服务</div>' +
+        '<div style="color:#f59e0b;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:6px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>无法连接到 AI 服务</div>' +
         '<div style="color:#e8eaf0;line-height:1.7;">AI 润色依赖 Cloudflare Workers，公司/校园/部分家庭宽带可能无法访问。</div>' +
         '<div style="color:#94a3b8;margin-top:10px;line-height:1.7;">你可以试试：</div>' +
         '<div style="color:#e8eaf0;line-height:1.9;margin-top:4px;">' +
