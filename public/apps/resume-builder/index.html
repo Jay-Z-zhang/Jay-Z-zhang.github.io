@@ -733,7 +733,7 @@ const tzKeys = [('lTz'+'Name'),('lTzSe'+'ction'),('lTz'+'Org'),('lTz'+'Role'),('
 document.querySelectorAll('.typo-label').forEach((el, i) => {
 if (t[tzKeys[i]]) el.textContent = t[tzKeys[i]];
 });
-[('e'+'du'),('wo'+'rk'),('pro'+'ject'),('aw'+'ard'),('p'+'ub')].forEach(type => _t9(type));
+['edu','work','project','award','pub'].forEach(type => _t9(type));
 }
 function _ta() {
 const t = I18N[S.lang];
@@ -1291,7 +1291,7 @@ S.awardEntries = [
 {id: Date.now()+31, data: {name:'全国大学生数学建模竞赛 二等奖', org:'教育部', year:'2016'}},
 ];
 }
-[('e'+'du'),('wo'+'rk'),('pro'+'ject'),('aw'+'ard')].forEach(t => _t9(t));
+['edu','work','project','award'].forEach(t => _t9(t));
 document.querySelectorAll('.sb-section-head').forEach(head => {
 if (!head.classList.contains(('op'+'en'))) {
 head.classList.add(('op'+'en'));
