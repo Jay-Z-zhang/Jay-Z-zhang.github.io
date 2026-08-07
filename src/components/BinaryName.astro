@@ -1,64 +1,70 @@
-<canvas id="binary-canvas" class="w-full h-auto" style="max-height: 500px;"></canvas>
+<canvas id="binary-canvas" class="w-full h-auto"></canvas>
 
 <script is:inline>
 (function() {
+  var animFrameId = null;
+  var observer = null;
+
   function init() {
-    const canvas = document.getElementById('binary-canvas');
+    var canvas = document.getElementById('binary-canvas');
     if (!canvas) return;
 
-    // Wait for layout + fonts
     Promise.all([
       document.fonts.ready,
-      new Promise(r => requestAnimationFrame(r))
-    ]).then(() => {
-      const ctx = canvas.getContext('2d');
-      const dpr = window.devicePixelRatio || 1;
+      new Promise(function(r) { requestAnimationFrame(r); })
+    ]).then(function() {
+      // Stop previous animation
+      if (animFrameId) { cancelAnimationFrame(animFrameId); animFrameId = null; }
+      if (observer) { observer.disconnect(); observer = null; }
 
-      const isWide = window.innerWidth >= 768;
-      const renderedW = canvas.offsetWidth || (isWide ? 960 : 480);
-      const W = isWide ? renderedW : 480;
-      const H = isWide ? Math.round(W * 0.3) : 240;
+      var ctx = canvas.getContext('2d');
+      var dpr = window.devicePixelRatio || 1;
+
+      var isWide = window.innerWidth >= 768;
+      var containerW = canvas.parentElement ? canvas.parentElement.offsetWidth : window.innerWidth;
+      var W = isWide ? Math.min(containerW, 1600) : 480;
+      var H = isWide ? Math.round(W * 0.32) : 240;
       canvas.width = W * dpr;
       canvas.height = H * dpr;
       canvas.style.width = W + 'px';
       canvas.style.height = H + 'px';
+      canvas.style.maxWidth = '100%';
       ctx.scale(dpr, dpr);
 
-      const chars = '01';
-      const particles = [];
-      const spacing = isWide ? 5 : 6;
-      const pushRadius = isWide ? 65 : 40;
-      const pushForce = 3;
-      const springForce = 0.08;
-      const friction = 0.85;
+      var chars = '01';
+      var particles = [];
+      var spacing = isWide ? 5 : 6;
+      var pushRadius = isWide ? 65 : 40;
+      var pushForce = 3;
+      var springForce = 0.08;
+      var friction = 0.85;
 
-      function getTextPixels(text, cx, cy, size, weight) {
-        const offscreen = document.createElement('canvas');
+      function getTextPixels(text, cx, cy, size) {
+        var offscreen = document.createElement('canvas');
         offscreen.width = W;
         offscreen.height = H;
-        const octx = offscreen.getContext('2d');
-        // 使用系统粗体字栈
+        var octx = offscreen.getContext('2d');
         octx.font = '900 ' + size + 'px "Arial Black", "Helvetica Neue", "Impact", sans-serif';
         octx.fillStyle = '#fff';
         octx.textAlign = 'center';
         octx.textBaseline = 'middle';
         octx.fillText(text, cx, cy);
-        const imageData = octx.getImageData(0, 0, W, H);
-        const pixels = [];
-        for (let y = 0; y < H; y += spacing) {
-          for (let x = 0; x < W; x += spacing) {
-            const idx = (y * W + x) * 4;
+        var imageData = octx.getImageData(0, 0, W, H);
+        var pixels = [];
+        for (var y = 0; y < H; y += spacing) {
+          for (var x = 0; x < W; x += spacing) {
+            var idx = (y * W + x) * 4;
             if (imageData.data[idx + 3] > 128) {
-              pixels.push({ x, y });
+              pixels.push({ x: x, y: y });
             }
           }
         }
         return pixels;
       }
 
-      let pixels1 = [], pixels2 = [];
+      var pixels1 = [], pixels2 = [];
       if (isWide) {
-        const fontSize = Math.min(135, W * 0.115);
+        var fontSize = Math.round(W * 0.13);
         pixels1 = getTextPixels('JAYZ ZHANG', W / 2, H / 2, fontSize);
       } else {
         pixels1 = getTextPixels('JAYZ', W / 2, H * 0.38, 80);
@@ -88,7 +94,6 @@
         });
       });
 
-      // 赛博朋克噪点粒子 — 在画布中随机漂浮
       var noiseCount = isWide ? 30 : 10;
       var noiseParticles = [];
       for (var n = 0; n < noiseCount; n++) {
@@ -103,30 +108,26 @@
         });
       }
 
-      const pSize = isWide ? 6 : 9;
+      var pSize = isWide ? Math.max(6, Math.round(W * 0.005)) : 9;
+      var mouseX = -999, mouseY = -999;
+      var isLight = document.documentElement.classList.contains('light');
+      var charColor = isLight ? '#15803d' : '#4ade80';
 
-      canvas.addEventListener('mousemove', function(e) {
+      canvas.onmousemove = function(e) {
         var rect = canvas.getBoundingClientRect();
         mouseX = (e.clientX - rect.left) * (W / rect.width);
         mouseY = (e.clientY - rect.top) * (H / rect.height);
-      });
-      canvas.addEventListener('mouseleave', function() { mouseX = -999; mouseY = -999; });
-      canvas.addEventListener('touchmove', function(e) {
+      };
+      canvas.onmouseleave = function() { mouseX = -999; mouseY = -999; };
+      canvas.ontouchmove = function(e) {
         e.preventDefault();
         var rect = canvas.getBoundingClientRect();
         mouseX = (e.touches[0].clientX - rect.left) * (W / rect.width);
         mouseY = (e.touches[0].clientY - rect.top) * (H / rect.height);
-      }, { passive: false });
-      canvas.addEventListener('touchend', function() { mouseX = -999; mouseY = -999; });
-      // 禁止右键菜单
-      canvas.addEventListener('contextmenu', function(e) { e.preventDefault(); });
+      };
+      canvas.ontouchend = function() { mouseX = -999; mouseY = -999; };
+      canvas.oncontextmenu = function(e) { e.preventDefault(); };
 
-      var mouseX = -999, mouseY = -999;
-      // 主题感知颜色
-      var isLight = document.documentElement.classList.contains('light');
-      var charColor = isLight ? '#15803d' : '#4ade80';
-
-      var animFrameId = null;
       function animate() {
         ctx.clearRect(0, 0, W, H);
 
@@ -149,7 +150,6 @@
           if (Math.random() < 0.005) {
             p.char = chars[Math.floor(Math.random() * 2)];
           }
-          // 明暗变化：闪烁粒子随机跳亮/暗，其余粒子微扰动
           if (p.flicker && Math.random() < 0.03) {
             p.alpha = Math.random() < 0.5 ? 0.1 : 1;
           } else {
@@ -161,7 +161,6 @@
           ctx.fillText(p.char, Math.round(p.x), Math.round(p.y));
         }
 
-        // 噪点粒子 — 缓慢漂移 + 闪烁
         for (var j = 0; j < noiseParticles.length; j++) {
           var np = noiseParticles[j];
           np.x += np.vx;
@@ -186,18 +185,14 @@
         animFrameId = requestAnimationFrame(animate);
       }
 
-      // Viewport-aware animation: pause when canvas is not visible
       function startAnimation() {
         if (!animFrameId) animFrameId = requestAnimationFrame(animate);
       }
       function stopAnimation() {
-        if (animFrameId) {
-          cancelAnimationFrame(animFrameId);
-          animFrameId = null;
-        }
+        if (animFrameId) { cancelAnimationFrame(animFrameId); animFrameId = null; }
       }
 
-      var observer = new IntersectionObserver(function(entries) {
+      observer = new IntersectionObserver(function(entries) {
         entries.forEach(function(entry) {
           entry.isIntersecting ? startAnimation() : stopAnimation();
         });
@@ -207,6 +202,13 @@
       startAnimation();
     });
   }
+
+  // Debounced resize
+  var resizeTimer = null;
+  window.addEventListener('resize', function() {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(init, 250);
+  });
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
