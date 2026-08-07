@@ -1155,6 +1155,7 @@ window.runImport = function() {
     ],
     max_tokens: 3000,
     temperature: 0.2,
+    x_kind: 'import',
     signal: controller.signal
   };
   if (workerUrl) {
@@ -1306,7 +1307,8 @@ window.runRewrite = function() {
       { role: 'user', content: prompt }
     ],
     max_tokens: 1500,
-    temperature: 0.5
+    temperature: 0.5,
+    x_kind: 'rewrite'
   };
   var targetUrl, fetchOptions;
   if (workerUrl) {
@@ -1470,7 +1472,8 @@ window.runAIPolish = function() {
           { role: 'user', content: prompt }
         ],
         max_tokens: 2000,
-        temperature: 0.7
+        temperature: 0.7,
+        x_kind: 'polish'
       })
     };
   } else {
