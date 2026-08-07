@@ -1,4 +1,4 @@
-<canvas id="binary-canvas" class="w-full h-auto"></canvas>
+<canvas id="binary-canvas" class="w-full h-auto" style="max-width: 960px; display: block; margin: 0 auto;"></canvas>
 
 <script is:inline>
 (function() {
@@ -22,8 +22,8 @@
 
       var isWide = window.innerWidth >= 768;
       var containerW = canvas.parentElement ? canvas.parentElement.offsetWidth : window.innerWidth;
-      var W = isWide ? Math.min(containerW, 1600) : 480;
-      var H = isWide ? Math.round(W * 0.32) : 240;
+      var W = isWide ? Math.min(containerW, 960) : 480;
+      var H = isWide ? Math.round(W * 0.3) : 240;
       canvas.width = W * dpr;
       canvas.height = H * dpr;
       canvas.style.width = W + 'px';
@@ -64,7 +64,7 @@
 
       var pixels1 = [], pixels2 = [];
       if (isWide) {
-        var fontSize = Math.round(W * 0.13);
+        var fontSize = Math.min(135, W * 0.115);
         pixels1 = getTextPixels('JAYZ ZHANG', W / 2, H / 2, fontSize);
       } else {
         pixels1 = getTextPixels('JAYZ', W / 2, H * 0.38, 80);
@@ -108,7 +108,7 @@
         });
       }
 
-      var pSize = isWide ? Math.max(6, Math.round(W * 0.005)) : 9;
+      var pSize = isWide ? 6 : 9;
       var mouseX = -999, mouseY = -999;
       var isLight = document.documentElement.classList.contains('light');
       var charColor = isLight ? '#15803d' : '#4ade80';
