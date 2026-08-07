@@ -9,6 +9,7 @@ workEntries: [],
 projectEntries: [],
 awardEntries: [],
 pubEntries: [],
+expanded: new Set(),
 };
 function _t0(head) {
 const body = head.nextElementSibling;
@@ -260,15 +261,40 @@ function _t7(type) {
 const key = type + ('Ent'+'ries');
 const id = Date.now();
 S[key].push({id, data:{}});
+S.expanded.add(id);
 _t9(type);
 _tu();
 }
 function _t8(type, id) {
 const key = type + ('Ent'+'ries');
 S[key] = S[key].filter(e => e.id !== id);
+S.expanded.delete(id);
 _t9(type);
 _tu();
 }
+function _entrySummary(type, entry) {
+  const d = entry.data || {};
+  const parts = [];
+  const push = v => { if (v && String(v).trim()) parts.push(String(v).trim()); };
+  if (type === 'work') { push(d.company); push(d.role); push(d.period); }
+  else if (type === 'edu') { push(d.school); push(d.degree); push(d.period); }
+  else if (type === 'project') { push(d.name); push(d.role); push(d.period); }
+  else if (type === 'award') { push(d.name); push(d.org); push(d.year); }
+  else if (type === 'pub') { push(d.title); push(d.venue); }
+  return parts;
+}
+function _isEntryEmpty(type, entry) {
+  const d = entry.data || {};
+  return !Object.values(d).some(v => v && String(v).trim());
+}
+function _toggleCollapse(type, id) {
+  if (S.expanded.has(id)) S.expanded.delete(id);
+  else S.expanded.add(id);
+  _t9(type);
+  _tu();
+}
+window._toggleCollapse = _toggleCollapse;
+
 function _t9(type) {
 const key = type + ('Ent'+'ries');
 const cfg = _ta()[type];
@@ -277,14 +303,43 @@ if (!container) return;
 container.innerHTML = '';
 S[key].forEach((entry, idx) => {
 const card = document.createElement(('d'+'iv'));
-card.className = ('entry'+'-card');
+card.className = 'entry-card';
+card.dataset.entryId = entry.id;
+card.dataset.entryType = type;
 const hasDesc = cfg.fields.some(f => f.id === 'desc');
-const rewriteBtn = hasDesc ? `<button class="rewrite-btn" onclick="openRewriteDialog('${type}',${entry.id})" title="AI 改写此段"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>AI 改写</button>` : '';
+// 空条目自动保持展开
+const isEmpty = _isEntryEmpty(type, entry);
+const isExpanded = S.expanded.has(entry.id) || isEmpty;
+
+const dragHandle = `<span class="entry-drag-handle" data-drag="1" title="拖动排序"><svg viewBox="0 0 24 24"><circle cx="9" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="18" r="1"/></svg></span>`;
+const rewriteBtn = hasDesc ? `<button class="rewrite-btn" onclick="event.stopPropagation();openRewriteDialog('${type}',${entry.id})" title="AI 改写此段"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>AI 改写</button>` : '';
+const delBtn = `<button class="entry-del" onclick="event.stopPropagation();_t8('${type}',${entry.id})" title="删除"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>`;
+
+if (!isExpanded) {
+  card.classList.add('collapsed');
+  card.onclick = function(e){
+    if (e.target.closest('button') || e.target.closest('[data-drag="1"]')) return;
+    _toggleCollapse(type, entry.id);
+  };
+  const parts = _entrySummary(type, entry);
+  const summaryHtml = parts.length
+    ? parts.map(p => `<span>${p}</span>`).join('<span class="sep">·</span>')
+    : `<span class="empty">${cfg.title} ${idx+1} — 点击展开填写</span>`;
+  card.innerHTML = `<div class="entry-collapsed-row">
+    ${dragHandle}
+    <div class="entry-summary">${summaryHtml}</div>
+    <div class="entry-card-actions">${rewriteBtn}${delBtn}</div>
+  </div>`;
+  container.appendChild(card);
+  return;
+}
+
+card.classList.add('expanded');
+const collapseBtn = `<button class="entry-collapse-btn" onclick="event.stopPropagation();_toggleCollapse('${type}',${entry.id})" title="收起"><svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg></button>`;
 card.innerHTML = `<div class="entry-card-head">
-<span>${cfg.title} ${idx+1}</span>
-<div class="entry-card-actions">${rewriteBtn}
-<button class="entry-del" onclick="_t8('${type}',${entry.id})" title="删除"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-</div></div>`;
+<div class="head-left">${dragHandle}<span class="title">${cfg.title} ${idx+1}</span></div>
+<div class="entry-card-actions">${rewriteBtn}${collapseBtn}${delBtn}</div>
+</div>`;
 cfg.fields.forEach(f => {
 const div = document.createElement(('d'+'iv'));
 div.className = ('fi'+'eld');
@@ -330,7 +385,81 @@ card.appendChild(div);
 });
 container.appendChild(card);
 });
+_bindDrag(type);
 }
+function _bindDrag(type) {
+  const container = document.getElementById(type + 'List');
+  if (!container || container._dragBound) return;
+  container._dragBound = true;
+  let dragCard = null;
+  let dragType = null;
+  let placeholder = null;
+  let cardHeight = 0;
+  function onMove(e){
+    if (!dragCard) return;
+    e.preventDefault();
+    const others = Array.from(container.querySelectorAll('.entry-card')).filter(c => c !== dragCard);
+    let inserted = false;
+    for (const other of others) {
+      const rect = other.getBoundingClientRect();
+      const mid = rect.top + rect.height / 2;
+      if (e.clientY < mid) {
+        other.parentNode.insertBefore(placeholder, other);
+        inserted = true;
+        break;
+      }
+    }
+    if (!inserted) container.appendChild(placeholder);
+  }
+  function onUp(){
+    if (!dragCard) return;
+    const cardsInOrder = Array.from(container.children).filter(c =>
+      c === placeholder || (c.classList.contains('entry-card') && c !== dragCard)
+    );
+    const draggedId = parseFloat(dragCard.dataset.entryId);
+    const key = dragType + 'Entries';
+    const dragged = S[key].find(x => x.id === draggedId);
+    const newArr = [];
+    cardsInOrder.forEach(node => {
+      if (node === placeholder) newArr.push(dragged);
+      else {
+        const oid = parseFloat(node.dataset.entryId);
+        const found = S[key].find(x => x.id === oid);
+        if (found) newArr.push(found);
+      }
+    });
+    S[key] = newArr;
+    placeholder.remove();
+    dragCard.classList.remove('dragging');
+    document.body.style.cursor = '';
+    const cachedType = dragType;
+    dragCard = null; dragType = null; placeholder = null;
+    document.removeEventListener('pointermove', onMove);
+    document.removeEventListener('pointerup', onUp);
+    document.removeEventListener('pointercancel', onUp);
+    _t9(cachedType);
+    _tu();
+  }
+  container.addEventListener('pointerdown', function(e){
+    const handle = e.target.closest('[data-drag="1"]');
+    if (!handle) return;
+    e.preventDefault();
+    dragCard = handle.closest('.entry-card');
+    if (!dragCard) return;
+    dragType = dragCard.dataset.entryType;
+    cardHeight = dragCard.getBoundingClientRect().height;
+    placeholder = document.createElement('div');
+    placeholder.className = 'entry-drop-placeholder';
+    placeholder.style.height = cardHeight + 'px';
+    dragCard.parentNode.insertBefore(placeholder, dragCard.nextSibling);
+    dragCard.classList.add('dragging');
+    document.body.style.cursor = 'grabbing';
+    document.addEventListener('pointermove', onMove);
+    document.addEventListener('pointerup', onUp);
+    document.addEventListener('pointercancel', onUp);
+  });
+}
+
 function _tc(id, fallback) { const el = document.getElementById(id); return el ? (parseFloat(el.value) || fallback) : fallback; }
 function _td(id) { const el = document.getElementById(id); return el ? el.value : '#374151'; }
 function _te() {
@@ -673,6 +802,7 @@ function _snapshotState() {
       edu: S.eduEntries, work: S.workEntries, project: S.projectEntries,
       award: S.awardEntries, pub: S.pubEntries,
     },
+    expanded: Array.from(S.expanded),
     form: {
       name:v.name, nameEn:v.nameEn, jobTitle:v.jobTitle, phone:v.phone,
       email:v.email, city:v.city, linkedin:v.linkedin, wechat:v.wechat,
@@ -728,6 +858,7 @@ function _restore() {
       S.awardEntries = data.entries.award || [];
       S.pubEntries = data.entries.pub || [];
     }
+    S.expanded = new Set(data.expanded || []);
     const f = data.form || {};
     const set = (id, val) => { const el = document.getElementById(id); if (el && val != null) el.value = val; };
     const chk = (id, val) => { const el = document.getElementById(id); if (el) el.checked = !!val; };
@@ -893,6 +1024,7 @@ S.awardEntries = [
 {id: Date.now()+31, data: {name:'全国大学生数学建模竞赛 二等奖', org:'教育部', year:'2016'}},
 ];
 }
+S.expanded = new Set();
 ['edu','work','project','award'].forEach(t => _t9(t));
 document.querySelectorAll('.sb-section-head').forEach(head => {
 if (!head.classList.contains(('op'+'en'))) {
@@ -902,6 +1034,7 @@ head.nextElementSibling.style.display = '';
 });
 _tu();
 }
+
 _t7(('e'+'du'));
 _t7(('wo'+'rk'));
 _tb();
@@ -1088,6 +1221,8 @@ function applyImportedData(d) {
   if (S.projectEntries.length) setChk('showProject', true);
   S.awardEntries = (d.award || []).map(function(e, i){ return {id: Date.now()+300+i, data: e}; });
   if (S.awardEntries.length) setChk('showAwards', true);
+  // 导入的条目默认收起(有内容),用户想改再点开
+  S.expanded = new Set();
   ['edu','work','project','award','pub'].forEach(function(t){ _t9(t); });
   _tu();
 }
