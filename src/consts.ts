@@ -3,7 +3,6 @@ import type { Metadata, Site, Socials } from "@types";
 export const SITE: Site = {
   TITLE: "Jayz Zhang",
   DESCRIPTION: "Growth PM @ Trip & TrainPal | 用 AI 重构工作方式",
-  EMAIL: "jay_z_zhang@qq.com",
   NUM_POSTS_ON_HOMEPAGE: 5,
   NUM_PROJECTS_ON_HOMEPAGE: 3,
 };

@@ -83,7 +83,6 @@
 
 ## 联系
 
-- jay_z_zhang@qq.com
 - [GitHub](https://github.com/Jay-Z-zhang)
 - [jayzzhang.online](https://www.jayzzhang.online)
 
