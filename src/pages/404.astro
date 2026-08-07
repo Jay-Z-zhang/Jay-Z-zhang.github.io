@@ -1,14 +1,14 @@
 ---
 import Layout from "@layouts/Layout.astro";
 import Container from "@components/Container.astro";
-import BackToPrevious from "@components/BackToPrevious.astro";
+import Breadcrumb from "@components/Breadcrumb.astro";
 import { SITE } from "@consts";
 ---
 
 <Layout title="404" description={SITE.DESCRIPTION}>
   <Container>
     <div class="flex items-center gap-3 mb-8">
-      <BackToPrevious href="/">返回首页</BackToPrevious>
+      <Breadcrumb trail={[{ href: "/", label: "首页" }, { label: "404" }]} />
     </div>
     <div class="grid place-items-center gap-6 pt-16">
       <h4 class="text-4xl font-bold text-foreground">

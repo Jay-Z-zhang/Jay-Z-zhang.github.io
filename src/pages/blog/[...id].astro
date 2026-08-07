@@ -4,7 +4,7 @@ import Layout from "@layouts/Layout.astro";
 import Container from "@components/Container.astro";
 import FormattedDate from "@components/FormattedDate.astro";
 import { readingTime } from "@lib/utils";
-import BackToPrevious from "@components/BackToPrevious.astro";
+import Breadcrumb from "@components/Breadcrumb.astro";
 import PostNavigation from "@components/PostNavigation.astro";
 import TableOfContents from "@components/TableOfContents.astro";
 import Giscus from "@components/Giscus.astro";
@@ -58,9 +58,9 @@ const { Content, headings } = await render(post);
   image={post.data.image}
   author="Jayz Zhang"
 >
-  <Container>
+  <Container size="prose">
     <div class="flex items-center gap-3 mb-6">
-      <BackToPrevious href="/blog">返回博客</BackToPrevious>
+      <Breadcrumb current={post.data.title} />
     </div>
     <div class="my-10 space-y-1">
       <div class="flex items-center gap-1.5 text-muted-fg">
@@ -74,7 +74,7 @@ const { Content, headings } = await render(post);
           </div>
         )}
       </div>
-      <h1 class="text-3xl font-semibold text-foreground">
+      <h1 class="page-title">
         {post.data.title}
       </h1>
       {

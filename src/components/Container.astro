@@ -1,5 +1,22 @@
 ---
+type Size = "prose" | "default" | "wide";
 
+type Props = {
+  /**
+   * prose: 640px 阅读优先(博客正文)
+   * default: 896px 通用列表/详情
+   * wide: 1152px 大内容区(默认,兼容原布局)
+   */
+  size?: Size;
+};
+
+const { size = "wide" } = Astro.props;
+const widthClass =
+  size === "prose"
+    ? "max-w-2xl"
+    : size === "default"
+      ? "max-w-4xl"
+      : "max-w-6xl";
 ---
 
-<div class="mx-auto max-w-6xl px-6"><slot /></div>
+<div class:list={["mx-auto px-6", widthClass]}><slot /></div>

@@ -3,7 +3,7 @@ import { getCollection } from "astro:content";
 import Layout from "@layouts/Layout.astro";
 import Container from "@components/Container.astro";
 import ArrowCard from "@components/ArrowCard.astro";
-import BackToPrevious from "@components/BackToPrevious.astro";
+import Breadcrumb from "@components/Breadcrumb.astro";
 
 export async function getStaticPaths() {
   const posts = await getCollection("blog", ({ data }) => !data.draft);
@@ -33,9 +33,9 @@ const sortedPosts = posts.sort(
   <Container>
     <div class="space-y-10" data-pagefind-ignore>
       <div class="flex items-center gap-3 mb-8">
-        <BackToPrevious href="/tags">所有标签</BackToPrevious>
+        <Breadcrumb current={`#${id}`} />
       </div>
-      <h1 class="text-2xl font-semibold text-foreground">
+      <h1 class="page-title">
         标签: <span class="text-primary">{id}</span>
       </h1>
       <ul class="flex flex-col gap-4">

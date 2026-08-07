@@ -1,0 +1,96 @@
+---
+type Crumb = { href?: string; label: string };
+
+type Props = {
+  /** 显式传入面包屑；不传则从 URL 自动生成 */
+  trail?: Crumb[];
+  /** 当前页面标题，附加为末级；若 trail 中已包含末级则忽略 */
+  current?: string;
+};
+
+const { trail: propTrail, current } = Astro.props;
+
+const LABELS: Record<string, string> = {
+  blog: "博客",
+  projects: "作品",
+  tags: "标签",
+  "resume-builder": "简历生成器",
+  "viral-calculator": "裂变漏斗计算器",
+};
+
+function autoTrail(pathname: string): Crumb[] {
+  const segments = pathname.replace(/^\/|\/$/g, "").split("/").filter(Boolean);
+  const crumbs: Crumb[] = [{ href: "/", label: "首页" }];
+  let acc = "";
+  segments.forEach((seg, i) => {
+    acc += "/" + seg;
+    const isLast = i === segments.length - 1;
+    const label = LABELS[seg] ?? decodeURIComponent(seg);
+    crumbs.push({ href: isLast ? undefined : acc, label });
+  });
+  return crumbs;
+}
+
+const base = propTrail ?? autoTrail(Astro.url.pathname);
+const items: Crumb[] = (() => {
+  if (!current) return base;
+  // 显式传 current 时,如果 base 末级是 URL slug 而非人类可读标签,
+  // 用 current 替换它;否则追加为新的末级
+  const last = base[base.length - 1];
+  if (last && last.label === current) return base;
+  // slug 通常是编码/带连字符,和 current(人类可读标题)不一致 → 替换
+  return [
+    ...base.slice(0, -1),
+    { label: current },
+  ];
+})();
+---
+
+<nav aria-label="面包屑" class="breadcrumb text-sm">
+  <ol class="flex items-center flex-wrap gap-x-1.5 gap-y-1 text-muted-fg">
+    {
+      items.map((item, i) => {
+        const isLast = i === items.length - 1;
+        return (
+          <li class="flex items-center gap-1.5 min-w-0">
+            {item.href && !isLast ? (
+              <a
+                href={item.href}
+                class="hover:text-primary transition-colors duration-200 truncate max-w-[220px]"
+                rel="prefetch"
+              >
+                {item.label}
+              </a>
+            ) : (
+              <span
+                class:list={[
+                  "truncate max-w-[280px]",
+                  isLast && "text-foreground font-medium",
+                ]}
+                aria-current={isLast ? "page" : undefined}
+              >
+                {item.label}
+              </span>
+            )}
+            {!isLast && (
+              <svg
+                width="10"
+                height="10"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="opacity-50 flex-shrink-0"
+                aria-hidden="true"
+              >
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
+            )}
+          </li>
+        );
+      })
+    }
+  </ol>
+</nav>

@@ -2,7 +2,7 @@
 import { getCollection } from "astro:content";
 import Layout from "@layouts/Layout.astro";
 import Container from "@components/Container.astro";
-import BackToPrevious from "@components/BackToPrevious.astro";
+import Breadcrumb from "@components/Breadcrumb.astro";
 import { PROJECTS } from "@consts";
 
 const projects = (await getCollection("projects"))
@@ -13,17 +13,17 @@ const projects = (await getCollection("projects"))
 <Layout title={PROJECTS.TITLE} description={PROJECTS.DESCRIPTION}>
   <Container>
     <div class="flex items-center gap-3 mb-8">
-      <BackToPrevious href="/">返回首页</BackToPrevious>
+      <Breadcrumb />
     </div>
     <div class="space-y-10">
-      <h1 class="text-3xl font-bold text-foreground">{PROJECTS.TITLE}</h1>
+      <h1 class="page-title">{PROJECTS.TITLE}</h1>
       <p class="text-muted-fg">{PROJECTS.DESCRIPTION}</p>
 
       <div class="grid md:grid-cols-2 gap-8 max-w-4xl">
         {projects.map((project) => (
           <a
             href={`/${project.id}/`}
-            class="block rounded-xl border border-border bg-secondary/20 overflow-hidden glow-border hover:border-primary/30 transition-all duration-300 group"
+            class="card-glow block overflow-hidden glow-border group"
           >
             <!-- 项目配图 -->
             <div class="aspect-[16/10] bg-secondary overflow-hidden border-b border-border">

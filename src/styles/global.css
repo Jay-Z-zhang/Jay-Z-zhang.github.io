@@ -91,6 +91,65 @@
   }
 }
 
+/* ══ Typography scale ══
+   页面级 h1: page-title / hero-title
+   段落级 h2: section-title
+   小卡内 h3: card-title
+   保持 semibold 主色 + tracking-tight 一致 */
+.page-title {
+  @apply text-3xl md:text-4xl font-semibold tracking-tight text-foreground leading-tight;
+}
+.hero-title {
+  @apply text-4xl md:text-5xl font-bold tracking-tight text-foreground leading-tight;
+}
+.section-title {
+  @apply text-2xl md:text-3xl font-semibold tracking-tight text-foreground;
+}
+.card-title {
+  @apply text-lg font-semibold text-foreground;
+}
+.card-title-sm {
+  @apply text-sm font-semibold text-foreground;
+}
+.lead {
+  @apply text-base md:text-lg text-muted-fg leading-relaxed;
+}
+
+/* ══ Card system ══
+   .card 基础卡片(无 hover)
+   .card-interactive 可点击卡片(color hover)
+   .card-glow 强 hover(边框+光晕,首页作品用)
+   所有尺寸变量统一 */
+.card {
+  @apply rounded-xl border bg-secondary/20 transition-colors duration-200;
+  border-color: var(--color-border);
+}
+.card-interactive {
+  @apply rounded-xl border bg-secondary/20 transition-colors duration-200 cursor-pointer;
+  border-color: var(--color-border);
+}
+.card-interactive:hover {
+  border-color: color-mix(in oklab, var(--color-primary) 30%, transparent);
+}
+.card-glow {
+  @apply rounded-xl border bg-secondary/20 transition-all duration-300 cursor-pointer;
+  border-color: var(--color-border);
+}
+.card-glow:hover {
+  border-color: color-mix(in oklab, var(--color-primary) 30%, transparent);
+  box-shadow: 0 0 32px -8px color-mix(in oklab, var(--color-primary) 25%, transparent);
+}
+
+/* Chip / tag 迷你卡片 */
+.chip {
+  @apply inline-flex items-center rounded-full border bg-secondary/40 px-2.5 py-0.5 text-xs text-muted-fg transition-colors duration-200;
+  border-color: var(--color-border);
+}
+.chip:hover {
+  color: var(--color-primary);
+  border-color: color-mix(in oklab, var(--color-primary) 40%, transparent);
+}
+
 /* ── Fluid background (hero) ── */
 .fluid-bg {
   background:

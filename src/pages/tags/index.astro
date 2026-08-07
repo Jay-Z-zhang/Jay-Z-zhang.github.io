@@ -2,7 +2,7 @@
 import { getCollection } from "astro:content";
 import Layout from "@layouts/Layout.astro";
 import Container from "@components/Container.astro";
-import BackToPrevious from "@components/BackToPrevious.astro";
+import Breadcrumb from "@components/Breadcrumb.astro";
 
 const posts = await getCollection("blog", ({ data }) => !data.draft);
 const tags = [...new Set(posts.flatMap((post) => post.data.tags || []))].sort();
@@ -11,10 +11,10 @@ const tags = [...new Set(posts.flatMap((post) => post.data.tags || []))].sort();
 <Layout title="标签" description="文章标签列表">
   <Container>
     <div class="flex items-center gap-3 mb-8">
-      <BackToPrevious href="/">返回首页</BackToPrevious>
+      <Breadcrumb />
     </div>
     <div class="space-y-10">
-      <h1 class="text-3xl font-bold text-foreground">标签</h1>
+      <h1 class="page-title">标签</h1>
       <div class="flex flex-wrap gap-2">
         {
           tags.map((tag) => (

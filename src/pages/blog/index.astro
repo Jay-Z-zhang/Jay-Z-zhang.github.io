@@ -3,7 +3,7 @@ import { type CollectionEntry, getCollection } from "astro:content";
 import Layout from "@layouts/Layout.astro";
 import Container from "@components/Container.astro";
 import ArrowCard from "@components/ArrowCard.astro";
-import BackToPrevious from "@components/BackToPrevious.astro";
+import Breadcrumb from "@components/Breadcrumb.astro";
 import { BLOG } from "@consts";
 
 const data = (await getCollection("blog"))
@@ -27,13 +27,13 @@ const years = Object.keys(posts).sort((a, b) => parseInt(b) - parseInt(a));
 ---
 
 <Layout title={BLOG.TITLE} description={BLOG.DESCRIPTION}>
-  <Container>
+  <Container size="default">
     <div class="flex items-center gap-3 mb-8">
-      <BackToPrevious href="/">返回首页</BackToPrevious>
+      <Breadcrumb />
     </div>
     <aside data-pagefind-ignore>
       <div class="space-y-8">
-        <h1 class="text-2xl font-semibold text-foreground">{BLOG.TITLE}</h1>
+        <h1 class="page-title">{BLOG.TITLE}</h1>
         <div class="space-y-8">
           {
             years.map((year) => (
