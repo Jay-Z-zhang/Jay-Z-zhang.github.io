@@ -1487,8 +1487,13 @@ window.runAIPolish = function() {
     };
   }
 
+  var controller = new AbortController();
+  var timeoutId = setTimeout(function(){ controller.abort(); }, 10000);
+  fetchOptions.signal = controller.signal;
+
   fetch(targetUrl, fetchOptions)
   .then(function(res) {
+    clearTimeout(timeoutId);
     if (!res.ok) throw new Error('API 请求失败：' + res.status);
     return res.json();
   })
@@ -1501,9 +1506,24 @@ window.runAIPolish = function() {
     btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block;vertical-align:-2px;margin-right:4px;"><path d="M22 2L11 13"/><path d="M22 2L15 22l-4-9-9-4 20-7z"/></svg>开始润色';
   })
   .catch(function(err) {
+    clearTimeout(timeoutId);
     document.getElementById('aiPolishLoading').style.display = 'none';
     document.getElementById('aiPolishResult').style.display = 'block';
-    document.getElementById('aiPolishResultContent').textContent = '请求失败：' + err.message + '\n\n请检查：\n1. API Key 或 Worker 地址是否正确\n2. DeepSeek 账户余额是否充足\n3. 网络连接是否正常';
+    var isNetworkErr = err.name === 'AbortError' || /Failed to fetch|NetworkError|ERR_TIMED_OUT/i.test(err.message);
+    var resultEl = document.getElementById('aiPolishResultContent');
+    if (isNetworkErr) {
+      resultEl.innerHTML =
+        '<div style="color:#f59e0b;font-weight:600;margin-bottom:8px;">⚠️ 无法连接到 AI 服务</div>' +
+        '<div style="color:#e8eaf0;line-height:1.7;">AI 润色依赖 Cloudflare Workers，公司/校园/部分家庭宽带可能无法访问。</div>' +
+        '<div style="color:#94a3b8;margin-top:10px;line-height:1.7;">你可以试试：</div>' +
+        '<div style="color:#e8eaf0;line-height:1.9;margin-top:4px;">' +
+        '• 切换到<b>手机流量热点</b>后重试<br>' +
+        '• 或复制简历内容到 <a href="https://chat.deepseek.com" target="_blank" rel="noopener" style="color:#c084fc;text-decoration:underline;">DeepSeek 官网</a> 手动润色<br>' +
+        '• 或使用其他网络环境后重试' +
+        '</div>';
+    } else {
+      resultEl.textContent = '请求失败：' + err.message + '\n\n请检查：\n1. DeepSeek 账户余额是否充足\n2. Worker 是否已配置 API Key';
+    }
     btn.disabled = false;
     btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block;vertical-align:-2px;margin-right:4px;"><path d="M22 2L11 13"/><path d="M22 2L15 22l-4-9-9-4 20-7z"/></svg>重新尝试';
   });
