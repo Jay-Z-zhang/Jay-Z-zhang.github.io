@@ -147,6 +147,26 @@ select option{background:#181b23;}
 .entry-card{background:rgba(15,17,23,.5);border:1px solid var(--app-border);border-radius:8px;padding:12px;margin-bottom:8px;}
 .entry-card-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
 .entry-card-head span{font-size:11px;font-weight:600;color:var(--app-muted);}
+.entry-card-actions{display:flex;gap:4px;align-items:center;}
+.rewrite-btn{background:transparent;border:1px solid rgba(168,85,247,.25);color:#c084fc;padding:2px 8px;border-radius:5px;cursor:pointer;font-size:10px;font-family:inherit;display:inline-flex;align-items:center;gap:4px;transition:all .15s;}
+.rewrite-btn:hover{background:rgba(168,85,247,.12);border-color:rgba(168,85,247,.5);}
+.rewrite-btn svg{width:10px;height:10px;stroke:currentColor;fill:none;stroke-width:2;}
+.rewrite-btn-inline{position:absolute;top:6px;right:6px;z-index:2;}
+.rewrite-field-wrap{position:relative;}
+
+/* ── Rewrite dialog ── */
+.rewrite-dialog{width:640px;max-width:calc(100vw - 40px);}
+.rewrite-compare{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px;}
+.rewrite-col{background:rgba(15,17,23,.6);border:1px solid var(--app-border);border-radius:8px;padding:12px;font-size:12px;line-height:1.7;color:var(--app-text);max-height:280px;overflow-y:auto;white-space:pre-wrap;}
+.rewrite-col.after{border-color:rgba(168,85,247,.35);background:rgba(168,85,247,.05);}
+.rewrite-col-label{font-size:10px;font-weight:600;color:var(--app-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;}
+.rewrite-col-label.after{color:#c084fc;}
+.rewrite-actions{display:flex;gap:8px;margin-top:14px;}
+.rewrite-actions .btn{flex:1;padding:9px;font-size:13px;}
+@media (max-width:768px){
+  .rewrite-compare{grid-template-columns:1fr;}
+  .rewrite-col{max-height:180px;}
+}
 .entry-del{background:transparent;border:none;color:#6b7280;cursor:pointer;font-size:13px;padding:2px 6px;border-radius:4px;}
 .entry-del:hover{color:#f87171;background:rgba(248,113,113,.1);}
 .add-btn{width:100%;padding:8px;border:1px dashed var(--app-border);background:transparent;color:var(--app-muted);border-radius:7px;cursor:pointer;font-size:12px;font-family:inherit;transition:all .18s;margin-top:4px;}
@@ -425,7 +445,11 @@ select option{background:#181b23;}
       <label class="toggle"><input type="checkbox" id="showSummary" checked onchange="render()"><span class="toggle-slider"></span></label>
     </div>
     <div id="summaryBody">
-      <div class="field"><label data-i18n="lSummaryContent">简介内容</label>
+      <div class="field">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
+          <label data-i18n="lSummaryContent" style="margin-bottom:0;">简介内容</label>
+          <button class="rewrite-btn" onclick="openRewriteDialog('summary',null)" title="AI 改写自我评价"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>AI 改写</button>
+        </div>
         <textarea id="summary" rows="3" data-i18n-ph="phSummary" placeholder="专注增长方向的产品经理，擅长活动设计与数据分析..." oninput="updateHint(this,'summaryHint',30,60,90)"></textarea>
         <div class="hint" id="summaryHint" data-i18n="hSummary">建议 40-60 字，聚焦核心优势 + 差异化亮点</div>
       </div>
@@ -644,6 +668,63 @@ select option{background:#181b23;}
 
       <div id="importResult" style="display:none;margin-top:12px;">
         <div id="importResultContent" class="ai-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ AI 改写对话框 ════ -->
+<div id="rewriteDialog" class="ai-dialog-overlay" style="display:none;">
+  <div class="ai-dialog rewrite-dialog">
+    <div class="ai-dialog-header">
+      <h3>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c084fc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        AI 改写
+      </h3>
+      <button class="ai-dialog-close" onclick="closeRewriteDialog()">×</button>
+    </div>
+    <div class="ai-dialog-body">
+      <div id="rewriteTargetLabel" style="font-size:12px;color:var(--app-muted);margin-bottom:8px;">目标段落: —</div>
+
+      <div id="rewriteStep1">
+        <div style="font-size:11px;color:var(--app-muted);margin-bottom:6px;">目标岗位 JD（可选，帮助 AI 针对性改写）</div>
+        <textarea id="rewriteJd" rows="2" placeholder="粘贴职位描述..." style="width:100%;background:rgba(15,17,23,.6);border:1px solid var(--app-border);color:var(--app-text);border-radius:7px;padding:8px 10px;font-size:12px;font-family:inherit;resize:vertical;margin-bottom:12px;"></textarea>
+        <div style="font-size:11px;color:var(--app-muted);margin-bottom:6px;">改写风格</div>
+        <div style="display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;">
+          <label class="font-opt active" data-style="star"><input type="radio" name="rewriteStyle" value="star" checked style="display:none;">STAR 结构化</label>
+          <label class="font-opt" data-style="concise"><input type="radio" name="rewriteStyle" value="concise" style="display:none;">精简版</label>
+          <label class="font-opt" data-style="senior"><input type="radio" name="rewriteStyle" value="senior" style="display:none;">资深职级</label>
+        </div>
+        <div class="ai-dialog-actions">
+          <button class="btn btn-ghost" onclick="closeRewriteDialog()">取消</button>
+          <button class="btn btn-primary" id="rewriteRunBtn" onclick="runRewrite()" style="background:rgba(168,85,247,.15);color:#c084fc;border-color:rgba(168,85,247,.3);">生成改写</button>
+        </div>
+      </div>
+
+      <div id="rewriteLoading" style="display:none;text-align:center;padding:20px;">
+        <div style="display:inline-block;width:22px;height:22px;border:2px solid var(--app-border);border-top-color:#c084fc;border-radius:50%;animation:spin .8s linear infinite;"></div>
+        <div style="font-size:12px;color:var(--app-muted);margin-top:10px;">AI 正在改写...</div>
+      </div>
+
+      <div id="rewriteStep2" style="display:none;">
+        <div class="rewrite-compare">
+          <div>
+            <div class="rewrite-col-label">原文</div>
+            <div class="rewrite-col" id="rewriteBefore"></div>
+          </div>
+          <div>
+            <div class="rewrite-col-label after">AI 改写后</div>
+            <div class="rewrite-col after" id="rewriteAfter"></div>
+          </div>
+        </div>
+        <div class="rewrite-actions">
+          <button class="btn btn-ghost" onclick="closeRewriteDialog()">保留原文</button>
+          <button class="btn btn-primary" onclick="acceptRewrite()" style="background:rgba(168,85,247,.15);color:#c084fc;border-color:rgba(168,85,247,.3);">采用 AI 版本</button>
+        </div>
+      </div>
+
+      <div id="rewriteError" style="display:none;margin-top:12px;">
+        <div id="rewriteErrorContent" class="ai-result"></div>
       </div>
     </div>
   </div>
@@ -931,10 +1012,13 @@ container.innerHTML = '';
 S[key].forEach((entry, idx) => {
 const card = document.createElement(('d'+'iv'));
 card.className = ('entry'+'-card');
+const hasDesc = cfg.fields.some(f => f.id === 'desc');
+const rewriteBtn = hasDesc ? `<button class="rewrite-btn" onclick="openRewriteDialog('${type}',${entry.id})" title="AI 改写此段"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>AI 改写</button>` : '';
 card.innerHTML = `<div class="entry-card-head">
 <span>${cfg.title} ${idx+1}</span>
+<div class="entry-card-actions">${rewriteBtn}
 <button class="entry-del" onclick="_t8('${type}',${entry.id})" title="删除"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-</div>`;
+</div></div>`;
 cfg.fields.forEach(f => {
 const div = document.createElement(('d'+'iv'));
 div.className = ('fi'+'eld');
@@ -1751,6 +1835,148 @@ function applyImportedData(d) {
   _tu();
 }
 window._applyImportedData = applyImportedData;
+
+/* ════ AI 改写单段 ════ */
+var _rewriteCtx = null; // {sectionKey, entryId, before}
+
+window.openRewriteDialog = function(type, entryId) {
+  var before = '', label = '';
+  if (type === 'summary') {
+    before = document.getElementById('summary').value.trim();
+    label = '自我评价';
+  } else if (type === 'work' || type === 'project') {
+    var entries = type === 'work' ? S.workEntries : S.projectEntries;
+    var e = entries.find(function(x){ return x.id === entryId; });
+    if (!e) { alert('未找到该条目'); return; }
+    before = e.data.desc || '';
+    var titleField = type === 'work' ? (e.data.company || '') : (e.data.name || '');
+    label = (type === 'work' ? '工作经历' : '项目经历') + (titleField ? ': ' + titleField : '');
+  }
+  if (!before.trim()) { alert('该段落还没有内容,请先填写再改写'); return; }
+  _rewriteCtx = { type: type, entryId: entryId, before: before, label: label };
+
+  document.getElementById('rewriteTargetLabel').textContent = '目标段落: ' + label;
+  document.getElementById('rewriteStep1').style.display = '';
+  document.getElementById('rewriteStep2').style.display = 'none';
+  document.getElementById('rewriteLoading').style.display = 'none';
+  document.getElementById('rewriteError').style.display = 'none';
+  document.getElementById('rewriteDialog').style.display = 'flex';
+};
+
+window.closeRewriteDialog = function() {
+  document.getElementById('rewriteDialog').style.display = 'none';
+  _rewriteCtx = null;
+};
+
+// 风格切换
+document.querySelectorAll('#rewriteStep1 .font-opt').forEach(function(opt){
+  opt.addEventListener('click', function(){
+    document.querySelectorAll('#rewriteStep1 .font-opt').forEach(function(o){ o.classList.remove('active'); });
+    this.classList.add('active');
+    this.querySelector('input').checked = true;
+  });
+});
+
+window.runRewrite = function() {
+  if (!_rewriteCtx) return;
+  var jd = document.getElementById('rewriteJd').value.trim();
+  var style = document.querySelector('input[name="rewriteStyle"]:checked')?.value || 'star';
+  var styleHint = {
+    star: '严格使用 STAR 法则(Situation-Task-Action-Result),每条以动词开头,包含量化数据(百分比/人数/金额)',
+    concise: '尽量精简,去掉一切冗余修饰,保留核心动作和结果',
+    senior: '突出决策层视角、跨团队协作、业务影响,用词更资深'
+  }[style];
+
+  var prompt = '你是资深简历顾问。请改写下面的简历段落。\n\n' +
+    '## 段落类型\n' + _rewriteCtx.label + '\n\n' +
+    '## 改写规则\n- ' + styleHint + '\n' +
+    '- 保持原文事实不变,只优化措辞、结构、数据呈现\n' +
+    '- 保持原文语言(中文或英文)\n' +
+    '- 输出用换行分隔的成就项,每项以"• "开头\n' +
+    '- 只输出改写后的内容,不要任何前言、解释、markdown 标记' +
+    (jd ? '\n- 结合目标岗位 JD 的关键词,但不要生造经历' : '') +
+    '\n\n' +
+    (jd ? '## 目标岗位 JD\n' + jd + '\n\n' : '') +
+    '## 原文\n' + _rewriteCtx.before;
+
+  var workerUrl = document.getElementById('aiWorkerUrl')?.value.trim() || '';
+  var apiKey = document.getElementById('aiApiKey')?.value.trim() || '';
+
+  document.getElementById('rewriteStep1').style.display = 'none';
+  document.getElementById('rewriteLoading').style.display = 'block';
+  document.getElementById('rewriteError').style.display = 'none';
+
+  var controller = new AbortController();
+  var timeoutId = setTimeout(function(){ controller.abort(); }, 20000);
+  var payload = {
+    model: 'deepseek-chat',
+    messages: [
+      { role: 'system', content: '你是资深简历顾问,只输出改写后的段落内容,不解释。' },
+      { role: 'user', content: prompt }
+    ],
+    max_tokens: 1500,
+    temperature: 0.5
+  };
+  var targetUrl, fetchOptions;
+  if (workerUrl) {
+    targetUrl = workerUrl.replace(/\/$/, '');
+    fetchOptions = { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload), signal: controller.signal };
+  } else {
+    targetUrl = 'https://api.deepseek.com/chat/completions';
+    fetchOptions = { method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+apiKey}, body: JSON.stringify(payload), signal: controller.signal };
+  }
+
+  fetch(targetUrl, fetchOptions)
+  .then(function(res){
+    clearTimeout(timeoutId);
+    if (!res.ok) throw new Error('API 请求失败: ' + res.status);
+    return res.json();
+  })
+  .then(function(data){
+    var text = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
+    if (!text) throw new Error('AI 未返回结果');
+    text = text.replace(/^```[a-z]*\s*/i, '').replace(/```\s*$/, '').trim();
+    _rewriteCtx.after = text;
+    document.getElementById('rewriteLoading').style.display = 'none';
+    document.getElementById('rewriteBefore').textContent = _rewriteCtx.before;
+    document.getElementById('rewriteAfter').textContent = text;
+    document.getElementById('rewriteStep2').style.display = '';
+  })
+  .catch(function(err){
+    clearTimeout(timeoutId);
+    document.getElementById('rewriteLoading').style.display = 'none';
+    document.getElementById('rewriteStep1').style.display = '';
+    document.getElementById('rewriteError').style.display = 'block';
+    var isNet = err.name === 'AbortError' || /Failed to fetch|NetworkError|ERR_TIMED_OUT/i.test(err.message);
+    var el = document.getElementById('rewriteErrorContent');
+    if (isNet) {
+      el.innerHTML = '<div style="color:#f59e0b;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:6px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>无法连接到 AI 服务</div>' +
+        '<div style="color:#e8eaf0;line-height:1.7;">改写功能依赖 Cloudflare Workers,公司/校园/部分家庭宽带可能无法访问。可切换手机热点或换网络后重试。</div>';
+    } else {
+      el.textContent = '改写失败: ' + err.message;
+    }
+  });
+};
+
+window.acceptRewrite = function() {
+  if (!_rewriteCtx || !_rewriteCtx.after) return;
+  var ctx = _rewriteCtx;
+  if (ctx.type === 'summary') {
+    var s = document.getElementById('summary');
+    s.value = ctx.after;
+    s.dispatchEvent(new Event('input'));
+  } else {
+    var entries = ctx.type === 'work' ? S.workEntries : S.projectEntries;
+    var e = entries.find(function(x){ return x.id === ctx.entryId; });
+    if (e) {
+      e.data.desc = ctx.after;
+      _t9(ctx.type);
+    }
+  }
+  _tu();
+  closeRewriteDialog();
+};
+window._setRewriteAfter = function(text) { if (_rewriteCtx) _rewriteCtx.after = text; };
 
 /* ════ AI 润色对话框 ════ */
 // 打开对话框
