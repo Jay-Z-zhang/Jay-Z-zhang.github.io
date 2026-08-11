@@ -166,21 +166,26 @@ const projects: CollectionEntry<"projects">[] = (
 </Layout>
 
 <script is:inline>
-  // 打字机效果
+  // 打字机 - 展示 newsletter 会讲哪些主题,而非抽象口号
   const phrases = [
-    '用 AI 重构工作方式',
-    '不写代码的 PM 不是好黑客',
-    '不做功能堆砌，做关键突破',
-    '让每一个用户都成为传播者',
-    'Data-driven, AI-powered',
+    'LTV/CAC 到底怎么算才不骗自己',
+    '海外增长:Reddit / Twitter / ProductHunt',
+    '融资估值背后的真实逻辑',
+    '增长实验平台从 0 到 1',
+    'ATS 简历怎么写才不被过滤',
   ];
 
   function initTypewriter() {
     const el = document.getElementById('typewriter');
     if (!el) return;
+    // 防重复:soft-nav 会再次触发 init,dataset 保证只跑一次
+    if (el.dataset.bound === '1') return;
+    el.dataset.bound = '1';
     let phraseIdx = 0, charIdx = 0, deleting = false;
 
     function type() {
+      // el 已从 DOM 移除 → 停止(soft-nav 场景)
+      if (!el.isConnected) return;
       const current = phrases[phraseIdx];
       if (!deleting) {
         el.textContent = current.slice(0, ++charIdx);

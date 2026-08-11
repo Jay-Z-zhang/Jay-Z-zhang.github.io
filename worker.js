@@ -114,6 +114,8 @@ async function handleSubscribe(request, env, ctx, headers) {
   }
   const record = { email, source, ts: new Date().toISOString() };
   await env.RATE_LIMIT.put(key, JSON.stringify(record));
+  // 注:并发订阅可能让 sub-count 少算(读→写非原子)。低流量阶段可接受。
+  // /subscribers 端点已改为用 sub: 前缀 list 实时计数,作为权威值。
   const total = parseInt(await env.RATE_LIMIT.get('sub-count') || '0') + 1;
   await env.RATE_LIMIT.put('sub-count', String(total));
   return new Response(JSON.stringify({ ok: true, already: false, total }), {
@@ -126,7 +128,6 @@ async function handleSubscribers(env, url) {
   if (!env.STATS_TOKEN || token !== env.STATS_TOKEN) {
     return new Response('unauthorized', { status: 401 });
   }
-  const total = parseInt(await env.RATE_LIMIT.get('sub-count') || '0');
   // 列出全部订阅(小规模使用可行,大量应该分页)
   const list = await env.RATE_LIMIT.list({ prefix: 'sub:', limit: 1000 });
   const items = [];
@@ -137,6 +138,8 @@ async function handleSubscribers(env, url) {
     }
   }
   items.sort((a, b) => (a.ts || '').localeCompare(b.ts || ''));
+  // list.keys.length 是权威值(sub-count 可能因并发漂移)
+  const total = items.length;
   return new Response(JSON.stringify({ total, subscribers: items }, null, 2), {
     headers: { 'Content-Type': 'application/json; charset=utf-8' },
   });

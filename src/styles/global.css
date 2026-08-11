@@ -69,7 +69,7 @@
   header.has-bg {
     background: rgba(11, 15, 26, 0.88) !important;
     backdrop-filter: blur(18px);
-    -webkit-backbackdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
     border-bottom: 1px solid var(--color-border);
   }
 
@@ -292,32 +292,7 @@ pre {
   --astro-code-token-link: #059669;
 }
 
-/* ── Gallery image hover ── */
-.gallery-img-wrap {
-  overflow: hidden;
-}
-
-.gallery-img-wrap img {
-  transition: transform 0.5s ease;
-}
-
-.gallery-img-wrap:hover img {
-  transform: scale(1.05);
-}
-
 /* ─ Project detail accordion ── */
-.detail-panel {
-  overflow: hidden;
-  max-height: 0;
-  opacity: 0;
-  transition: max-height 0.5s ease, opacity 0.4s ease;
-}
-
-.detail-panel.open {
-  max-height: 500px;
-  opacity: 1;
-}
-
 .chevron {
   transition: transform 0.3s ease;
 }
@@ -378,9 +353,6 @@ pre {
   }
   .typewriter-cursor {
     animation: none;
-  }
-  .gallery-img-wrap img {
-    transition: none;
   }
   .scroll-guide,
   .scroll-arrow {

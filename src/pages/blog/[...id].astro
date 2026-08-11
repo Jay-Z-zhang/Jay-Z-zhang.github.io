@@ -40,8 +40,10 @@ function getNeighbors(currentId: string, series: string | undefined) {
   return { prev: undefined, next: undefined };
 }
 
-const nextPost = getNeighbors(Astro.params.id!, Astro.props.data.series).next;
-const prevPost = getNeighbors(Astro.params.id!, Astro.props.data.series).prev;
+const { prev: prevPost, next: nextPost } = getNeighbors(
+  Astro.params.id!,
+  Astro.props.data.series,
+);
 
 const post = Astro.props;
 const { Content, headings } = await render(post);
