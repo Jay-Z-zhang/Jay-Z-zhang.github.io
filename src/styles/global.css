@@ -61,19 +61,20 @@
     @apply antialiased flex flex-col;
   }
 
-  header {
+  /* 只作用于顶部 nav(id=nav),避免影响页面内的 <header> 元素 */
+  #nav {
     @apply fixed left-0 right-0 top-0 z-50 py-4 transition-all duration-300;
     background: transparent;
   }
 
-  header.has-bg {
+  #nav.has-bg {
     background: rgba(11, 15, 26, 0.88) !important;
     backdrop-filter: blur(18px);
     -webkit-backdrop-filter: blur(18px);
     border-bottom: 1px solid var(--color-border);
   }
 
-  .light header.has-bg {
+  .light #nav.has-bg {
     background: rgba(248, 250, 252, 0.88) !important;
   }
 
