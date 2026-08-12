@@ -1193,7 +1193,7 @@ window.runImport = function() {
     clearTimeout(timeoutId);
     document.getElementById('importLoading').style.display = 'none';
     document.getElementById('importResult').style.display = 'block';
-    var isNet = err.name === 'AbortError' || /Failed to fetch|NetworkError|ERR_TIMED_OUT/i.test(err.message);
+    var isNet = err.name === 'AbortError' || /Failed to fetch|Load failed|NetworkError|ERR_TIMED_OUT|The network connection was lost/i.test(err.message);
     var el = document.getElementById('importResultContent');
     if (isNet) {
       el.innerHTML = '<div style="color:#f59e0b;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:6px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>无法连接到 AI 服务</div>' +
@@ -1343,7 +1343,7 @@ window.runRewrite = function() {
     document.getElementById('rewriteLoading').style.display = 'none';
     document.getElementById('rewriteStep1').style.display = '';
     document.getElementById('rewriteError').style.display = 'block';
-    var isNet = err.name === 'AbortError' || /Failed to fetch|NetworkError|ERR_TIMED_OUT/i.test(err.message);
+    var isNet = err.name === 'AbortError' || /Failed to fetch|Load failed|NetworkError|ERR_TIMED_OUT|The network connection was lost/i.test(err.message);
     var el = document.getElementById('rewriteErrorContent');
     if (isNet) {
       el.innerHTML = '<div style="color:#f59e0b;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:6px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>无法连接到 AI 服务</div>' +
@@ -1521,7 +1521,7 @@ window.runAIPolish = function() {
     clearTimeout(timeoutId);
     document.getElementById('aiPolishLoading').style.display = 'none';
     document.getElementById('aiPolishResult').style.display = 'block';
-    var isNetworkErr = err.name === 'AbortError' || /Failed to fetch|NetworkError|ERR_TIMED_OUT/i.test(err.message);
+    var isNetworkErr = err.name === 'AbortError' || /Failed to fetch|Load failed|NetworkError|ERR_TIMED_OUT|The network connection was lost/i.test(err.message);
     var resultEl = document.getElementById('aiPolishResultContent');
     if (isNetworkErr) {
       resultEl.innerHTML =
