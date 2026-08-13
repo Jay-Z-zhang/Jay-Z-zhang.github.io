@@ -1148,7 +1148,7 @@ window.runImport = function() {
   btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block;vertical-align:-2px;margin-right:4px;animation:spin 1s linear infinite;"><circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-dashoffset="12"/></svg>解析中...';
 
   var controller = new AbortController();
-  var timeoutId = setTimeout(function(){ controller.abort(); }, 30000);
+  var timeoutId = setTimeout(function(){ controller.abort(); }, 45000);
   var targetUrl, fetchOptions;
   var payload = {
     model: 'deepseek-chat',
@@ -1302,7 +1302,7 @@ window.runRewrite = function() {
   document.getElementById('rewriteError').style.display = 'none';
 
   var controller = new AbortController();
-  var timeoutId = setTimeout(function(){ controller.abort(); }, 20000);
+  var timeoutId = setTimeout(function(){ controller.abort(); }, 25000);
   var payload = {
     model: 'deepseek-chat',
     messages: [
@@ -1500,7 +1500,7 @@ window.runAIPolish = function() {
   }
 
   var controller = new AbortController();
-  var timeoutId = setTimeout(function(){ controller.abort(); }, 10000);
+  var timeoutId = setTimeout(function(){ controller.abort(); }, 45000);
   fetchOptions.signal = controller.signal;
 
   fetch(targetUrl, fetchOptions)
