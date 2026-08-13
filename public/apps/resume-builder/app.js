@@ -1374,6 +1374,51 @@ window.acceptRewrite = function() {
 };
 window._setRewriteAfter = function(text) { if (_rewriteCtx) _rewriteCtx.after = text; };
 
+/* ── Markdown → safe HTML (仅用于 AI 润色结果展示) ── */
+function _mdToHtml(md) {
+  if (!md) return '';
+  var s = md
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+  var lines = s.split('\n');
+  var out = [];
+  var inList = false;
+  for (var i = 0; i < lines.length; i++) {
+    var l = lines[i];
+    if (/^### (.+)/.test(l)) {
+      if (inList) { out.push('</ul>'); inList = false; }
+      out.push('<h4 style="font-size:12px;font-weight:700;color:#c084fc;margin:14px 0 6px;letter-spacing:.04em;">' + l.replace(/^### /, '') + '</h4>');
+    } else if (/^## (.+)/.test(l)) {
+      if (inList) { out.push('</ul>'); inList = false; }
+      out.push('<h3 style="font-size:13px;font-weight:700;color:#e8eaf0;margin:16px 0 6px;border-bottom:1px solid #252832;padding-bottom:4px;">' + l.replace(/^## /, '') + '</h3>');
+    } else if (/^---+$/.test(l.trim())) {
+      if (inList) { out.push('</ul>'); inList = false; }
+      out.push('<hr style="border:none;border-top:1px solid #252832;margin:12px 0;">');
+    } else if (/^&gt; (.*)/.test(l)) {
+      if (inList) { out.push('</ul>'); inList = false; }
+      out.push('<div style="border-left:3px solid #6366f1;padding:6px 10px;margin:6px 0;background:rgba(99,102,241,.08);border-radius:0 6px 6px 0;font-size:12px;color:#c4c9d4;line-height:1.65;">' + _mdInline(l.replace(/^&gt; /, '')) + '</div>');
+    } else if (/^[•\-\*] (.+)/.test(l) || /^\d+\. (.+)/.test(l)) {
+      if (!inList) { out.push('<ul style="margin:6px 0;padding:0;list-style:none;">'); inList = true; }
+      var item = l.replace(/^[•\-\*] /, '').replace(/^\d+\. /, '');
+      out.push('<li style="padding:3px 0 3px 14px;position:relative;font-size:12px;line-height:1.65;color:#c4c9d4;"><span style="position:absolute;left:0;color:#6366f1;">•</span>' + _mdInline(item) + '</li>');
+    } else if (l.trim() === '') {
+      if (inList) { out.push('</ul>'); inList = false; }
+      out.push('<div style="height:5px;"></div>');
+    } else {
+      if (inList) { out.push('</ul>'); inList = false; }
+      out.push('<p style="font-size:12px;line-height:1.7;color:#c4c9d4;margin:4px 0;">' + _mdInline(l) + '</p>');
+    }
+  }
+  if (inList) out.push('</ul>');
+  return out.join('');
+}
+function _mdInline(s) {
+  s = s.replace(/\*\*(.+?)\*\*/g, '<strong style="color:#e8eaf0;font-weight:600;">$1</strong>');
+  s = s.replace(/`(.+?)`/g, '<code style="background:rgba(99,102,241,.15);color:#a5b4fc;padding:1px 4px;border-radius:3px;font-size:11px;">$1</code>');
+  return s;
+}
+
 /* ════ AI 润色对话框 ════ */
 window.openAIPolish = function() {
   document.getElementById('aiPolishDialog').style.display = 'flex';
@@ -1513,7 +1558,7 @@ window.runAIPolish = function() {
     document.getElementById('aiPolishLoading').style.display = 'none';
     document.getElementById('aiPolishResult').style.display = 'block';
     var text = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
-    document.getElementById('aiPolishResultContent').textContent = text || '未获取到结果';
+    document.getElementById('aiPolishResultContent').innerHTML = _mdToHtml(text || '未获取到结果');
     btn.disabled = false;
     btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block;vertical-align:-2px;margin-right:4px;"><path d="M22 2L11 13"/><path d="M22 2L15 22l-4-9-9-4 20-7z"/></svg>开始润色';
   })

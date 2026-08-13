@@ -35,7 +35,7 @@ body{background:var(--app-bg);color:var(--app-text);font-family:'Inter','Noto Sa
 .ai-option input[type=checkbox]{width:auto;margin:0;}
 .ai-dialog-actions{display:flex;gap:8px;margin-top:14px;}
 .ai-dialog-actions .btn{flex:1;padding:9px;font-size:13px;}
-.ai-result{background:rgba(15,17,23,.6);border:1px solid var(--app-border);border-radius:10px;padding:14px;font-size:13px;line-height:1.7;color:var(--app-text);max-height:350px;overflow-y:auto;white-space:pre-wrap;margin-top:12px;}
+.ai-result{background:rgba(15,17,23,.6);border:1px solid var(--app-border);border-radius:10px;padding:14px;font-size:13px;line-height:1.7;color:var(--app-text);max-height:350px;overflow-y:auto;margin-top:12px;}
 .ai-result::-webkit-scrollbar{width:4px;}
 .ai-result::-webkit-scrollbar-thumb{background:#2a2f3e;border-radius:2px;}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
