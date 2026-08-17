@@ -212,7 +212,7 @@ const projects: CollectionEntry<"projects">[] = (
   document.addEventListener('astro:after-swap', initTypewriter);
 
   // 订阅表单
-  const WORKER_URL = 'https://deepseek-proxy.jayzzhang.workers.dev';
+  const WORKER_URL = 'https://api.jayzzhang.online';
   function initSubscribe() {
     const form = document.getElementById('subscribe-form');
     if (!form || form.dataset.bound === '1') return;
