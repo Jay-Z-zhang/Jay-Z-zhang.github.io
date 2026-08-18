@@ -1091,10 +1091,31 @@ window.closeImportDialog = function() {
   if (!drop || !fileInput) return;
   function readFile(file) {
     if (!file) return;
+    // PDF 无法在浏览器直接解析,给明确提示
+    if (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')) {
+      alert('PDF 暂不支持直接上传。\n\n请打开 PDF → 全选文字 → 复制 → 粘贴到下方文本框。');
+      return;
+    }
     if (file.size > 500 * 1024) { alert('文件太大 (>500KB)，请截取核心内容后粘贴'); return; }
-    var reader = new FileReader();
-    reader.onload = function(e) { textarea.value = e.target.result; };
-    reader.readAsText(file, 'utf-8');
+    // 先读为 ArrayBuffer,自动检测编码(UTF-8 → GB18030 fallback)
+    var bufReader = new FileReader();
+    bufReader.onload = function(e) {
+      var buf = e.target.result;
+      var text;
+      try {
+        // 先尝试 UTF-8(严格模式,遇到非法字节会抛出)
+        text = new TextDecoder('utf-8', { fatal: true }).decode(buf);
+      } catch (err) {
+        // UTF-8 解码失败,尝试 GB18030(兼容 GBK/GB2312,Windows 中文默认)
+        try {
+          text = new TextDecoder('gb18030', { fatal: false }).decode(buf);
+        } catch (err2) {
+          text = new TextDecoder('utf-8', { fatal: false }).decode(buf);
+        }
+      }
+      textarea.value = text;
+    };
+    bufReader.readAsArrayBuffer(file);
   }
   fileInput.addEventListener('change', function(){ readFile(this.files[0]); });
   drop.addEventListener('dragover', function(e){ e.preventDefault(); drop.classList.add('dragover'); });
