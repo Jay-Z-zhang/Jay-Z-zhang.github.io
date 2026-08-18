@@ -27,7 +27,7 @@ function _t2(t, card) {
 S.template = t;
 document.querySelectorAll('.tpl-card').forEach(c => c.classList.remove(('act'+'ive')));
 card.classList.add(('act'+'ive'));
-const defaults = {classic:'#374151', modern:'#1d4ed8', dark:'#7c3aed', twocol:'#1e293b'};
+const defaults = {classic:'#374151', modern:'#1d4ed8', dark:'#7c3aed', twocol:'#1e293b', lines:'#0f766e', premium:'#1e40af'};
 _t4(defaults[t]);
 _tu();
 }
@@ -345,6 +345,12 @@ const div = document.createElement(('d'+'iv'));
 div.className = ('fi'+'eld');
 div.innerHTML = `<label>${f.label}</label>`;
 if (f.isTextarea) {
+// Bold toolbar above description field
+var toolbar = document.createElement('div');
+toolbar.className = 'field-toolbar';
+toolbar.innerHTML = '<button type="button" class="field-toolbar-btn" title="加粗选中文字 (Ctrl+B)"><b>B</b></button>';
+toolbar.querySelector('button').addEventListener('click', function(){ _wrapSel(ta); });
+div.appendChild(toolbar);
 const ta = document.createElement(('text'+'area'));
 ta.placeholder = f.placeholder;
 ta.rows = 3;
@@ -354,6 +360,9 @@ entry.data[f.id] = this.value;
 if (f.hintId) _t6(this, f.hintId + '_' + entry.id, f.good, f.ok, f.warn);
 else _tu();
 };
+ta.addEventListener('keydown', function(e) {
+if ((e.ctrlKey || e.metaKey) && e.key === 'b') { e.preventDefault(); _wrapSel(this); }
+});
 div.appendChild(ta);
 if (f.hintId) {
 const hint = document.createElement(('d'+'iv'));
@@ -510,11 +519,11 @@ function _th(hex, a) { const {r,g,b} = _tf(hex); return `rgba(${r},${g},${b},${a
 function _ti(hex) { const {r,g,b} = _tf(hex); return (r*299+g*587+b*114)/1000 < 140; }
 function _tj(text) {
 if (!text) return '';
-return text.split('\n').filter(l=>l.trim()).map(l =>
-`<div style="margin-bottom:2px;padding-left:10px;position:relative;">
-<span style="position:absolute;left:0;top:0;">${l.startsWith('•')||l.startsWith('-') ? '' : '•'}</span>
-${l.replace(/^[•\-]\s*/,'')}</div>`
-).join('');
+return text.split('\n').filter(l=>l.trim()).map(l => {
+const hasBullet = l.startsWith('•') || l.startsWith('-');
+const content = l.replace(/^[•\-]\s*/,'').replace(/\*\*(.+?)\*\*/g,'<strong style="font-weight:700;">$1</strong>');
+return `<div style="margin-bottom:2px;padding-left:10px;position:relative;"><span style="position:absolute;left:0;top:0;">${hasBullet ? '' : '•'}</span>${content}</div>`;
+}).join('');
 }
 function _tk(v, col) {
 const items = [];
@@ -725,6 +734,76 @@ return `<div style="margin-bottom:18px;">
 ${body}
 </div>`;
 }
+
+/* ── Template: 极简线条 (lines) ── */
+function _tlines(v, col, font) {
+const t = v.t;
+function secH(title) {
+  return `<div style="display:flex;align-items:center;gap:8px;margin:14px 0 8px;"><div style="width:3px;height:${t.szSection+2}px;background:${col};border-radius:2px;flex-shrink:0;"></div><span style="font-size:${t.szSection}px;font-weight:700;color:${t.clSection};letter-spacing:.06em;text-transform:uppercase;">${title}</span><div style="flex:1;height:1px;background:${col};opacity:.2;"></div></div>`;
+}
+const ci = [];
+if (v.phone) ci.push(v.phone);
+if (v.email) ci.push(v.email);
+if (v.city) ci.push(v.city);
+if (v.linkedin) ci.push(v.linkedin);
+if (v.wechat) ci.push((v.L?v.L.rWechat:'WeChat')+': '+v.wechat);
+let html = `<div style="font-family:${font};color:${t.clBody};padding:28px 36px 24px;">`;
+html += `<div style="position:relative;padding-right:${v.showPhoto&&v.photoUrl?'78px':'0'};">
+${v.showPhoto&&v.photoUrl?`<img src="${v.photoUrl}" alt="${v.name||'Profile'}" style="position:absolute;right:0;top:0;width:62px;height:82px;object-fit:cover;border-radius:3px;">`:'' }
+<div style="font-size:${t.szName}px;font-weight:700;color:${t.clName};">${v.name||'姓名'}${v.nameEn?`<span style="font-size:${Math.round(t.szName*.52)}px;font-weight:400;color:${t.clMeta};margin-left:10px;">${v.nameEn}</span>`:''}</div>
+${v.jobTitle?`<div style="font-size:${t.szRole}px;color:${col};font-weight:500;margin-top:4px;">${v.jobTitle}</div>`:''}
+${ci.length?`<div style="font-size:${t.szMeta}px;color:${t.clMeta};margin-top:6px;">${ci.join('<span style="margin:0 5px;opacity:.4;">|</span>')}</div>`:''}
+<div style="height:2px;background:${col};margin-top:12px;border-radius:1px;opacity:.7;"></div>
+</div>`;
+if (v.showSummary&&v.summary) html+=secH(v.L.rSummary)+`<p style="font-size:${t.szBody}px;color:${t.clBody};line-height:1.7;margin:0;">${v.summary}</p>`;
+if (v.edu.length) html+=secH(v.L.rEdu)+v.edu.map(e=>`<div style="margin-bottom:8px;"><div style="display:flex;justify-content:space-between;"><strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${e.school||''}</strong><span style="font-size:${t.szMeta}px;color:${t.clMeta};">${e.period||''}</span></div><div style="font-size:${t.szRole}px;color:${t.clRole};">${e.degree||''}${e.gpa?` &nbsp;·&nbsp; <span style="color:${col};">${e.gpa}</span>`:''}</div></div>`).join('');
+if (v.work.length) html+=secH(v.L.rWork)+v.work.map(e=>`<div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;"><strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${e.company||''}</strong><span style="font-size:${t.szMeta}px;color:${t.clMeta};">${e.period||''}</span></div><div style="font-size:${t.szRole}px;color:${col};font-weight:500;margin-bottom:3px;">${e.role||''}</div><div style="font-size:${t.szBody}px;color:${t.clBody};line-height:1.65;">${_tj(e.desc)}</div></div>`).join('');
+if (v.showProject&&v.project.length) html+=secH(v.L.rProject)+v.project.map(e=>`<div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;align-items:baseline;"><strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${e.name||''}</strong><span style="font-size:${t.szMeta}px;color:${t.clMeta};">${e.period||''}</span></div><div style="font-size:${t.szRole}px;color:${col};margin-bottom:2px;">${e.role||''}${e.link?` · <a href="${e.link}" style="color:${col};text-decoration:none;">${v.L.rViewLink}</a>`:''}</div><div style="font-size:${t.szBody}px;color:${t.clBody};line-height:1.65;">${_tj(e.desc)}</div></div>`).join('');
+if (v.showSkills&&(v.skillTools||v.skillLang||v.skillCerts)){
+  html+=secH(v.L.rSkillsSection);
+  if(v.skillTools) html+=`<div style="margin-bottom:4px;font-size:${t.szBody}px;color:${t.clBody};"><strong>${v.L.rSkillTools}：</strong>${v.skillTools}</div>`;
+  if(v.skillLang) html+=`<div style="margin-bottom:4px;font-size:${t.szBody}px;color:${t.clBody};"><strong>${v.L.rSkillLang}：</strong>${v.skillLang}</div>`;
+  if(v.skillCerts) html+=`<div style="font-size:${t.szBody}px;color:${t.clBody};"><strong>${v.L.rSkillCerts}：</strong>${v.skillCerts}</div>`;
+}
+if (v.showAwards&&v.award.length) html+=secH(v.L.rAwards)+v.award.map(e=>`<div style="display:flex;justify-content:space-between;margin-bottom:4px;font-size:${t.szBody}px;"><span><strong style="color:${col};">${e.name||''}</strong>${e.org?` · <span style="color:${t.clBody};">${e.org}</span>`:''}</span><span style="color:${t.clMeta};">${e.year||''}</span></div>`).join('');
+if (v.showPubs&&v.pub.length) html+=secH(v.L.rPubs)+v.pub.map(e=>`<div style="margin-bottom:6px;font-size:${t.szBody}px;color:${t.clBody};"><strong>${e.title||''}</strong>${e.venue?` · <em style="color:${t.clMeta};">${e.venue}</em>`:''}${e.link?` · <a href="${e.link}" style="color:${col};">${e.link}</a>`:''}</div>`).join('');
+return html+'</div>';
+}
+
+/* ── Template: 精英侧栏 (premium) ── */
+function _tpremium(v, col, font) {
+const t = v.t;
+function sideH(title) {
+  return `<div style="font-size:9px;font-weight:700;color:${col};letter-spacing:.1em;text-transform:uppercase;border-bottom:1px solid ${_th(col,.25)};padding-bottom:3px;margin:12px 0 7px;">${title}</div>`;
+}
+function mainH(title) {
+  return `<div style="font-size:${t.szSection}px;font-weight:700;color:${t.clSection};padding-bottom:3px;margin:14px 0 7px;border-bottom:1px solid ${_th(col,.2)};">${title}</div>`;
+}
+const header = `<div style="background:${col};color:#fff;padding:18px 22px 14px;display:flex;justify-content:space-between;align-items:flex-start;">
+<div><div style="font-size:${t.szName}px;font-weight:700;">${v.name||'姓名'}${v.nameEn?`<span style="font-size:${Math.round(t.szName*.52)}px;font-weight:300;opacity:.8;margin-left:8px;">${v.nameEn}</span>`:''}</div>${v.jobTitle?`<div style="font-size:${t.szRole}px;opacity:.9;margin-top:4px;">${v.jobTitle}</div>`:''}</div>
+${v.showPhoto&&v.photoUrl?`<img src="${v.photoUrl}" alt="${v.name||'Profile'}" style="width:58px;height:77px;object-fit:cover;border-radius:4px;border:2px solid rgba(255,255,255,.35);">`:'' }
+</div>`;
+const ci = [];
+if (v.phone) ci.push(v.phone);
+if (v.email) ci.push(v.email);
+if (v.city) ci.push(v.city);
+if (v.linkedin) ci.push(v.linkedin);
+if (v.wechat) ci.push(v.wechat);
+let side = '';
+if (ci.length) side+=sideH(v.L.rContact)+`<div style="font-size:${t.szMeta}px;color:#374151;line-height:2.0;">${ci.join('<br>')}</div>`;
+if (v.showSkills&&v.skillTools) side+=sideH(v.L.rSkillsSection)+(v.skillTools||'').split(',').filter(s=>s.trim()).map(s=>`<div style="font-size:${t.szMeta}px;color:#374151;padding:2px 0;border-bottom:1px solid ${_th(col,.1)};margin-bottom:3px;">${s.trim()}</div>`).join('');
+if (v.showSkills&&v.skillLang) side+=sideH(v.L.rLangSide)+`<div style="font-size:${t.szMeta}px;color:#374151;line-height:1.8;">${v.skillLang}</div>`;
+if (v.showSkills&&v.skillCerts) side+=sideH(v.L.rCertsSide)+`<div style="font-size:${t.szMeta}px;color:#374151;line-height:1.8;">${v.skillCerts}</div>`;
+if (v.showAwards&&v.award.length) side+=sideH(v.L.rAwards)+v.award.map(e=>`<div style="font-size:${t.szMeta}px;color:#374151;margin-bottom:6px;"><strong style="color:${col};display:block;">${e.name||''}</strong><span style="opacity:.65;">${e.org||''} ${e.year||''}</span></div>`).join('');
+let main = '';
+if (v.showSummary&&v.summary) main+=mainH(v.L.rSummary)+`<p style="font-size:${t.szBody}px;color:${t.clBody};line-height:1.7;margin:0;">${v.summary}</p>`;
+if (v.work.length) main+=mainH(v.L.rWork)+v.work.map(e=>`<div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;"><strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${e.company||''}</strong><span style="font-size:${t.szMeta}px;color:${t.clMeta};">${e.period||''}</span></div><div style="font-size:${t.szRole}px;color:${col};font-weight:500;margin-bottom:3px;">${e.role||''}</div><div style="font-size:${t.szBody}px;color:${t.clBody};line-height:1.65;">${_tj(e.desc)}</div></div>`).join('');
+if (v.edu.length) main+=mainH(v.L.rEdu)+v.edu.map(e=>`<div style="margin-bottom:8px;"><div style="display:flex;justify-content:space-between;"><strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${e.school||''}</strong><span style="font-size:${t.szMeta}px;color:${t.clMeta};">${e.period||''}</span></div><div style="font-size:${t.szRole}px;color:${t.clRole};">${e.degree||''}${e.gpa?` · <span style="color:${col};">${e.gpa}</span>`:''}</div></div>`).join('');
+if (v.showProject&&v.project.length) main+=mainH(v.L.rProject)+v.project.map(e=>`<div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;align-items:baseline;"><strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${e.name||''}</strong><span style="font-size:${t.szMeta}px;color:${t.clMeta};">${e.period||''}</span></div><div style="font-size:${t.szRole}px;color:${col};margin-bottom:2px;">${e.role||''}${e.link?` · <a href="${e.link}" style="color:${col};">${v.L.rViewLink}</a>`:''}</div><div style="font-size:${t.szBody}px;color:${t.clBody};line-height:1.65;">${_tj(e.desc)}</div></div>`).join('');
+if (v.showPubs&&v.pub.length) main+=mainH(v.L.rPubs)+v.pub.map(e=>`<div style="margin-bottom:6px;font-size:${t.szBody}px;color:${t.clBody};"><strong>${e.title||''}</strong>${e.venue?` · <em style="color:${t.clMeta};">${e.venue}</em>`:''}${e.link?` · <a href="${e.link}" style="color:${col};">${e.link}</a>`:''}</div>`).join('');
+return `<div style="font-family:${font};color:${t.clBody};">${header}<div style="display:flex;min-height:1050px;"><div style="width:196px;flex-shrink:0;background:${_th(col,.06)};border-right:1px solid ${_th(col,.15)};padding:16px 14px;">${side}</div><div style="flex:1;padding:16px 22px;">${main}</div></div></div>`;
+}
+
 function _tu() {
 const v = _te();
 v.L = I18N[S.lang];
@@ -735,6 +814,8 @@ if (S.template === ('cla'+'ssic')) html = _tl(v, col, font);
 else if (S.template === ('mod'+'ern')) html = _tn(v, col, font);
 else if (S.template === ('da'+'rk')) html = _tp(v, col, font);
 else if (S.template === ('two'+'col')) html = _tr(v, col, font);
+else if (S.template === 'lines') html = _tlines(v, col, font);
+else if (S.template === 'premium') html = _tpremium(v, col, font);
 const el = document.getElementById('resume-preview');
 el.innerHTML = html;
 requestAnimationFrame(() => {
@@ -761,6 +842,8 @@ if (S.template === ('cla'+'ssic')) body = _tl(v,col,font);
 else if (S.template === ('mod'+'ern')) body = _tn(v,col,font);
 else if (S.template === ('da'+'rk')) body = _tp(v,col,font);
 else if (S.template === ('two'+'col')) body = _tr(v,col,font);
+else if (S.template === 'lines') body = _tlines(v,col,font);
+else if (S.template === 'premium') body = _tpremium(v,col,font);
 return `<!DOCTYPE html><html lang="zh"><head><meta charset="UTF-8">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@400;600;700&family=Inter:wght@300;400;500;600;700&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&family=Lato:wght@300;400;700&family=Raleway:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>*{box-sizing:border-box;margin:0;padding:0;}body{background:#d1d5db;display:flex;justify-content:center;padding:24px;}
@@ -891,7 +974,7 @@ function _restore() {
       el.classList.toggle('active', (i === 0 ? 'zh' : 'en') === S.lang);
     });
     document.querySelectorAll('.tpl-card').forEach((el, i) => {
-      const names = ['classic','modern','dark','twocol'];
+      const names = ['classic','modern','dark','twocol','lines','premium'];
       el.classList.toggle('active', names[i] === S.template);
     });
     document.querySelectorAll('.color-swatch').forEach(el => {
@@ -1252,6 +1335,26 @@ function applyImportedData(d) {
   _tu();
 }
 window._applyImportedData = applyImportedData;
+
+/* ── 加粗选中文字 (textarea **...**) ── */
+function _wrapSel(ta) {
+  var start = ta.selectionStart;
+  var end = ta.selectionEnd;
+  var text = ta.value;
+  var sel = text.substring(start, end);
+  var before = '**'; var after = '**';
+  // 已包裹 → 解除;未包裹 → 加粗
+  if (sel.startsWith(before) && sel.endsWith(after) && sel.length > before.length + after.length) {
+    var inner = sel.slice(before.length, -after.length);
+    ta.value = text.substring(0, start) + inner + text.substring(end);
+    ta.setSelectionRange(start, start + inner.length);
+  } else {
+    ta.value = text.substring(0, start) + before + sel + after + text.substring(end);
+    ta.setSelectionRange(start + before.length, start + before.length + sel.length);
+  }
+  ta.dispatchEvent(new Event('input'));
+}
+window._wrapSel = _wrapSel;
 
 /* ════ AI 改写单段 ════ */
 var _rewriteCtx = null;
