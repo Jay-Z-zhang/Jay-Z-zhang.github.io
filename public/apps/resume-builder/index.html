@@ -12,18 +12,58 @@
 <!-- Top bar -->
 <div class="topbar">
   <div class="topbar-logo"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity:.75"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><strong>简历生成器</strong> <span>BETA</span></div>
-  <div id="topbar-tagline" style="font-size:11px;color:var(--app-muted)">实时预览 · 4套模板 · 中英双语</div>
+  
+  <!-- 撤销/重做按钮组 -->
+  <div class="topbar-edit-group">
+    <button class="btn btn-edit-action" id="undoBtn" onclick="undoAction()" title="撤销 (Ctrl+Z)" disabled>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+    </button>
+    <button class="btn btn-edit-action" id="redoBtn" onclick="redoAction()" title="重做 (Ctrl+Y)" disabled>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.13-9.36L23 10"/></svg>
+    </button>
+  </div>
+  
   <span id="saveStatus" aria-live="polite" style="font-size:10px;color:#10b981;margin-left:6px;opacity:0;transition:opacity .3s;">已保存</span>
   <div class="topbar-actions">
-    <button class="btn btn-demo" onclick="fillDemoData()">模板预览</button>
-    <button class="btn btn-ghost" onclick="openImportDialog()">导入旧简历</button>
-    <button class="btn btn-ghost" onclick="resetAll()">重置</button>
-    <button class="btn btn-primary" id="aiPolishBtn" onclick="openAIPolish()" style="background:rgba(168,85,247,.15);color:#c084fc;border-color:rgba(168,85,247,.3);">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block;vertical-align:-2px;margin-right:4px;"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-      AI 润色
-    </button>
-    <button class="btn btn-pdf" onclick="exportPDF()">导出 PDF</button>
-    <button class="btn btn-primary" onclick="downloadHTML()">下载 HTML</button>
+    <!-- 文件操作组 -->
+    <div class="btn-group">
+      <button class="btn btn-demo" onclick="fillDemoData()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        模板预览
+      </button>
+      <button class="btn btn-ghost" onclick="openImportDialog()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        导入
+      </button>
+      <button class="btn btn-ghost" onclick="resetAll()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+        重置
+      </button>
+    </div>
+    
+    <div class="btn-divider"></div>
+    
+    <!-- AI 功能组 -->
+    <div class="btn-group">
+      <button class="btn btn-ai" id="aiPolishBtn" onclick="openAIPolish()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        AI 润色
+      </button>
+    </div>
+    
+    <div class="btn-divider"></div>
+    
+    <!-- 导出组 -->
+    <div class="btn-group">
+      <button class="btn btn-pdf" onclick="exportPDF()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        导出 PDF
+      </button>
+      <button class="btn btn-primary" onclick="downloadHTML()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        下载 HTML
+      </button>
+    </div>
   </div>
 </div>
 <div class="app-body">
@@ -147,57 +187,66 @@
         <div class="font-opt" data-font="'JetBrains Mono',monospace" onclick="setFont(this)" style="font-family:monospace">Mono</div>
       </div>
     </div>
-    <!-- Typography -->
-    <div class="field" style="margin-top:4px;">
-      <label>字号 &amp; 颜色调整</label>
-      <div class="typo-grid">
-        <div class="typo-row">
-          <span class="typo-label">姓名</span>
-          <div class="typo-controls">
-            <input type="number" class="typo-size" id="sz-name" value="24" min="16" max="36" oninput="render()">
-            <span class="typo-unit">px</span>
-            <input type="color" class="typo-color" id="cl-name" value="#111111" oninput="render()">
-          </div>
+  </div>
+</div>
+
+<!-- 排版设置（独立区块） -->
+<div class="sb-section">
+  <div class="sb-section-head" onclick="toggleSection(this)">
+    <h3>
+      <svg class="sb-icon" viewBox="0 0 24 24"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></svg>
+      排版设置
+    </h3>
+    <span class="chevron">▼</span>
+  </div>
+  <div class="sb-section-body" style="display:none;">
+    <div class="typo-grid">
+      <div class="typo-row">
+        <span class="typo-label">姓名</span>
+        <div class="typo-controls">
+          <input type="number" class="typo-size" id="sz-name" value="24" min="16" max="36" oninput="render()">
+          <span class="typo-unit">px</span>
+          <input type="color" class="typo-color" id="cl-name" value="#111111" oninput="render()">
         </div>
-        <div class="typo-row">
-          <span class="typo-label">章节标题</span>
-          <div class="typo-controls">
-            <input type="number" class="typo-size" id="sz-section" value="13" min="10" max="18" oninput="render()">
-            <span class="typo-unit">px</span>
-            <input type="color" class="typo-color" id="cl-section" value="#374151" oninput="render()">
-          </div>
+      </div>
+      <div class="typo-row">
+        <span class="typo-label">章节标题</span>
+        <div class="typo-controls">
+          <input type="number" class="typo-size" id="sz-section" value="13" min="10" max="18" oninput="render()">
+          <span class="typo-unit">px</span>
+          <input type="color" class="typo-color" id="cl-section" value="#374151" oninput="render()">
         </div>
-        <div class="typo-row">
-          <span class="typo-label">机构/公司</span>
-          <div class="typo-controls">
-            <input type="number" class="typo-size" id="sz-org" value="12" min="9" max="16" oninput="render()">
-            <span class="typo-unit">px</span>
-            <input type="color" class="typo-color" id="cl-org" value="#111111" oninput="render()">
-          </div>
+      </div>
+      <div class="typo-row">
+        <span class="typo-label">机构/公司</span>
+        <div class="typo-controls">
+          <input type="number" class="typo-size" id="sz-org" value="12" min="9" max="16" oninput="render()">
+          <span class="typo-unit">px</span>
+          <input type="color" class="typo-color" id="cl-org" value="#111111" oninput="render()">
         </div>
-        <div class="typo-row">
-          <span class="typo-label">职位/学位</span>
-          <div class="typo-controls">
-            <input type="number" class="typo-size" id="sz-role" value="11" min="9" max="15" oninput="render()">
-            <span class="typo-unit">px</span>
-            <input type="color" class="typo-color" id="cl-role" value="#374151" oninput="render()">
-          </div>
+      </div>
+      <div class="typo-row">
+        <span class="typo-label">职位/学位</span>
+        <div class="typo-controls">
+          <input type="number" class="typo-size" id="sz-role" value="11" min="9" max="15" oninput="render()">
+          <span class="typo-unit">px</span>
+          <input type="color" class="typo-color" id="cl-role" value="#374151" oninput="render()">
         </div>
-        <div class="typo-row">
-          <span class="typo-label">正文内容</span>
-          <div class="typo-controls">
-            <input type="number" class="typo-size" id="sz-body" value="11" min="8" max="14" oninput="render()">
-            <span class="typo-unit">px</span>
-            <input type="color" class="typo-color" id="cl-body" value="#374151" oninput="render()">
-          </div>
+      </div>
+      <div class="typo-row">
+        <span class="typo-label">正文内容</span>
+        <div class="typo-controls">
+          <input type="number" class="typo-size" id="sz-body" value="11" min="8" max="14" oninput="render()">
+          <span class="typo-unit">px</span>
+          <input type="color" class="typo-color" id="cl-body" value="#374151" oninput="render()">
         </div>
-        <div class="typo-row">
-          <span class="typo-label">辅助信息</span>
-          <div class="typo-controls">
-            <input type="number" class="typo-size" id="sz-meta" value="11" min="8" max="14" oninput="render()">
-            <span class="typo-unit">px</span>
-            <input type="color" class="typo-color" id="cl-meta" value="#6b7280" oninput="render()">
-          </div>
+      </div>
+      <div class="typo-row">
+        <span class="typo-label">辅助信息</span>
+        <div class="typo-controls">
+          <input type="number" class="typo-size" id="sz-meta" value="11" min="8" max="14" oninput="render()">
+          <span class="typo-unit">px</span>
+          <input type="color" class="typo-color" id="cl-meta" value="#6b7280" oninput="render()">
         </div>
       </div>
     </div>

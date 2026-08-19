@@ -11,6 +11,123 @@ awardEntries: [],
 pubEntries: [],
 expanded: new Set(),
 };
+
+// Undo/Redo History System
+const History = {
+  stack: [],
+  index: -1,
+  maxSize: 50,
+  isRestoring: false,
+  lastSaveTime: 0,
+  saveDelay: 300,
+};
+
+function _getFullState() {
+  const g = id => (document.getElementById(id) || {value:''}).value;
+  const gc = id => (document.getElementById(id) || {checked:false}).checked;
+  return {
+    template: S.template, color: S.color, font: S.font, lang: S.lang,
+    form: {
+      name: g('name'), nameEn: g('nameEn'), jobTitle: g('jobTitle'),
+      phone: g('phone'), email: g('email'), city: g('city'), linkedin: g('linkedin'),
+      showWechat: gc('showWechat'), wechat: g('wechat'),
+      showPhoto: gc('showPhoto'), photoUrl: g('photoUrl'),
+      showSummary: gc('showSummary'), summary: g('summary'),
+      showProject: gc('showProject'), showSkills: gc('showSkills'),
+      skillTools: g('skillTools'), skillLang: g('skillLang'), skillCerts: g('skillCerts'),
+      showAwards: gc('showAwards'), showPubs: gc('showPubs'),
+    },
+    edu: S.eduEntries.map(e => ({id: e.id, data: {...e.data}})),
+    work: S.workEntries.map(e => ({id: e.id, data: {...e.data}})),
+    project: S.projectEntries.map(e => ({id: e.id, data: {...e.data}})),
+    award: S.awardEntries.map(e => ({id: e.id, data: {...e.data}})),
+    pub: S.pubEntries.map(e => ({id: e.id, data: {...e.data}})),
+  };
+}
+
+function _restoreState(state) {
+  if (!state) return;
+  History.isRestoring = true;
+  S.template = state.template; S.color = state.color; S.font = state.font; S.lang = state.lang;
+  document.querySelectorAll('.tpl-card').forEach(c => c.classList.toggle('active', c.dataset.tpl === state.template));
+  document.querySelectorAll('.color-swatch').forEach(s => s.classList.toggle('active', s.dataset.color === state.color));
+  document.querySelectorAll('.font-opt').forEach(f => f.classList.toggle('active', f.dataset.font === state.font));
+  document.querySelectorAll('.lang-tab').forEach(t => t.classList.toggle('active', t.dataset.lang === state.lang));
+  const f = state.form || {};
+  const set = (id, v) => { const el = document.getElementById(id); if (el) el.value = v || ''; };
+  const chk = (id, v) => { const el = document.getElementById(id); if (el) el.checked = !!v; };
+  set('name', f.name); set('nameEn', f.nameEn); set('jobTitle', f.jobTitle);
+  set('phone', f.phone); set('email', f.email); set('city', f.city); set('linkedin', f.linkedin);
+  chk('showWechat', f.showWechat); set('wechat', f.wechat);
+  chk('showPhoto', f.showPhoto); set('photoUrl', f.photoUrl);
+  chk('showSummary', f.showSummary); set('summary', f.summary);
+  chk('showProject', f.showProject); chk('showSkills', f.showSkills);
+  set('skillTools', f.skillTools); set('skillLang', f.skillLang); set('skillCerts', f.skillCerts);
+  chk('showAwards', f.showAwards); chk('showPubs', f.showPubs);
+  document.getElementById('wechatField').style.display = f.showWechat ? '' : 'none';
+  document.getElementById('photoField').style.display = f.showPhoto ? '' : 'none';
+  document.getElementById('summaryBody').style.display = f.showSummary ? '' : 'none';
+  S.eduEntries = (state.edu || []).map(e => ({id: e.id, data: {...e.data}}));
+  S.workEntries = (state.work || []).map(e => ({id: e.id, data: {...e.data}}));
+  S.projectEntries = (state.project || []).map(e => ({id: e.id, data: {...e.data}}));
+  S.awardEntries = (state.award || []).map(e => ({id: e.id, data: {...e.data}}));
+  S.pubEntries = (state.pub || []).map(e => ({id: e.id, data: {...e.data}}));
+  _renderEntries('edu'); _renderEntries('work'); _renderEntries('project'); _renderEntries('award'); _renderEntries('pub');
+  History.isRestoring = false;
+  _tu();
+}
+
+function _renderEntries(type) {
+  if (typeof _t9 === 'function') _t9(type);
+}
+
+let _historySaveTimer = null;
+function _saveHistory() {
+  if (History.isRestoring) return;
+  clearTimeout(_historySaveTimer);
+  _historySaveTimer = setTimeout(() => {
+    const state = _getFullState();
+    const stateStr = JSON.stringify(state);
+    if (History.stack.length > 0 && JSON.stringify(History.stack[History.index]) === stateStr) return;
+    History.stack = History.stack.slice(0, History.index + 1);
+    History.stack.push(JSON.parse(stateStr));
+    if (History.stack.length > History.maxSize) History.stack.shift();
+    History.index = History.stack.length - 1;
+    _updateUndoRedoButtons();
+  }, History.saveDelay);
+}
+
+function _undo() {
+  if (History.index <= 0) return;
+  History.index--;
+  _restoreState(History.stack[History.index]);
+  _updateUndoRedoButtons();
+}
+
+function _redo() {
+  if (History.index >= History.stack.length - 1) return;
+  History.index++;
+  _restoreState(History.stack[History.index]);
+  _updateUndoRedoButtons();
+}
+
+function _updateUndoRedoButtons() {
+  const undoBtn = document.getElementById('undoBtn');
+  const redoBtn = document.getElementById('redoBtn');
+  if (undoBtn) undoBtn.disabled = History.index <= 0;
+  if (redoBtn) redoBtn.disabled = History.index >= History.stack.length - 1;
+}
+
+document.addEventListener('keydown', function(e) {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
+    e.preventDefault();
+    _undo();
+  } else if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) {
+    e.preventDefault();
+    _redo();
+  }
+});
+
 function _t0(head) {
 const body = head.nextElementSibling;
 const open = head.classList.toggle(('op'+'en'));
@@ -517,6 +634,10 @@ return `rgb(${Math.min(255,r+amt)},${Math.min(255,g+amt)},${Math.min(255,b+amt)}
 }
 function _th(hex, a) { const {r,g,b} = _tf(hex); return `rgba(${r},${g},${b},${a})`; }
 function _ti(hex) { const {r,g,b} = _tf(hex); return (r*299+g*587+b*114)/1000 < 140; }
+function _md(text) {
+if (!text) return '';
+return text.replace(/\*\*(.+?)\*\*/g,'<strong style="font-weight:700;">$1</strong>');
+}
 function _tj(text) {
 if (!text) return '';
 return text.split('\n').filter(l=>l.trim()).map(l => {
@@ -544,7 +665,7 @@ ${v.showPhoto && v.photoUrl ? `<img src="${v.photoUrl}" alt="${v.name || 'Profil
 ${v.jobTitle ? `<div style="font-size:${t.szRole}px;color:${col};margin-top:4px;font-weight:500;">${v.jobTitle}</div>` : ''}
 <div style="font-size:${t.szMeta}px;margin-top:6px;">${_tk(v, t.clBody)}</div>
 </div>`);
-if (v.showSummary && v.summary) sections.push(_tm(v.L.rSummary, `<p style="line-height:1.7;font-size:${t.szBody}px;color:${t.clBody};">${v.summary}</p>`, col, t));
+if (v.showSummary && v.summary) sections.push(_tm(v.L.rSummary, `<p style="line-height:1.7;font-size:${t.szBody}px;color:${t.clBody};">${_md(v.summary)}</p>`, col, t));
 if (v.edu.length) sections.push(_tm(v.L.rEdu, v.edu.map(e=>`
 <div style="margin-bottom:8px;"><div style="display:flex;justify-content:space-between;">
 <strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${e.school||''}</strong><span style="font-size:${t.szMeta}px;color:${t.clMeta};">${e.period||''}</span>
@@ -585,7 +706,7 @@ ${body}
 function _tn(v, col, font) {
 const t = v.t;
 const sections = [];
-if (v.showSummary && v.summary) sections.push(_to(v.L.rSummary, `<p style="font-size:${t.szBody}px;color:${t.clBody};line-height:1.7;">${v.summary}</p>`, col, t));
+if (v.showSummary && v.summary) sections.push(_to(v.L.rSummary, `<p style="font-size:${t.szBody}px;color:${t.clBody};line-height:1.7;">${_md(v.summary)}</p>`, col, t));
 if (v.edu.length) sections.push(_to(v.L.rEdu, v.edu.map(e=>`
 <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
 <div><strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${e.school||''}</strong><br><span style="font-size:${t.szRole}px;color:${t.clRole};">${e.degree||''}</span>${e.gpa?`<br><span style="font-size:${t.szMeta}px;color:${col}">${e.gpa}</span>`:''}</div>
@@ -633,7 +754,7 @@ function _tp(v, col, font) {
 const t = v.t;
 const bg = '#1a1a2e'; const bg2 = '#16213e'; const textLight = '#e2e8f0';
 const sections = [];
-if (v.showSummary && v.summary) sections.push(_tq(v.L.rSummary, `<p style="font-size:${t.szBody}px;color:#94a3b8;line-height:1.7;">${v.summary}</p>`, col, t));
+if (v.showSummary && v.summary) sections.push(_tq(v.L.rSummary, `<p style="font-size:${t.szBody}px;color:#94a3b8;line-height:1.7;">${_md(v.summary)}</p>`, col, t));
 if (v.edu.length) sections.push(_tq(v.L.rEdu, v.edu.map(e=>`
 <div style="margin-bottom:8px;padding:8px 10px;background:rgba(255,255,255,.04);border-radius:6px;">
 <div style="display:flex;justify-content:space-between;"><strong style="font-size:${t.szOrg}px;color:${textLight};">${e.school||''}</strong><span style="font-size:${t.szMeta}px;color:#64748b;">${e.period||''}</span></div>
@@ -702,7 +823,7 @@ if (v.showSkills && v.skillLang) sideContent.push(`<div style="margin-bottom:14p
 if (v.showSkills && v.skillCerts) sideContent.push(`<div style="margin-bottom:14px;">${_ts(v.L.rCertsSide)}<div style="font-size:${t.szMeta}px;color:rgba(255,255,255,.8);line-height:1.8;">${v.skillCerts}</div></div>`);
 if (v.showAwards && v.award.length) sideContent.push(`<div style="margin-bottom:14px;">${_ts(v.L.rAwards)}${v.award.map(e=>`<div style="font-size:${t.szMeta}px;color:rgba(255,255,255,.8);margin-bottom:4px;"><strong>${e.name||''}</strong><br>${e.org||''} ${e.year||''}</div>`).join('')}</div>`);
 const mainContent = [];
-if (v.showSummary && v.summary) mainContent.push(_tt(v.L.rSummary, `<p style="font-size:${t.szBody}px;color:${t.clBody};line-height:1.7;">${v.summary}</p>`, col, t));
+if (v.showSummary && v.summary) mainContent.push(_tt(v.L.rSummary, `<p style="font-size:${t.szBody}px;color:${t.clBody};line-height:1.7;">${_md(v.summary)}</p>`, col, t));
 if (v.edu.length) mainContent.push(_tt(v.L.rEdu, v.edu.map(e=>`
 <div style="margin-bottom:8px;"><div style="display:flex;justify-content:space-between;">
 <strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${e.school||''}</strong><span style="font-size:${t.szMeta}px;color:${t.clMeta};">${e.period||''}</span>
@@ -755,7 +876,7 @@ ${v.jobTitle?`<div style="font-size:${t.szRole}px;color:${col};font-weight:500;m
 ${ci.length?`<div style="font-size:${t.szMeta}px;color:${t.clMeta};margin-top:6px;">${ci.join('<span style="margin:0 5px;opacity:.4;">|</span>')}</div>`:''}
 <div style="height:2px;background:${col};margin-top:12px;border-radius:1px;opacity:.7;"></div>
 </div>`;
-if (v.showSummary&&v.summary) html+=secH(v.L.rSummary)+`<p style="font-size:${t.szBody}px;color:${t.clBody};line-height:1.7;margin:0;">${v.summary}</p>`;
+if (v.showSummary&&v.summary) html+=secH(v.L.rSummary)+`<p style="font-size:${t.szBody}px;color:${t.clBody};line-height:1.7;margin:0;">${_md(v.summary)}</p>`;
 if (v.edu.length) html+=secH(v.L.rEdu)+v.edu.map(e=>`<div style="margin-bottom:8px;"><div style="display:flex;justify-content:space-between;"><strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${e.school||''}</strong><span style="font-size:${t.szMeta}px;color:${t.clMeta};">${e.period||''}</span></div><div style="font-size:${t.szRole}px;color:${t.clRole};">${e.degree||''}${e.gpa?` &nbsp;·&nbsp; <span style="color:${col};">${e.gpa}</span>`:''}</div></div>`).join('');
 if (v.work.length) html+=secH(v.L.rWork)+v.work.map(e=>`<div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;"><strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${e.company||''}</strong><span style="font-size:${t.szMeta}px;color:${t.clMeta};">${e.period||''}</span></div><div style="font-size:${t.szRole}px;color:${col};font-weight:500;margin-bottom:3px;">${e.role||''}</div><div style="font-size:${t.szBody}px;color:${t.clBody};line-height:1.65;">${_tj(e.desc)}</div></div>`).join('');
 if (v.showProject&&v.project.length) html+=secH(v.L.rProject)+v.project.map(e=>`<div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;align-items:baseline;"><strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${e.name||''}</strong><span style="font-size:${t.szMeta}px;color:${t.clMeta};">${e.period||''}</span></div><div style="font-size:${t.szRole}px;color:${col};margin-bottom:2px;">${e.role||''}${e.link?` · <a href="${e.link}" style="color:${col};text-decoration:none;">${v.L.rViewLink}</a>`:''}</div><div style="font-size:${t.szBody}px;color:${t.clBody};line-height:1.65;">${_tj(e.desc)}</div></div>`).join('');
@@ -796,7 +917,7 @@ if (v.showSkills&&v.skillLang) side+=sideH(v.L.rLangSide)+`<div style="font-size
 if (v.showSkills&&v.skillCerts) side+=sideH(v.L.rCertsSide)+`<div style="font-size:${t.szMeta}px;color:#374151;line-height:1.8;">${v.skillCerts}</div>`;
 if (v.showAwards&&v.award.length) side+=sideH(v.L.rAwards)+v.award.map(e=>`<div style="font-size:${t.szMeta}px;color:#374151;margin-bottom:6px;"><strong style="color:${col};display:block;">${e.name||''}</strong><span style="opacity:.65;">${e.org||''} ${e.year||''}</span></div>`).join('');
 let main = '';
-if (v.showSummary&&v.summary) main+=mainH(v.L.rSummary)+`<p style="font-size:${t.szBody}px;color:${t.clBody};line-height:1.7;margin:0;">${v.summary}</p>`;
+if (v.showSummary&&v.summary) main+=mainH(v.L.rSummary)+`<p style="font-size:${t.szBody}px;color:${t.clBody};line-height:1.7;margin:0;">${_md(v.summary)}</p>`;
 if (v.work.length) main+=mainH(v.L.rWork)+v.work.map(e=>`<div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;"><strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${e.company||''}</strong><span style="font-size:${t.szMeta}px;color:${t.clMeta};">${e.period||''}</span></div><div style="font-size:${t.szRole}px;color:${col};font-weight:500;margin-bottom:3px;">${e.role||''}</div><div style="font-size:${t.szBody}px;color:${t.clBody};line-height:1.65;">${_tj(e.desc)}</div></div>`).join('');
 if (v.edu.length) main+=mainH(v.L.rEdu)+v.edu.map(e=>`<div style="margin-bottom:8px;"><div style="display:flex;justify-content:space-between;"><strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${e.school||''}</strong><span style="font-size:${t.szMeta}px;color:${t.clMeta};">${e.period||''}</span></div><div style="font-size:${t.szRole}px;color:${t.clRole};">${e.degree||''}${e.gpa?` · <span style="color:${col};">${e.gpa}</span>`:''}</div></div>`).join('');
 if (v.showProject&&v.project.length) main+=mainH(v.L.rProject)+v.project.map(e=>`<div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;align-items:baseline;"><strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${e.name||''}</strong><span style="font-size:${t.szMeta}px;color:${t.clMeta};">${e.period||''}</span></div><div style="font-size:${t.szRole}px;color:${col};margin-bottom:2px;">${e.role||''}${e.link?` · <a href="${e.link}" style="color:${col};">${v.L.rViewLink}</a>`:''}</div><div style="font-size:${t.szBody}px;color:${t.clBody};line-height:1.65;">${_tj(e.desc)}</div></div>`).join('');
@@ -832,6 +953,7 @@ el.appendChild(marker);
 }
 });
 if (typeof _scheduleSave === 'function') _scheduleSave();
+_saveHistory();
 }
 function _tv() {
 const v = _te();
@@ -1132,6 +1254,12 @@ if (_restore()) {
 } else {
   document.getElementById('onboardOverlay').style.display = 'flex';
 }
+// Initialize history with current state
+setTimeout(function() {
+  History.stack = [_getFullState()];
+  History.index = 0;
+  _updateUndoRedoButtons();
+}, 100);
 window.toggleSection=_t0;
 window.setLang=_t1;
 window.setTemplate=_t2;
@@ -1145,6 +1273,8 @@ window.downloadHTML=_tw;
 window.exportPDF=_tx;
 window.resetAll=_ty;
 window.fillDemoData=_tz;
+window.undoAction=_undo;
+window.redoAction=_redo;
 
 /* ════ 首次访问引导 ════ */
 window.onboardChoose = function(choice) {
