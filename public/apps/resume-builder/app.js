@@ -976,14 +976,25 @@ return `<!DOCTYPE html><html lang="zh"><head><meta charset="UTF-8">
 }
 function _tw() {
 const v = _te();
+const html = _tv();
+const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+const url = URL.createObjectURL(blob);
 const a = document.createElement('a');
-a.href = 'data:text/html;charset=utf-8,' + encodeURIComponent(_tv());
+a.href = url;
 a.download = (v.name||('res'+'ume')) + '-简历.html';
+document.body.appendChild(a);
 a.click();
+document.body.removeChild(a);
+URL.revokeObjectURL(url);
 }
 function _tx() {
+const html = _tv();
 const win = window.open('', '_blank');
-win.document.write(_tv());
+if (!win || win.closed || typeof win.closed === 'undefined') {
+  alert('弹窗被浏览器拦截，请允许弹窗后重试，或使用"下载 HTML"后手动打印');
+  return;
+}
+win.document.write(html);
 win.document.close();
 win.focus();
 setTimeout(() => { win.print(); }, 600);
