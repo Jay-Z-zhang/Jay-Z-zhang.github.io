@@ -1007,50 +1007,38 @@ location.reload();
 
 /* ── 分享功能 ── */
 function _shareLink() {
-const url = 'https://jay-z-zhang.github.io/apps/resume-builder/';
-const title = '简历生成器 - 免费在线简历制作工具';
-const text = '免费在线简历生成器，支持6套精美模板、实时预览、AI智能润色、PDF导出。';
-const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-if (isMobile && navigator.share) {
-  navigator.share({ title, text, url }).catch(() => { _copyUrl(url); });
-} else {
-  _copyUrl(url);
-}
-}
-function _copyUrl(url) {
-if (navigator.clipboard && window.isSecureContext) {
-  navigator.clipboard.writeText(url).then(() => {
-    _showShareToast('链接已复制，快去分享吧！');
-  }).catch(() => { _copyUrlFallback(url); });
-} else {
-  _copyUrlFallback(url);
-}
-}
-function _copyUrlFallback(url) {
-const ta = document.createElement('textarea');
+var url = 'https://jay-z-zhang.github.io/apps/resume-builder/';
+var ta = document.createElement('textarea');
 ta.value = url;
-ta.style.cssText = 'position:fixed;left:-9999px;';
+ta.style.cssText = 'position:fixed;top:0;left:0;width:1px;height:1px;opacity:0.01;';
 document.body.appendChild(ta);
+ta.focus();
 ta.select();
-try {
-  document.execCommand('copy');
-  _showShareToast('链接已复制，快去分享吧！');
-} catch (e) {
-  prompt('复制以下链接分享：', url);
-}
+var ok = false;
+try { ok = document.execCommand('copy'); } catch(e) {}
 document.body.removeChild(ta);
+if (ok) {
+  _showShareToast('链接已复制到剪贴板');
+} else if (navigator.clipboard) {
+  navigator.clipboard.writeText(url).then(function() {
+    _showShareToast('链接已复制到剪贴板');
+  }, function() {
+    prompt('请手动复制链接：', url);
+  });
+} else {
+  prompt('请手动复制链接：', url);
+}
 }
 function _showShareToast(msg) {
-let toast = document.getElementById('shareToast');
-if (!toast) {
-  toast = document.createElement('div');
-  toast.id = 'shareToast';
-  toast.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#22c55e;color:#fff;padding:12px 24px;border-radius:8px;font-size:14px;z-index:9999;box-shadow:0 4px 12px rgba(0,0,0,.15);opacity:0;transition:opacity .3s;';
-  document.body.appendChild(toast);
-}
+var exist = document.getElementById('shareToast');
+if (exist) exist.remove();
+var toast = document.createElement('div');
+toast.id = 'shareToast';
 toast.textContent = msg;
-toast.style.opacity = '1';
-setTimeout(() => { toast.style.opacity = '0'; }, 2500);
+toast.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.8);color:#fff;padding:16px 32px;border-radius:12px;font-size:16px;font-weight:500;z-index:99999;pointer-events:none;animation:shareToastIn .3s ease;';
+document.body.appendChild(toast);
+setTimeout(function() { toast.style.opacity = '0'; toast.style.transition = 'opacity .4s'; }, 2000);
+setTimeout(function() { toast.remove(); }, 2500);
 }
 
 /* ── 自动保存到 localStorage ── */

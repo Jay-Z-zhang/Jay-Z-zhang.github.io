@@ -87,6 +87,7 @@ body{background:var(--app-bg);color:var(--app-text);font-family:'Inter','Noto Sa
 .ai-result::-webkit-scrollbar-thumb{background:#2a2f3e;border-radius:2px;}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 @keyframes slideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes shareToastIn{from{opacity:0;transform:translate(-50%,-50%) scale(.8)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
 
 /* ── Onboarding overlay ── */
 .onboard-overlay{position:fixed;inset:0;background:rgba(15,17,23,.92);backdrop-filter:blur(8px);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;}
