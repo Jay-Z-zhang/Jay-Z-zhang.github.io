@@ -1008,19 +1008,37 @@ location.reload();
 /* ── 分享功能 ── */
 function _shareLink() {
 const url = 'https://jay-z-zhang.github.io/apps/resume-builder/';
-if (navigator.share) {
-  navigator.share({
-    title: '简历生成器 - 免费在线简历制作工具',
-    text: '免费在线简历生成器，支持6套精美模板、实时预览、AI智能润色、PDF导出。',
-    url: url
-  }).catch(() => {});
+const title = '简历生成器 - 免费在线简历制作工具';
+const text = '免费在线简历生成器，支持6套精美模板、实时预览、AI智能润色、PDF导出。';
+const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+if (isMobile && navigator.share) {
+  navigator.share({ title, text, url }).catch(() => { _copyUrl(url); });
 } else {
+  _copyUrl(url);
+}
+}
+function _copyUrl(url) {
+if (navigator.clipboard && window.isSecureContext) {
   navigator.clipboard.writeText(url).then(() => {
     _showShareToast('链接已复制，快去分享吧！');
-  }).catch(() => {
-    prompt('复制以下链接分享：', url);
-  });
+  }).catch(() => { _copyUrlFallback(url); });
+} else {
+  _copyUrlFallback(url);
 }
+}
+function _copyUrlFallback(url) {
+const ta = document.createElement('textarea');
+ta.value = url;
+ta.style.cssText = 'position:fixed;left:-9999px;';
+document.body.appendChild(ta);
+ta.select();
+try {
+  document.execCommand('copy');
+  _showShareToast('链接已复制，快去分享吧！');
+} catch (e) {
+  prompt('复制以下链接分享：', url);
+}
+document.body.removeChild(ta);
 }
 function _showShareToast(msg) {
 let toast = document.getElementById('shareToast');
