@@ -988,16 +988,22 @@ document.body.removeChild(a);
 URL.revokeObjectURL(url);
 }
 function _tx() {
-const html = _tv();
-const win = window.open('', '_blank');
-if (!win || win.closed || typeof win.closed === 'undefined') {
-  alert('弹窗被浏览器拦截，请允许弹窗后重试，或使用"下载 HTML"后手动打印');
-  return;
-}
-win.document.write(html);
-win.document.close();
-win.focus();
-setTimeout(() => { win.print(); }, 600);
+var html = _tv();
+var old = document.getElementById('_printFrame');
+if (old) old.remove();
+var iframe = document.createElement('iframe');
+iframe.id = '_printFrame';
+iframe.style.cssText = 'position:fixed;right:0;bottom:0;width:0;height:0;border:none;';
+document.body.appendChild(iframe);
+var doc = iframe.contentDocument || iframe.contentWindow.document;
+doc.open();
+doc.write(html);
+doc.close();
+iframe.contentWindow.onafterprint = function() { iframe.remove(); };
+setTimeout(function() {
+  try { iframe.contentWindow.focus(); iframe.contentWindow.print(); }
+  catch(e) { alert('打印失败，请使用"下载 HTML"后在浏览器中打开并打印'); }
+}, 1000);
 }
 function _ty() {
 if (!confirm(I18N[S.lang].resetConfirm)) return;
