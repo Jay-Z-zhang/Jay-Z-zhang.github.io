@@ -1005,6 +1005,36 @@ try { localStorage.removeItem(_STORAGE_KEY); } catch(e) {}
 location.reload();
 }
 
+/* ── 分享功能 ── */
+function _shareLink() {
+const url = 'https://jay-z-zhang.github.io/apps/resume-builder/';
+if (navigator.share) {
+  navigator.share({
+    title: '简历生成器 - 免费在线简历制作工具',
+    text: '免费在线简历生成器，支持6套精美模板、实时预览、AI智能润色、PDF导出。',
+    url: url
+  }).catch(() => {});
+} else {
+  navigator.clipboard.writeText(url).then(() => {
+    _showShareToast('链接已复制，快去分享吧！');
+  }).catch(() => {
+    prompt('复制以下链接分享：', url);
+  });
+}
+}
+function _showShareToast(msg) {
+let toast = document.getElementById('shareToast');
+if (!toast) {
+  toast = document.createElement('div');
+  toast.id = 'shareToast';
+  toast.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#22c55e;color:#fff;padding:12px 24px;border-radius:8px;font-size:14px;z-index:9999;box-shadow:0 4px 12px rgba(0,0,0,.15);opacity:0;transition:opacity .3s;';
+  document.body.appendChild(toast);
+}
+toast.textContent = msg;
+toast.style.opacity = '1';
+setTimeout(() => { toast.style.opacity = '0'; }, 2500);
+}
+
 /* ── 自动保存到 localStorage ── */
 const _STORAGE_KEY = 'resume-builder-v1';
 let _saveTimer = null;
@@ -1283,6 +1313,7 @@ window.render=_tu;
 window.downloadHTML=_tw;
 window.exportPDF=_tx;
 window.resetAll=_ty;
+window.shareLink=_shareLink;
 window.fillDemoData=_tz;
 window.undoAction=_undo;
 window.redoAction=_redo;

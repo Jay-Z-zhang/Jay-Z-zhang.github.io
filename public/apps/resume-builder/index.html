@@ -3,7 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>简历生成器</title>
+<title>简历生成器 - 免费在线简历制作工具 | Resume Builder</title>
+<meta name="description" content="免费在线简历生成器，支持6套精美模板、实时预览、AI智能润色、PDF导出。无需注册，数据本地存储，保护隐私安全。">
+<meta name="keywords" content="简历生成器,简历模板,在线简历,免费简历,Resume Builder,CV制作,求职简历">
+<meta name="author" content="Jay Zhang">
+<!-- Open Graph / 微信 QQ 分享 -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://jay-z-zhang.github.io/apps/resume-builder/">
+<meta property="og:title" content="简历生成器 - 免费在线简历制作工具">
+<meta property="og:description" content="免费在线简历生成器，支持6套精美模板、实时预览、AI智能润色、PDF导出。无需注册，数据本地存储。">
+<meta property="og:image" content="https://jay-z-zhang.github.io/apps/resume-builder/share-preview.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="简历生成器 - 免费在线简历制作工具">
+<meta name="twitter:description" content="免费在线简历生成器，支持6套精美模板、实时预览、AI智能润色、PDF导出。">
+<meta name="twitter:image" content="https://jay-z-zhang.github.io/apps/resume-builder/share-preview.png">
+<link rel="canonical" href="https://jay-z-zhang.github.io/apps/resume-builder/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@400;600;700&family=Inter:wght@300;400;500;600;700&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&family=Lato:wght@300;400;700&family=Raleway:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="app.css">
@@ -62,6 +79,16 @@
       <button class="btn btn-primary" onclick="downloadHTML()">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         下载 HTML
+      </button>
+    </div>
+    
+    <div class="btn-divider"></div>
+    
+    <!-- 分享 -->
+    <div class="btn-group">
+      <button class="btn btn-share" onclick="shareLink()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        分享
       </button>
     </div>
   </div>
