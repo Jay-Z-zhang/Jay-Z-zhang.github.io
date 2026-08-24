@@ -957,6 +957,7 @@ _saveHistory();
 }
 function _tv() {
 const v = _te();
+v.L = I18N[S.lang];
 const col = S.color;
 const font = S.font;
 let body = '';
@@ -975,35 +976,33 @@ return `<!DOCTYPE html><html lang="zh"><head><meta charset="UTF-8">
 <body><div id="page">${body}</div></body></html>`;
 }
 function _tw() {
-const v = _te();
-const html = _tv();
-const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
-const url = URL.createObjectURL(blob);
-const a = document.createElement('a');
-a.href = url;
-a.download = (v.name||('res'+'ume')) + '-简历.html';
-document.body.appendChild(a);
-a.click();
-document.body.removeChild(a);
-URL.revokeObjectURL(url);
+try {
+  var v = _te();
+  var html = _tv();
+  var blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = (v.name || 'resume') + '-简历.html';
+  a.rel = 'noopener';
+  a.style.display = 'none';
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(function() {
+    if (a.parentNode) a.parentNode.removeChild(a);
+    URL.revokeObjectURL(url);
+  }, 2000);
+  _showShareToast('已开始下载 HTML');
+} catch (e) {
+  _showShareToast('下载失败：' + (e && e.message ? e.message : e));
+}
 }
 function _tx() {
-var html = _tv();
-var old = document.getElementById('_printFrame');
-if (old) old.remove();
-var iframe = document.createElement('iframe');
-iframe.id = '_printFrame';
-iframe.style.cssText = 'position:fixed;right:0;bottom:0;width:0;height:0;border:none;';
-document.body.appendChild(iframe);
-var doc = iframe.contentDocument || iframe.contentWindow.document;
-doc.open();
-doc.write(html);
-doc.close();
-iframe.contentWindow.onafterprint = function() { iframe.remove(); };
-setTimeout(function() {
-  try { iframe.contentWindow.focus(); iframe.contentWindow.print(); }
-  catch(e) { alert('打印失败，请使用"下载 HTML"后在浏览器中打开并打印'); }
-}, 1000);
+try {
+  window.print();
+} catch (e) {
+  _showShareToast('导出失败：' + (e && e.message ? e.message : e));
+}
 }
 function _ty() {
 if (!confirm(I18N[S.lang].resetConfirm)) return;
@@ -1296,6 +1295,23 @@ head.nextElementSibling.style.display = '';
 _tu();
 }
 
+window.toggleSection=_t0;
+window.setLang=_t1;
+window.setTemplate=_t2;
+window.setColor=_t3;
+window.setFont=_t5;
+window.updateHint=_t6;
+window.addEntry=_t7;
+window.deleteEntry=_t8;
+window.render=_tu;
+window.downloadHTML=_tw;
+window.exportPDF=_tx;
+window.resetAll=_ty;
+window.shareLink=_shareLink;
+window.fillDemoData=_tz;
+window.undoAction=_undo;
+window.redoAction=_redo;
+
 _t7(('e'+'du'));
 _t7(('wo'+'rk'));
 _tb();
@@ -1313,22 +1329,6 @@ setTimeout(function() {
   History.index = 0;
   _updateUndoRedoButtons();
 }, 100);
-window.toggleSection=_t0;
-window.setLang=_t1;
-window.setTemplate=_t2;
-window.setColor=_t3;
-window.setFont=_t5;
-window.updateHint=_t6;
-window.addEntry=_t7;
-window.deleteEntry=_t8;
-window.render=_tu;
-window.downloadHTML=_tw;
-window.exportPDF=_tx;
-window.resetAll=_ty;
-window.shareLink=_shareLink;
-window.fillDemoData=_tz;
-window.undoAction=_undo;
-window.redoAction=_redo;
 
 /* ════ 首次访问引导 ════ */
 window.onboardChoose = function(choice) {
