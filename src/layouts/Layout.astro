@@ -15,6 +15,7 @@ type Props = {
   author?: string;
   image?: string;
   keywords?: string;
+  icon?: "default" | "project";
 };
 
 const {
@@ -27,6 +28,7 @@ const {
   author,
   image,
   keywords,
+  icon,
 } = Astro.props;
 ---
 
@@ -42,6 +44,7 @@ const {
       author={author}
       image={image}
       keywords={keywords}
+      icon={icon}
     />
   </head>
   <body>
