@@ -4,7 +4,12 @@ import Container from "@components/Container.astro";
 import Breadcrumb from "@components/Breadcrumb.astro";
 ---
 
-<Layout title="简历生成器" description="多模板在线简历工具 — 实时预览、AI 润色、一键导出 PDF">
+<Layout
+  title="免费在线简历生成器"
+  description="免费在线制作求职简历，支持6套精美模板、AI智能润色、实时预览、PDF/HTML导出。适合校招、社招、跳槽。无需注册，数据仅保存在本地。"
+  image="/apps/resume-builder/share-preview.png"
+  keywords="简历生成器,免费简历模板,在线制作简历,AI简历润色,求职简历,校招简历,PDF简历,简历在线生成,中英文简历"
+>
   <Container>
     <div class="flex items-center gap-3 mb-10 pt-8">
       <Breadcrumb />
@@ -24,10 +29,10 @@ import Breadcrumb from "@components/Breadcrumb.astro";
         </div>
 
         <h1 class="hero-title mb-5">
-          简历生成器
+          免费在线简历生成器
         </h1>
         <p class="text-lg text-muted-fg leading-relaxed max-w-xl">
-          左侧编辑、右侧实时预览。支持 4 套模板、AI 润色建议、一键导出 PDF，让写简历回归内容本身。
+          左侧编辑、右侧实时预览。支持 6 套模板、AI 润色建议、一键导出 PDF，适合校招、社招和跳槽，让写简历回归内容本身。
         </p>
       </div>
     </section>
@@ -40,7 +45,7 @@ import Breadcrumb from "@components/Breadcrumb.astro";
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
           </div>
           <div>
-            <h3 class="text-sm font-semibold text-foreground mb-1">4 套模板 · 10 种主题色</h3>
+            <h3 class="text-sm font-semibold text-foreground mb-1">6 套模板 · 10 种主题色</h3>
             <p class="text-xs text-muted-fg leading-relaxed">极简黑白、蓝色现代、深色强调、双栏布局，一键切换风格</p>
           </div>
         </div>
@@ -121,4 +126,35 @@ import Breadcrumb from "@components/Breadcrumb.astro";
       </div>
     </section>
   </Container>
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "简历生成器",
+    "alternateName": "免费在线简历制作工具",
+    "url": "https://www.jayzzhang.online/apps/resume-builder/",
+    "image": "https://www.jayzzhang.online/apps/resume-builder/share-preview.png",
+    "description": "免费在线制作求职简历，支持6套精美模板、AI智能润色、实时预览、PDF/HTML导出。无需注册，数据仅保存在本地。",
+    "applicationCategory": "BusinessApplication",
+    "operatingSystem": "Web",
+    "browserRequirements": "Requires JavaScript",
+    "inLanguage": ["zh-CN", "en"],
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "CNY"
+    },
+    "featureList": [
+      "6套简历模板",
+      "AI智能润色",
+      "实时预览",
+      "PDF/HTML导出",
+      "中英双语",
+      "本地存储保护隐私"
+    ],
+    "author": {
+      "@type": "Person",
+      "name": "Jayz Zhang",
+      "url": "https://www.jayzzhang.online"
+    }
+  })} />
 </Layout>

@@ -9,6 +9,7 @@ interface Props {
   publishedDate?: string;
   modifiedDate?: string;
   author?: string;
+  keywords?: string;
 }
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
@@ -21,7 +22,10 @@ const {
   publishedDate,
   modifiedDate,
   author = "Jayz Zhang",
+  keywords,
 } = Astro.props;
+
+const ogImage = new URL(image, Astro.site).toString();
 ---
 
 <!-- Global Metadata -->
@@ -39,28 +43,56 @@ const {
 <title>{title}</title>
 <meta name="title" content={title} />
 <meta name="description" content={description} />
+{keywords && <meta name="keywords" content={keywords} />}
 <meta name="author" content={author} />
 <meta name="robots" content="index, follow, max-image-preview:large" />
 <meta name="googlebot" content="index, follow" />
+<meta name="baiduspider" content="index, follow" />
 
-<!-- Open Graph / Facebook -->
+<!-- 百度 SEO -->
+<meta name="applicable-device" content="pc,mobile" />
+<meta name="MobileOptimized" content="width" />
+<meta name="HandheldFriendly" content="true" />
+<meta name="renderer" content="webkit" />
+<meta name="force-rendering" content="webkit" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<meta name="mobile-agent" content={`format=html5; url=${canonicalURL}`} />
+<link rel="alternate" hreflang="zh-CN" href={canonicalURL} />
+<link rel="alternate" hreflang="x-default" href={canonicalURL} />
+
+<!-- Open Graph / 微信 QQ 小红书 -->
 <meta property="og:type" content={type} />
-<meta property="og:url" content={Astro.url} />
+<meta property="og:url" content={canonicalURL} />
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
-<meta property="og:image" content={new URL(image, Astro.url)} />
+<meta property="og:image" content={ogImage} />
+<meta property="og:image:secure_url" content={ogImage} />
+<meta property="og:image:type" content="image/png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content={title} />
 <meta property="og:site_name" content="Jayz Zhang" />
 <meta property="og:locale" content="zh_CN" />
+<meta name="og:title" content={title} />
+<meta name="og:description" content={description} />
+<meta name="og:image" content={ogImage} />
 {publishedDate && <meta property="article:published_time" content={publishedDate} />}
 {modifiedDate && <meta property="article:modified_time" content={modifiedDate} />}
 <meta property="article:author" content="https://www.jayzzhang.online" />
+
+<!-- 小红书 / 微信 / QQ 分享卡片（itemprop） -->
+<meta itemprop="name" content={title} />
+<meta itemprop="description" content={description} />
+<meta itemprop="image" content={ogImage} />
 
 <!-- Twitter -->
 <meta property="twitter:card" content="summary_large_image" />
 <meta property="twitter:url" content={Astro.url} />
 <meta property="twitter:title" content={title} />
 <meta property="twitter:description" content={description} />
-<meta property="twitter:image" content={new URL(image, Astro.url)} />
+<meta property="twitter:image" content={ogImage} />
 <meta property="twitter:creator" content="@jayzzhang" />
 
 <!-- JSON-LD Structured Data -->
@@ -82,7 +114,8 @@ const {
   },
   ...(publishedDate && { "datePublished": publishedDate }),
   ...(modifiedDate && { "dateModified": modifiedDate }),
-  "image": new URL(image, Astro.url).toString()
+  "image": ogImage,
+  "inLanguage": "zh-CN"
 })} />
 
 <!-- Performance: Preconnect -->
@@ -209,3 +242,4 @@ const {
     });
   }
 </script>
+<script is:inline src="/js/jz-analytics.js" defer></script>

@@ -5,8 +5,8 @@
  * - 代理 DeepSeek chat completions
  * - CORS 白名单
  * - 每 IP 每天 30 次限流
- * - PMF 事件日志(KV 汇总,不含 PII)
- * - GET /stats?token=... 查询汇总
+ * - GET/POST /t 全站曝光与产品事件（路径、事件名、来源域名，不含 PII）
+ * - GET /stats?token=... 查询 AI 用量 + 流量埋点
  *
  * 部署: npx wrangler deploy
  * 密钥: DEEPSEEK_API_KEY, STATS_TOKEN(用于查询埋点)
@@ -71,13 +71,23 @@ async function handleStats(env, url) {
   for (let i = 0; i < days; i++) {
     const d = new Date(now.getTime() - i * 86400000);
     const day = d.toISOString().slice(0, 10);
-    const [statsRaw, uidsRaw] = await Promise.all([
+    const [statsRaw, uidsRaw, tRaw] = await Promise.all([
       env.RATE_LIMIT.get(`stats:${day}`),
       env.RATE_LIMIT.get(`stats-uid:${day}`),
+      env.RATE_LIMIT.get(`t:${day}`),
     ]);
     const s = statsRaw ? JSON.parse(statsRaw) : { calls: 0, tokens: 0, byKind: {}, errors: 0 };
     const uids = uidsRaw ? JSON.parse(uidsRaw) : [];
-    rows.push({ day, calls: s.calls, tokens: s.tokens, users: uids.length, byKind: s.byKind, errors: s.errors });
+    const traffic = tRaw ? JSON.parse(tRaw) : { pv: 0, uv: 0, pages: {}, events: {}, referrers: {} };
+    rows.push({
+      day,
+      calls: s.calls,
+      tokens: s.tokens,
+      users: uids.length,
+      byKind: s.byKind,
+      errors: s.errors,
+      traffic,
+    });
   }
   return new Response(JSON.stringify({ days: rows }, null, 2), {
     headers: { 'Content-Type': 'application/json; charset=utf-8' },
@@ -152,6 +162,97 @@ function jsonErr(headers, status, msg) {
   });
 }
 
+/* ── 全站曝光 + 简历事件埋点（不含 PII）── */
+const TRACK_EVENTS = new Set([
+  'page_view',
+  'resume_export_pdf',
+  'resume_download_html',
+  'resume_share',
+  'resume_ai_polish_open',
+  'resume_ai_polish_run',
+  'resume_ai_rewrite_open',
+  'resume_ai_rewrite_run',
+  'resume_import_open',
+  'resume_import_run',
+  'resume_fill_demo',
+  'resume_reset',
+  'resume_template',
+  'resume_lang',
+  'resume_onboard',
+]);
+const TRACK_PROP_EVENTS = new Set(['resume_template', 'resume_lang', 'resume_onboard']);
+
+function sanitizePath(p) {
+  if (typeof p !== 'string') return '/';
+  try { p = decodeURIComponent(p); } catch (e) {}
+  p = p.split('?')[0].split('#')[0];
+  if (!p.startsWith('/')) p = '/';
+  return p.slice(0, 120);
+}
+
+async function logTrack(env, { e, p, r, v, ip, day }) {
+  if (!env.RATE_LIMIT) return;
+  const ipHash = await sha256Hex(ip + '|t|' + day);
+  const dayKey = `t:${day}`;
+  const uidKey = `t-uid:${day}`;
+  try {
+    const raw = await env.RATE_LIMIT.get(dayKey);
+    const s = raw ? JSON.parse(raw) : { pv: 0, uv: 0, pages: {}, events: {}, referrers: {} };
+    if (e === 'page_view') {
+      s.pv += 1;
+      s.pages[p] = (s.pages[p] || 0) + 1;
+      if (r) s.referrers[r] = (s.referrers[r] || 0) + 1;
+      const uidRaw = await env.RATE_LIMIT.get(uidKey);
+      const uids = uidRaw ? JSON.parse(uidRaw) : [];
+      if (!uids.includes(ipHash)) {
+        uids.push(ipHash);
+        s.uv = uids.length;
+        await env.RATE_LIMIT.put(uidKey, JSON.stringify(uids), { expirationTtl: 60 * 24 * 3600 });
+      } else {
+        s.uv = uids.length;
+      }
+    }
+    s.events[e] = (s.events[e] || 0) + 1;
+    if (v) {
+      s.events[e + ':' + v] = (s.events[e + ':' + v] || 0) + 1;
+    }
+    await env.RATE_LIMIT.put(dayKey, JSON.stringify(s), { expirationTtl: 60 * 24 * 3600 });
+  } catch (err) {}
+}
+
+async function handleTrack(request, env, ctx, headers) {
+  if (!env.RATE_LIMIT) return new Response('ok', { status: 204, headers });
+  const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+  const hourKey = `t-rate:${ip}:${new Date().toISOString().slice(0, 13)}`;
+  const c = parseInt(await env.RATE_LIMIT.get(hourKey) || '0');
+  if (c >= 120) return new Response('ok', { status: 204, headers });
+  ctx.waitUntil(env.RATE_LIMIT.put(hourKey, String(c + 1), { expirationTtl: 3600 }));
+
+  let e = '', p = '', r = '', v = '';
+  if (request.method === 'GET') {
+    const url = new URL(request.url);
+    e = url.searchParams.get('e') || '';
+    p = url.searchParams.get('p') || '';
+    r = url.searchParams.get('r') || '';
+    v = url.searchParams.get('v') || '';
+  } else {
+    let body = {};
+    try { body = JSON.parse(await request.text() || '{}'); } catch (err) { body = {}; }
+    e = body.e || '';
+    p = body.p || '';
+    r = body.r || '';
+    v = body.v || '';
+  }
+  if (!TRACK_EVENTS.has(e)) return new Response('ok', { status: 204, headers });
+  p = sanitizePath(p);
+  r = String(r || '').replace(/^https?:\/\//, '').split('/')[0].slice(0, 80);
+  v = TRACK_PROP_EVENTS.has(e) ? String(v).replace(/[^\w\-\u4e00-\u9fff]/g, '').slice(0, 32) : '';
+
+  const day = new Date().toISOString().slice(0, 10);
+  ctx.waitUntil(logTrack(env, { e, p, r, v, ip, day }));
+  return new Response('ok', { status: 204, headers });
+}
+
 export default {
   async fetch(request, env, ctx) {
     const origin = request.headers.get('Origin') || '';
@@ -160,6 +261,10 @@ export default {
 
     if (request.method === 'OPTIONS') {
       return new Response(null, { headers });
+    }
+
+    if (url.pathname === '/t' && (request.method === 'GET' || request.method === 'POST')) {
+      return handleTrack(request, env, ctx, headers);
     }
 
     // GET /stats?token=xxx&days=14 — PMF 数据查询接口

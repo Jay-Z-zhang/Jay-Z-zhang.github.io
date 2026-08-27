@@ -133,12 +133,17 @@ const body = head.nextElementSibling;
 const open = head.classList.toggle(('op'+'en'));
 body.style.display = open ? '' : ('no'+'ne');
 }
+function _track(e, v) {
+  try { if (typeof window.jzTrack === 'function') window.jzTrack(e, v); } catch (err) {}
+}
+
 function _t1(lang, tab) {
 S.lang = lang;
 document.querySelectorAll('.lang-tab').forEach(t => t.classList.remove(('act'+'ive')));
 tab.classList.add(('act'+'ive'));
 _tb();
 _tu();
+_track('resume_lang', lang);
 }
 function _t2(t, card) {
 S.template = t;
@@ -147,6 +152,7 @@ card.classList.add(('act'+'ive'));
 const defaults = {classic:'#374151', modern:'#1d4ed8', dark:'#7c3aed', twocol:'#1e293b', lines:'#0f766e', premium:'#1e40af'};
 _t4(defaults[t]);
 _tu();
+_track('resume_template', t);
 }
 function _t3(el) {
 document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove(('act'+'ive')));
@@ -993,6 +999,7 @@ try {
     URL.revokeObjectURL(url);
   }, 2000);
   _showShareToast('已开始下载 HTML');
+  _track('resume_download_html');
 } catch (e) {
   _showShareToast('下载失败：' + (e && e.message ? e.message : e));
 }
@@ -1000,19 +1007,21 @@ try {
 function _tx() {
 try {
   window.print();
+  _track('resume_export_pdf');
 } catch (e) {
   _showShareToast('导出失败：' + (e && e.message ? e.message : e));
 }
 }
 function _ty() {
 if (!confirm(I18N[S.lang].resetConfirm)) return;
+_track('resume_reset');
 try { localStorage.removeItem(_STORAGE_KEY); } catch(e) {}
 location.reload();
 }
 
 /* ── 分享功能 ── */
 function _shareLink() {
-var url = 'https://jay-z-zhang.github.io/apps/resume-builder/';
+var url = 'https://www.jayzzhang.online/apps/resume-builder/';
 var ta = document.createElement('textarea');
 ta.value = url;
 ta.style.cssText = 'position:fixed;top:0;left:0;width:1px;height:1px;opacity:0.01;';
@@ -1024,9 +1033,11 @@ try { ok = document.execCommand('copy'); } catch(e) {}
 document.body.removeChild(ta);
 if (ok) {
   _showShareToast('链接已复制到剪贴板');
+  _track('resume_share');
 } else if (navigator.clipboard) {
   navigator.clipboard.writeText(url).then(function() {
     _showShareToast('链接已复制到剪贴板');
+    _track('resume_share');
   }, function() {
     prompt('请手动复制链接：', url);
   });
@@ -1163,6 +1174,7 @@ function _restore() {
   return true;
 }
 function _tz() {
+_track('resume_fill_demo');
 if (S.lang === 'en') {
 document.getElementById(('na'+'me')).value = 'Alex Zhang';
 document.getElementById(('nam'+'eEn')).value = '';
@@ -1332,6 +1344,7 @@ setTimeout(function() {
 
 /* ════ 首次访问引导 ════ */
 window.onboardChoose = function(choice) {
+  _track('resume_onboard', choice);
   document.getElementById('onboardOverlay').style.display = 'none';
   if (choice === 'demo') _tz();
   else if (choice === 'import') openImportDialog();
@@ -1340,6 +1353,7 @@ window.onboardChoose = function(choice) {
 
 /* ════ 导入旧简历对话框 ════ */
 window.openImportDialog = function() {
+  _track('resume_import_open');
   document.getElementById('importDialog').style.display = 'flex';
   document.getElementById('importResult').style.display = 'none';
   document.getElementById('importLoading').style.display = 'none';
@@ -1398,6 +1412,7 @@ window.runImport = function() {
   var text = document.getElementById('importText').value.trim();
   if (!text) { alert('请先粘贴简历内容或选择文件'); return; }
   if (text.length < 50) { alert('内容太短，请粘贴完整简历'); return; }
+  _track('resume_import_run');
 
   var workerUrl = document.getElementById('aiWorkerUrl')?.value.trim() || '';
   var apiKey = document.getElementById('aiApiKey')?.value.trim() || '';
@@ -1557,6 +1572,7 @@ window.openRewriteDialog = function(type, entryId) {
     label = (type === 'work' ? '工作经历' : '项目经历') + (titleField ? ': ' + titleField : '');
   }
   if (!before.trim()) { alert('该段落还没有内容,请先填写再改写'); return; }
+  _track('resume_ai_rewrite_open');
   _rewriteCtx = { type: type, entryId: entryId, before: before, label: label };
 
   document.getElementById('rewriteTargetLabel').textContent = '目标段落: ' + label;
@@ -1582,6 +1598,7 @@ document.querySelectorAll('#rewriteStep1 .font-opt').forEach(function(opt){
 
 window.runRewrite = function() {
   if (!_rewriteCtx) return;
+  _track('resume_ai_rewrite_run');
   var jd = document.getElementById('rewriteJd').value.trim();
   var style = document.querySelector('input[name="rewriteStyle"]:checked')?.value || 'star';
   var styleHint = {
@@ -1729,6 +1746,7 @@ function _mdInline(s) {
 
 /* ════ AI 润色对话框 ════ */
 window.openAIPolish = function() {
+  _track('resume_ai_polish_open');
   document.getElementById('aiPolishDialog').style.display = 'flex';
   document.getElementById('aiPolishResult').style.display = 'none';
   document.getElementById('aiPolishLoading').style.display = 'none';
@@ -1767,6 +1785,7 @@ window.runAIPolish = function() {
 
   if (!dims.length) { alert('请至少选择一个润色维度'); return; }
   if (!apiKey && !workerUrl) { alert('请确保 Worker 代理地址已配置'); return; }
+  _track('resume_ai_polish_run');
 
   var resumeText = [];
   var nameEl = document.getElementById('name');

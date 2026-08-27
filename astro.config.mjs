@@ -7,7 +7,16 @@ import tailwindcss from "@tailwindcss/vite";
 // https://astro.build/config
 export default defineConfig({
   site: "https://www.jayzzhang.online",
-  integrations: [sitemap(), mdx(), pagefind()],
+  integrations: [
+    sitemap({
+      customPages: [
+        "https://www.jayzzhang.online/apps/resume-builder/",
+        "https://www.jayzzhang.online/apps/viral-calculator/",
+      ],
+    }),
+    mdx(),
+    pagefind(),
+  ],
   vite: {
     plugins: [tailwindcss()],
   },
