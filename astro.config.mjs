@@ -9,6 +9,7 @@ export default defineConfig({
   site: "https://www.jayzzhang.online",
   integrations: [
     sitemap({
+      filter: (page) => !page.includes('/ops'),
       customPages: [
         "https://www.jayzzhang.online/apps/resume-builder/",
         "https://www.jayzzhang.online/apps/viral-calculator/",

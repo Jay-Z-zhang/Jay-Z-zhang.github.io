@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<title>数据看板</title>
+<style>
+:root{
+  --bg:#0b0f18;--card:#121826;--line:#1e293b;--text:#e8eef7;--muted:#8b95a8;
+  --accent:#6366f1;--green:#22c55e;--amber:#f59e0b;--red:#f87171;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:Inter,ui-sans-serif,system-ui,"Noto Sans SC",sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+.wrap{max-width:1120px;margin:0 auto;padding:28px 20px 64px;}
+h1{font-size:22px;font-weight:700;letter-spacing:.02em;}
+.sub{color:var(--muted);font-size:13px;margin-top:6px;}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+.hidden{display:none!important;}
+
+/* gate */
+.gate{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
+.gate-card{width:100%;max-width:400px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:28px;}
+.gate-card h1{margin-bottom:8px;}
+.gate-card p{color:var(--muted);font-size:13px;line-height:1.6;margin-bottom:18px;}
+input[type=password],input[type=text]{
+  width:100%;background:#0b0f18;border:1px solid var(--line);color:var(--text);
+  border-radius:10px;padding:11px 12px;font-size:14px;outline:none;
+}
+input:focus{border-color:var(--accent);}
+.btn{border:0;border-radius:10px;padding:10px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;}
+.btn-primary{background:var(--accent);color:#fff;}
+.btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--line);}
+.err{color:var(--red);font-size:12px;margin-top:10px;min-height:16px;}
+
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:22px;flex-wrap:wrap;}
+select{background:#0b0f18;border:1px solid var(--line);color:var(--text);border-radius:8px;padding:8px 10px;font-size:13px;}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px;}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;}
+.kpi .l{font-size:12px;color:var(--muted);}
+.kpi .n{font-size:28px;font-weight:700;margin-top:6px;letter-spacing:-.03em;}
+.kpi .d{font-size:11px;color:var(--muted);margin-top:4px;}
+.grid{display:grid;grid-template-columns:1.4fr 1fr;gap:12px;margin-bottom:12px;}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;}
+.card h2{font-size:13px;font-weight:600;margin-bottom:12px;color:#cbd5e1;}
+.chart{display:flex;align-items:flex-end;gap:6px;height:140px;}
+.bar{flex:1;background:linear-gradient(180deg,#818cf8,#4f46e5);border-radius:5px 5px 2px 2px;min-height:2px;position:relative;}
+.bar:hover::after{content:attr(data-tip);position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:#0b0f18;border:1px solid var(--line);color:#fff;font-size:11px;padding:4px 6px;border-radius:6px;white-space:nowrap;margin-bottom:6px;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th{text-align:left;color:var(--muted);font-weight:500;padding:6px 0;border-bottom:1px solid var(--line);}
+td{padding:8px 0;border-bottom:1px solid rgba(30,41,59,.7);vertical-align:middle;}
+td:last-child,th:last-child{text-align:right;font-variant-numeric:tabular-nums;}
+.meter{height:6px;background:#0b0f18;border-radius:99px;overflow:hidden;margin-top:4px;}
+.meter>i{display:block;height:100%;background:var(--accent);border-radius:99px;}
+.tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:99px;background:rgba(99,102,241,.12);color:#a5b4fc;}
+@media (max-width:840px){
+  .kpis,.grid{grid-template-columns:1fr 1fr;}
+}
+@media (max-width:560px){
+  .kpis,.grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+<div id="gate" class="gate">
+  <form class="gate-card" onsubmit="return login(event)">
+    <h1>数据看板</h1>
+    <p>使用 STATS_TOKEN 进入。该页面不对外收录，token 只保存在本机会话中。</p>
+    <input id="tokenInput" type="password" autocomplete="current-password" placeholder="输入 STATS_TOKEN" autofocus>
+    <div class="row" style="margin-top:14px;">
+      <button class="btn btn-primary" type="submit">进入看板</button>
+    </div>
+    <div id="gateErr" class="err"></div>
+  </form>
+</div>
+
+<div id="app" class="wrap hidden">
+  <div class="top">
+    <div>
+      <h1>Jayz Zhang · 数据看板</h1>
+      <div class="sub">全站曝光 + 简历工具事件 · 不含简历正文</div>
+    </div>
+    <div class="row">
+      <select id="daysSel" onchange="load()">
+        <option value="7">近 7 天</option>
+        <option value="14" selected>近 14 天</option>
+        <option value="30">近 30 天</option>
+        <option value="60">近 60 天</option>
+      </select>
+      <button class="btn btn-ghost" type="button" onclick="load()">刷新</button>
+      <button class="btn btn-ghost" type="button" onclick="logout()">退出</button>
+    </div>
+  </div>
+  <div class="kpis">
+    <div class="kpi"><div class="l">页面曝光 PV</div><div class="n" id="kPv">—</div><div class="d" id="kPvD"></div></div>
+    <div class="kpi"><div class="l">日 UV 合计</div><div class="n" id="kUv">—</div><div class="d">按天去重后加总</div></div>
+    <div class="kpi"><div class="l">简历关键行为</div><div class="n" id="kResume">—</div><div class="d">导出 / 分享 / AI</div></div>
+    <div class="kpi"><div class="l">AI 调用</div><div class="n" id="kAi">—</div><div class="d" id="kAiD"></div></div>
+  </div>
+  <div class="grid">
+    <div class="card">
+      <h2>每日曝光</h2>
+      <div class="chart" id="chart"></div>
+    </div>
+    <div class="card">
+      <h2>来源域名</h2>
+      <div id="refs"></div>
+    </div>
+  </div>
+  <div class="grid">
+    <div class="card">
+      <h2>页面曝光排行</h2>
+      <div id="pages"></div>
+    </div>
+    <div class="card">
+      <h2>简历事件</h2>
+      <div id="events"></div>
+    </div>
+  </div>
+  <div class="card">
+    <h2>AI 用量（润色 / 改写 / 导入）</h2>
+    <div id="ai"></div>
+  </div>
+</div>
+<script>
+var API = 'https://api.jayzzhang.online';
+var KEY = 'jz_stats_token';
+var LABELS = {
+  page_view: '页面曝光',
+  resume_export_pdf: '导出 PDF',
+  resume_download_html: '下载 HTML',
+  resume_share: '分享',
+  resume_ai_polish_open: '打开 AI 润色',
+  resume_ai_polish_run: '开始 AI 润色',
+  resume_ai_rewrite_open: '打开 AI 改写',
+  resume_ai_rewrite_run: '开始 AI 改写',
+  resume_import_open: '打开导入',
+  resume_import_run: '开始导入',
+  resume_fill_demo: '模板预览',
+  resume_reset: '重置',
+  resume_template: '切换模板',
+  resume_lang: '切换语言',
+  resume_onboard: '首次引导'
+};
+var RESUME_KEYS = Object.keys(LABELS).filter(function(k){ return k.indexOf('resume_') === 0 && k.indexOf(':') < 0; });
+
+function token(){ return sessionStorage.getItem(KEY) || ''; }
+function fmt(n){ n = n || 0; return n >= 10000 ? (n/10000).toFixed(1) + '万' : String(n); }
+function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]); }); }
+
+function login(e){
+  e.preventDefault();
+  var t = document.getElementById('tokenInput').value.trim();
+  if (!t) { document.getElementById('gateErr').textContent = '请输入 token'; return false; }
+  sessionStorage.setItem(KEY, t);
+  boot();
+  return false;
+}
+function logout(){
+  sessionStorage.removeItem(KEY);
+  location.reload();
+}
+
+async function boot(){
+  if (!token()) return;
+  document.getElementById('gate').classList.add('hidden');
+  document.getElementById('app').classList.remove('hidden');
+  await load();
+}
+
+async function load(){
+  var days = document.getElementById('daysSel').value;
+  try {
+    var res = await fetch(API + '/stats?days=' + days, {
+      headers: { Authorization: 'Bearer ' + token() }
+    });
+    if (res.status === 401) {
+      sessionStorage.removeItem(KEY);
+      document.getElementById('gate').classList.remove('hidden');
+      document.getElementById('app').classList.add('hidden');
+      document.getElementById('gateErr').textContent = 'token 无效，请重试';
+      return;
+    }
+    if (!res.ok) throw new Error('加载失败 ' + res.status);
+    render(await res.json());
+  } catch (err) {
+    alert(err.message || '加载失败');
+  }
+}
+
+function render(data){
+  var rows = (data.days || []).slice().reverse();
+  var pv = 0, uv = 0, ai = 0, tokens = 0, errors = 0, resume = 0;
+  var pages = {}, events = {}, refs = {}, kinds = {};
+  rows.forEach(function(d){
+    var t = d.traffic || {};
+    pv += t.pv || 0;
+    uv += t.uv || 0;
+    ai += d.calls || 0;
+    tokens += d.tokens || 0;
+    errors += d.errors || 0;
+    Object.keys(t.pages || {}).forEach(function(k){ pages[k] = (pages[k]||0) + t.pages[k]; });
+    Object.keys(t.events || {}).forEach(function(k){ events[k] = (events[k]||0) + t.events[k]; });
+    Object.keys(t.referrers || {}).forEach(function(k){ refs[k] = (refs[k]||0) + t.referrers[k]; });
+    Object.keys(d.byKind || {}).forEach(function(k){ kinds[k] = (kinds[k]||0) + d.byKind[k]; });
+  });
+  RESUME_KEYS.forEach(function(k){ resume += events[k] || 0; });
+
+  document.getElementById('kPv').textContent = fmt(pv);
+  document.getElementById('kUv').textContent = fmt(uv);
+  document.getElementById('kResume').textContent = fmt(resume);
+  document.getElementById('kAi').textContent = fmt(ai);
+  document.getElementById('kPvD').textContent = rows.length + ' 天合计';
+  document.getElementById('kAiD').textContent = (errors ? ('错误 ' + errors + ' · ') : '') + 'tokens ' + fmt(tokens);
+
+  var maxPv = Math.max.apply(null, rows.map(function(d){ return (d.traffic && d.traffic.pv) || 0; }).concat([1]));
+  document.getElementById('chart').innerHTML = rows.map(function(d){
+    var v = (d.traffic && d.traffic.pv) || 0;
+    var h = Math.max(4, Math.round(v / maxPv * 140));
+    return '<div class="bar" style="height:' + h + 'px" data-tip="' + d.day.slice(5) + ' · ' + v + '"></div>';
+  }).join('');
+
+  document.getElementById('pages').innerHTML = rankTable(pages, function(k){ return k || '/'; });
+  document.getElementById('refs').innerHTML = rankTable(refs, function(k){ return k || '(直接访问)'; });
+  var eventRows = {};
+  Object.keys(events).forEach(function(k){
+    if (k === 'page_view') return;
+    eventRows[LABELS[k] || k] = events[k];
+  });
+  document.getElementById('events').innerHTML = rankTable(eventRows, function(k){ return k; });
+  var kindLabel = { polish: 'AI 润色', rewrite: 'AI 改写', import: '简历导入', unknown: '其他' };
+  var kindRows = {};
+  Object.keys(kinds).forEach(function(k){ kindRows[kindLabel[k] || k] = kinds[k]; });
+  document.getElementById('ai').innerHTML = Object.keys(kindRows).length
+    ? rankTable(kindRows, function(k){ return k; })
+    : '<div class="sub">这段时间还没有 AI 调用</div>';
+}
+
+function rankTable(map, labelFn){
+  var items = Object.keys(map).map(function(k){ return [k, map[k]]; }).sort(function(a,b){ return b[1]-a[1]; }).slice(0, 12);
+  if (!items.length) return '<div class="sub">暂无数据</div>';
+  var max = items[0][1] || 1;
+  return '<table><thead><tr><th>项目</th><th>次数</th></tr></thead><tbody>' +
+    items.map(function(it){
+      var pct = Math.round(it[1] / max * 100);
+      return '<tr><td>' + esc(labelFn(it[0])) + '<div class="meter"><i style="width:' + pct + '%"></i></div></td><td>' + fmt(it[1]) + '</td></tr>';
+    }).join('') + '</tbody></table>';
+}
+
+if (token()) boot();
+</script>
+</body>
+</html>

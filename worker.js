@@ -25,7 +25,7 @@ function corsHeaders(origin) {
   return {
     'Access-Control-Allow-Origin': allow ? origin : ALLOWED_ORIGINS[0],
     'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
     'Vary': 'Origin',
   };
 }
@@ -60,10 +60,15 @@ async function logEvent(env, ctx, {kind, tokens, ip, day, status}) {
   })());
 }
 
-async function handleStats(env, url) {
-  const token = url.searchParams.get('token');
+async function handleStats(env, request, url, headers) {
+  const auth = request.headers.get('Authorization') || '';
+  const bearer = auth.replace(/^Bearer\s+/i, '').trim();
+  const token = url.searchParams.get('token') || bearer;
   if (!env.STATS_TOKEN || token !== env.STATS_TOKEN) {
-    return new Response('unauthorized', { status: 401 });
+    return new Response(JSON.stringify({ error: 'unauthorized' }), {
+      status: 401,
+      headers: { ...headers, 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' },
+    });
   }
   const days = Math.min(parseInt(url.searchParams.get('days') || '14'), 60);
   const now = new Date();
@@ -90,7 +95,7 @@ async function handleStats(env, url) {
     });
   }
   return new Response(JSON.stringify({ days: rows }, null, 2), {
-    headers: { 'Content-Type': 'application/json; charset=utf-8' },
+    headers: { ...headers, 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' },
   });
 }
 
@@ -269,7 +274,7 @@ export default {
 
     // GET /stats?token=xxx&days=14 — PMF 数据查询接口
     if (request.method === 'GET' && url.pathname === '/stats') {
-      return handleStats(env, url);
+      return handleStats(env, request, url, headers);
     }
     // GET /subscribers?token=xxx — 列出所有订阅者
     if (request.method === 'GET' && url.pathname === '/subscribers') {
