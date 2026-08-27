@@ -4,223 +4,156 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow, noarchive">
-<title>数据看板 · 指标口径</title>
+<title>数据看板</title>
 <style>
 :root{
-  --bg:#0b0f18;--card:#121826;--line:#1e293b;--text:#e8eef7;--muted:#8b95a8;
-  --accent:#6366f1;--green:#22c55e;--amber:#f59e0b;--red:#f87171;
+  --bg:#0b0f18;--card:#121826;--line:#243044;--text:#e8eef7;--muted:#8b95a8;--accent:#818cf8;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:Inter,ui-sans-serif,system-ui,"Noto Sans SC",sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
-.wrap{max-width:1120px;margin:0 auto;padding:28px 20px 72px;}
-h1{font-size:22px;font-weight:700;letter-spacing:.02em;}
-.sub{color:var(--muted);font-size:13px;margin-top:6px;line-height:1.65;}
-.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+.wrap{max-width:1180px;margin:0 auto;padding:24px 20px 56px;}
+h1{font-size:20px;font-weight:700;}
 .hidden{display:none!important;}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
 .gate{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
-.gate-card{width:100%;max-width:400px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:28px;}
-.gate-card h1{margin-bottom:8px;}
-.gate-card p{color:var(--muted);font-size:13px;line-height:1.6;margin-bottom:18px;}
+.gate-card{width:100%;max-width:380px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:28px;}
+.gate-card p{color:var(--muted);font-size:13px;margin:8px 0 16px;line-height:1.5;}
 input[type=password]{width:100%;background:#0b0f18;border:1px solid var(--line);color:var(--text);border-radius:10px;padding:11px 12px;font-size:14px;outline:none;}
-input:focus{border-color:var(--accent);}
-.btn{border:0;border-radius:10px;padding:10px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;}
-.btn-primary{background:var(--accent);color:#fff;}
+.btn{border:0;border-radius:10px;padding:9px 14px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;}
+.btn-primary{background:#6366f1;color:#fff;}
 .btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--line);}
-.err{color:var(--red);font-size:12px;margin-top:10px;min-height:16px;}
-.top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:18px;flex-wrap:wrap;}
+.err{color:#f87171;font-size:12px;margin-top:10px;}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;}
 select{background:#0b0f18;border:1px solid var(--line);color:var(--text);border-radius:8px;padding:8px 10px;font-size:13px;}
-.meta{font-size:12px;color:var(--muted);margin-bottom:16px;line-height:1.7;}
-.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px;}
-.kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;}
-.kpi .code{font-size:10px;letter-spacing:.06em;color:#a5b4fc;text-transform:uppercase;}
-.kpi .l{font-size:14px;font-weight:600;margin-top:4px;}
-.kpi .n{font-size:28px;font-weight:700;margin-top:8px;letter-spacing:-.03em;}
-.note{font-size:11px;color:var(--muted);line-height:1.55;margin-top:8px;}
-.grid{display:grid;grid-template-columns:1.4fr 1fr;gap:12px;margin-bottom:12px;}
-.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;}
-.card h2{font-size:14px;font-weight:650;color:#e2e8f0;}
-.card .code{font-size:10px;color:#a5b4fc;letter-spacing:.04em;margin-left:6px;}
-.chart{display:flex;align-items:flex-end;gap:6px;height:140px;margin-top:12px;}
-.bar{flex:1;background:linear-gradient(180deg,#818cf8,#4f46e5);border-radius:5px 5px 2px 2px;min-height:2px;position:relative;}
-.bar:hover::after{content:attr(data-tip);position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:#0b0f18;border:1px solid var(--line);color:#fff;font-size:11px;padding:4px 6px;border-radius:6px;white-space:nowrap;margin-bottom:6px;z-index:2;}
-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px;}
-th{text-align:left;color:var(--muted);font-weight:500;padding:6px 0;border-bottom:1px solid var(--line);}
-td{padding:8px 0;border-bottom:1px solid rgba(30,41,59,.7);vertical-align:middle;}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px;}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;}
+.kpi .l{font-size:12px;color:var(--muted);}
+.kpi .n{font-size:26px;font-weight:700;margin-top:4px;letter-spacing:-.03em;}
+.grid2{display:grid;grid-template-columns:1fr;gap:12px;}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;}
+.card h2{font-size:14px;font-weight:650;margin-bottom:4px;}
+.hint{font-size:11px;color:var(--muted);margin-bottom:8px;}
+.plot{width:100%;overflow:hidden;}
+.plot svg{width:100%;height:auto;display:block;}
+.legend{display:flex;flex-wrap:wrap;gap:10px 16px;margin-top:8px;font-size:12px;color:var(--muted);}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px;}
+.pages-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:12px;}
+.funnel{display:flex;flex-direction:column;gap:8px;margin-top:8px;}
+.f-step{position:relative;}
+.f-bar{height:42px;border-radius:8px;background:linear-gradient(90deg,#6366f1,#4f46e5);display:flex;align-items:center;justify-content:space-between;padding:0 14px;color:#fff;font-size:13px;min-width:80px;margin:0 auto;}
+.f-conv{text-align:center;font-size:11px;color:var(--muted);padding:2px 0;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th,td{padding:7px 4px;border-bottom:1px solid var(--line);}
+th{color:var(--muted);font-weight:500;text-align:left;}
 td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;}
-.meter{height:6px;background:#0b0f18;border-radius:99px;overflow:hidden;margin-top:4px;}
-.meter>i{display:block;height:100%;background:var(--accent);border-radius:99px;}
-.funnel{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;}
-.funnel div{background:#0b0f18;border:1px solid var(--line);border-radius:10px;padding:10px 12px;}
-.funnel .l{font-size:12px;color:var(--muted);}
-.funnel .n{font-size:20px;font-weight:700;margin-top:4px;}
-.dict{width:100%;font-size:12px;}
-.dict th,.dict td{padding:8px 6px;vertical-align:top;}
-.dict td:first-child{white-space:nowrap;color:#a5b4fc;font-family:ui-monospace,Menlo,monospace;font-size:11px;}
-.warn{color:var(--amber);}
-@media (max-width:840px){.kpis,.grid,.funnel{grid-template-columns:1fr 1fr;}}
-@media (max-width:560px){.kpis,.grid,.funnel{grid-template-columns:1fr;}}
+details{margin-top:12px;color:var(--muted);font-size:12px;line-height:1.65;}
+details summary{cursor:pointer;color:#a5b4fc;}
+@media (max-width:840px){.kpis,.pages-grid{grid-template-columns:1fr 1fr;}}
+@media (max-width:560px){.kpis,.pages-grid{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
 <div id="gate" class="gate">
   <form class="gate-card" onsubmit="return login(event)">
     <h1>数据看板</h1>
-    <p>使用 STATS_TOKEN 进入。页面不收录；token 仅保存在本机会话。</p>
-    <input id="tokenInput" type="password" autocomplete="current-password" placeholder="输入 STATS_TOKEN" autofocus>
-    <div class="row" style="margin-top:14px;"><button class="btn btn-primary" type="submit">进入看板</button></div>
+    <p>输入 STATS_TOKEN 进入</p>
+    <input id="tokenInput" type="password" autocomplete="current-password" placeholder="STATS_TOKEN" autofocus>
+    <div class="row" style="margin-top:14px;"><button class="btn btn-primary" type="submit">进入</button></div>
     <div id="gateErr" class="err"></div>
   </form>
 </div>
 
 <div id="app" class="wrap hidden">
   <div class="top">
-    <div>
-      <h1>站内流量与产品行为看板</h1>
-      <div class="sub">覆盖 jayzzhang.online 全站曝光，以及简历生成器的客户端行为、AI 接口服务端调用。</div>
-    </div>
+    <h1>流量看板</h1>
     <div class="row">
       <select id="daysSel" onchange="load()">
-        <option value="7">近 7 个 UTC 日</option>
-        <option value="14" selected>近 14 个 UTC 日</option>
-        <option value="30">近 30 个 UTC 日</option>
-        <option value="60">近 60 个 UTC 日</option>
+        <option value="7">近 7 天</option>
+        <option value="14" selected>近 14 天</option>
+        <option value="30">近 30 天</option>
+        <option value="60">近 60 天</option>
       </select>
       <button class="btn btn-ghost" type="button" onclick="load()">刷新</button>
       <button class="btn btn-ghost" type="button" onclick="logout()">退出</button>
     </div>
   </div>
-  <div class="meta" id="periodMeta">统计周期与数据更新时间加载中…</div>
-
   <div class="kpis">
-    <div class="kpi">
-      <div class="code">PV</div>
-      <div class="l">页面浏览量</div>
-      <div class="n" id="kPv">—</div>
-      <div class="note">口径：统计周期内 <code>page_view</code> 事件次数之和。一次页面加载记 1 次；刷新会再记。不是去重人数。</div>
-    </div>
-    <div class="kpi">
-      <div class="code">Σ DAU</div>
-      <div class="l">日活加总</div>
-      <div class="n" id="kUv">—</div>
-      <div class="note">口径：按 UTC 自然日、IP 哈希去重后的每日独立访问者，再把各天相加。跨天回访会重复计入，<span class="warn">不是周期 UV</span>。</div>
-    </div>
-    <div class="kpi">
-      <div class="code">Resume Events</div>
-      <div class="l">简历工具事件次数</div>
-      <div class="n" id="kResume">—</div>
-      <div class="note">口径：简历工具全部主事件之和（导出、分享、打开/提交 AI 等）。打开与提交分别计数，未做用户去重。</div>
-    </div>
-    <div class="kpi">
-      <div class="code">AI Calls</div>
-      <div class="l">AI 接口调用次数</div>
-      <div class="n" id="kAi">—</div>
-      <div class="note" id="kAiD">口径：Cloudflare Worker 转发 DeepSeek 的服务端请求数，与前端「开始润色」不是同一指标。含失败。</div>
-    </div>
+    <div class="kpi" title="page_view 次数之和，UTC 日"><div class="l">页面浏览量 PV</div><div class="n" id="kPv">—</div></div>
+    <div class="kpi" title="每日 IP 去重后加总，非周期 UV"><div class="l">日活加总 ΣDAU</div><div class="n" id="kUv">—</div></div>
+    <div class="kpi" title="简历工具页 pathname 的 PV"><div class="l">简历工具 PV</div><div class="n" id="kResumePv">—</div></div>
+    <div class="kpi" title="导出 PDF + 下载 HTML + 分享"><div class="l">简历产出次数</div><div class="n" id="kOut">—</div></div>
   </div>
 
-  <div class="grid">
+  <div class="grid2">
     <div class="card">
-      <h2>每日页面浏览量 <span class="code">Daily PV</span></h2>
-      <div class="note">横轴为 UTC 日期（左旧右新）。柱高 = 当日 <code>page_view</code> 次数。悬停可看当天绝对值。</div>
-      <div class="chart" id="chart"></div>
+      <h2>全站每日浏览量</h2>
+      <div class="hint">X = 日期（UTC）　Y = PV</div>
+      <div class="plot" id="chartAll"></div>
+    </div>
+    <div class="pages-grid">
+      <div class="card">
+        <h2>各子页浏览量</h2>
+        <div class="hint">X = 页面　Y = PV</div>
+        <div class="plot" id="chartPages"></div>
+      </div>
+      <div class="card">
+        <h2>子页每日趋势</h2>
+        <div class="hint">X = 日期　Y = PV　点图例可隐藏</div>
+        <div class="plot" id="chartPageTrend"></div>
+        <div class="legend" id="legend"></div>
+      </div>
     </div>
     <div class="card">
-      <h2>访问来源域名 <span class="code">Referrer Host</span></h2>
-      <div class="note">仅在 <code>page_view</code> 时记录 <code>document.referrer</code> 的主机名。站内跳转、直接打开、微信等无 referrer 的场景会计入「直接/不可识别」。不能当作完整 UTM 渠道。</div>
-      <div id="refs"></div>
+      <h2>简历工具漏斗</h2>
+      <div class="hint">访问工具 → 完成引导 → 提交 AI/导入 → 导出或分享</div>
+      <div class="funnel" id="funnel"></div>
     </div>
   </div>
-
-  <div class="grid">
-    <div class="card">
-      <h2>落地页浏览量 <span class="code">PV by Path</span></h2>
-      <div class="note">维度是 URL 路径（不含 query / hash）。同一路径多次打开会累加。占比 = 该路径 PV / 本表最大项，不是占全站 PV 的份额。</div>
-      <div id="pages"></div>
-    </div>
-    <div class="card">
-      <h2>简历工具事件明细 <span class="code">Resume Event Count</span></h2>
-      <div class="note">客户端在用户完成对应操作后上报。带维度的子键（如 <code>resume_template:classic</code>）是拆解，与主事件同时计数，下表会分开列出。</div>
-      <div id="events"></div>
-    </div>
-  </div>
-
-  <div class="card" style="margin-bottom:12px;">
-    <h2>简历工具漏斗（打开 → 提交） <span class="code">Open → Submit</span></h2>
-    <div class="note">提交率 = 提交次数 / 打开次数。分母是打开弹窗次数，不是 PV。未打开直接失败的不进入分母。提交不代表模型调用成功（成功以下方 AI 接口为准）。</div>
-    <div class="funnel" id="funnel"></div>
-  </div>
-
-  <div class="card" style="margin-bottom:12px;">
-    <h2>AI 接口用量 <span class="code">Server-side AI Calls</span></h2>
-    <div class="note">数据源：Worker 在转发 DeepSeek 后写入。polish / rewrite / import 对应润色、改写、导入三类。Tokens 为模型返回的 total_tokens 之和。错误次数含 4xx/5xx。受每 IP 每天 30 次上限影响，达上限后不会再增加调用。</div>
-    <div id="ai"></div>
-  </div>
-
-  <div class="card">
-    <h2>指标与口径说明</h2>
-    <div class="note" style="margin-bottom:10px;">时区：全部按 <strong>UTC 自然日</strong> 切天（不是北京时间）。保留期：约 60 天（KV TTL）。并发写入 KV 可能少计。单 IP 每小时最多计入 120 条前端事件，超限丢弃。不采集简历正文、姓名、邮箱等 PII。</div>
-    <table class="dict">
-      <thead>
-        <tr><th>指标 / 事件名</th><th>业务名称</th><th>口径与备注</th></tr>
-      </thead>
-      <tbody>
-        <tr><td>PV</td><td>页面浏览量</td><td>周期内 page_view 次数。页面加载或 Astro 路由切换各记 1 次。</td></tr>
-        <tr><td>Σ DAU</td><td>日活加总</td><td>每日 IP 哈希去重人数之和。不可当作周期独立访客。</td></tr>
-        <tr><td>Daily PV</td><td>每日页面浏览量</td><td>UTC 当天的 page_view 次数。</td></tr>
-        <tr><td>PV by Path</td><td>落地页浏览量</td><td>按 pathname 聚合的 PV。例如 /apps/resume-builder/。</td></tr>
-        <tr><td>Referrer Host</td><td>访问来源域名</td><td>page_view 时的 referrer 主机名；空则为直接/不可识别。</td></tr>
-        <tr><td>page_view</td><td>页面浏览</td><td>全站脚本加载后自动上报，含博客、项目、工具页。</td></tr>
-        <tr><td>resume_export_pdf</td><td>导出 PDF 次数</td><td>用户点击导出并调用打印对话框后计数。取消打印仍会计入。</td></tr>
-        <tr><td>resume_download_html</td><td>下载 HTML 次数</td><td>浏览器开始下载 HTML 后计数，不校验文件是否保存成功。</td></tr>
-        <tr><td>resume_share</td><td>分享成功次数</td><td>链接成功写入剪贴板后计数。弹出手动复制框时不计入。</td></tr>
-        <tr><td>resume_ai_polish_open</td><td>打开 AI 润色</td><td>打开润色弹窗。未点「开始润色」也计入。</td></tr>
-        <tr><td>resume_ai_polish_run</td><td>提交 AI 润色</td><td>通过校验后发起润色请求。不等于接口成功。</td></tr>
-        <tr><td>resume_ai_rewrite_open</td><td>打开 AI 改写</td><td>目标段落有内容并打开改写弹窗。</td></tr>
-        <tr><td>resume_ai_rewrite_run</td><td>提交 AI 改写</td><td>发起单段改写请求。不等于接口成功。</td></tr>
-        <tr><td>resume_import_open</td><td>打开导入</td><td>打开导入弹窗。</td></tr>
-        <tr><td>resume_import_run</td><td>提交导入</td><td>粘贴内容长度合格后发起解析。不等于解析成功。</td></tr>
-        <tr><td>resume_fill_demo</td><td>填充示例简历</td><td>点击「模板预览」或引导里选择示例。</td></tr>
-        <tr><td>resume_reset</td><td>重置简历</td><td>用户确认重置后、刷新前计数。</td></tr>
-        <tr><td>resume_template</td><td>切换模板次数</td><td>每切换一次计 1。子键 resume_template:{id} 为模板拆解。</td></tr>
-        <tr><td>resume_lang</td><td>切换语言次数</td><td>中/英切换。子键为 zh / en。</td></tr>
-        <tr><td>resume_onboard</td><td>完成首次引导</td><td>选择 demo / import / blank。不是引导曝光人数。</td></tr>
-        <tr><td>AI Calls</td><td>AI 接口调用次数</td><td>服务端实际转发次数，含失败；与前端 * _run 应对齐但允许不一致。</td></tr>
-        <tr><td>AI Tokens</td><td>模型 Token 消耗</td><td>DeepSeek 返回的 total_tokens 之和，不是人民币成本。</td></tr>
-      </tbody>
-    </table>
-  </div>
+  <details>
+    <summary>数据口径</summary>
+    PV 为 page_view 次数；切天为 UTC；日活加总是按天 IP 去重后再相加。漏斗分母为上一层次数。打开打印框即计入导出，取消打印仍计数。AI 提交不等于接口成功。
+  </details>
 </div>
 <script>
 var API = 'https://api.jayzzhang.online';
 var KEY = 'jz_stats_token';
-var LABELS = {
-  page_view: '页面浏览 (page_view)',
-  resume_export_pdf: '导出 PDF',
-  resume_download_html: '下载 HTML',
-  resume_share: '分享成功',
-  resume_ai_polish_open: '打开 AI 润色',
-  resume_ai_polish_run: '提交 AI 润色',
-  resume_ai_rewrite_open: '打开 AI 改写',
-  resume_ai_rewrite_run: '提交 AI 改写',
-  resume_import_open: '打开导入',
-  resume_import_run: '提交导入',
-  resume_fill_demo: '填充示例简历',
-  resume_reset: '重置简历',
-  resume_template: '切换模板',
-  resume_lang: '切换语言',
-  resume_onboard: '完成首次引导'
+var COLORS = ['#818cf8','#34d399','#fbbf24','#f472b6','#38bdf8','#a78bfa','#fb7185','#2dd4bf'];
+var PAGE_NAME = {
+  '/': '首页',
+  '/blog': '博客',
+  '/blog/': '博客',
+  '/projects': '项目',
+  '/projects/': '项目',
+  '/resume-builder': '简历介绍',
+  '/resume-builder/': '简历介绍',
+  '/apps/resume-builder': '简历工具',
+  '/apps/resume-builder/': '简历工具',
+  '/viral-calculator': '裂变介绍',
+  '/viral-calculator/': '裂变介绍',
+  '/apps/viral-calculator': '裂变工具',
+  '/apps/viral-calculator/': '裂变工具',
+  '/tags': '标签',
+  '/tags/': '标签'
 };
-var RESUME_KEYS = Object.keys(LABELS).filter(function(k){ return k.indexOf('resume_') === 0; });
 
 function token(){ return sessionStorage.getItem(KEY) || ''; }
-function fmt(n){ n = n || 0; return n >= 10000 ? (n/10000).toFixed(1) + '万' : String(n); }
-function pct(a,b){ if (!b) return '—'; return Math.round(a / b * 100) + '%'; }
-function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]); }); }
-function eventLabel(k){
-  if (LABELS[k]) return LABELS[k];
-  var i = k.indexOf(':');
-  if (i > 0 && LABELS[k.slice(0,i)]) return LABELS[k.slice(0,i)] + ' · ' + k.slice(i+1);
-  return k;
+function fmt(n){ n = +n || 0; return n >= 10000 ? (n/10000).toFixed(1)+'万' : String(Math.round(n)); }
+function esc(s){ return String(s).replace(/[&<>"]/g,function(c){return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]);}); }
+function pageName(p){
+  if (PAGE_NAME[p]) return PAGE_NAME[p];
+  if (p.indexOf('/blog/') === 0) return '博客文章';
+  if (p.indexOf('/projects/') === 0) return '项目详情';
+  if (p.indexOf('/tags/') === 0) return '标签';
+  if (p.indexOf('/ops') === 0) return '看板';
+  return p || '/';
+}
+function niceMax(v){
+  if (v <= 0) return 1;
+  var p = Math.pow(10, Math.floor(Math.log10(v)));
+  var n = Math.ceil(v / p);
+  if (n > 5) n = 10;
+  else if (n > 2) n = 5;
+  return n * p;
 }
 
 function login(e){
@@ -232,14 +165,12 @@ function login(e){
   return false;
 }
 function logout(){ sessionStorage.removeItem(KEY); location.reload(); }
-
 async function boot(){
   if (!token()) return;
   document.getElementById('gate').classList.add('hidden');
   document.getElementById('app').classList.remove('hidden');
   await load();
 }
-
 async function load(){
   var days = document.getElementById('daysSel').value;
   try {
@@ -248,93 +179,151 @@ async function load(){
       sessionStorage.removeItem(KEY);
       document.getElementById('gate').classList.remove('hidden');
       document.getElementById('app').classList.add('hidden');
-      document.getElementById('gateErr').textContent = 'token 无效，请重试';
+      document.getElementById('gateErr').textContent = 'token 无效';
       return;
     }
-    if (!res.ok) throw new Error('加载失败 ' + res.status);
-    render(await res.json(), parseInt(days, 10));
-  } catch (err) {
-    alert(err.message || '加载失败');
-  }
+    if (!res.ok) throw new Error('加载失败');
+    render(await res.json());
+  } catch (err) { alert(err.message || '加载失败'); }
 }
 
-function render(data, nDays){
+function render(data){
   var rows = (data.days || []).slice().reverse();
-  var pv = 0, dauSum = 0, ai = 0, tokens = 0, errors = 0, resume = 0;
-  var pages = {}, events = {}, refs = {}, kinds = {};
-  rows.forEach(function(d){
+  var dates = rows.map(function(d){ return d.day.slice(5); });
+  var dailyPv = rows.map(function(d){ return (d.traffic && d.traffic.pv) || 0; });
+  var pv = 0, dau = 0, events = {}, pagesTotal = {}, pageDaily = {};
+  rows.forEach(function(d, i){
     var t = d.traffic || {};
     pv += t.pv || 0;
-    dauSum += t.uv || 0;
-    ai += d.calls || 0;
-    tokens += d.tokens || 0;
-    errors += d.errors || 0;
-    Object.keys(t.pages || {}).forEach(function(k){ pages[k] = (pages[k]||0) + t.pages[k]; });
+    dau += t.uv || 0;
     Object.keys(t.events || {}).forEach(function(k){ events[k] = (events[k]||0) + t.events[k]; });
-    Object.keys(t.referrers || {}).forEach(function(k){ refs[k] = (refs[k]||0) + t.referrers[k]; });
-    Object.keys(d.byKind || {}).forEach(function(k){ kinds[k] = (kinds[k]||0) + d.byKind[k]; });
+    Object.keys(t.pages || {}).forEach(function(k){
+      if (k.indexOf('/ops') === 0) return;
+      pagesTotal[k] = (pagesTotal[k]||0) + t.pages[k];
+      if (!pageDaily[k]) pageDaily[k] = rows.map(function(){ return 0; });
+      pageDaily[k][i] += t.pages[k] || 0;
+    });
   });
-  RESUME_KEYS.forEach(function(k){ resume += events[k] || 0; });
 
-  var start = rows[0] && rows[0].day;
-  var end = rows.length && rows[rows.length-1].day;
-  document.getElementById('periodMeta').innerHTML =
-    '统计周期：<strong>' + esc(start || '—') + '</strong> 至 <strong>' + esc(end || '—') + '</strong>（含首尾，UTC） · 窗口 ' + nDays +
-    ' 天 · 拉取时间 ' + new Date().toISOString().replace('T',' ').slice(0,19) + ' UTC';
-
+  var resumePv = 0;
+  Object.keys(pagesTotal).forEach(function(k){
+    if (k.indexOf('resume-builder') >= 0) resumePv += pagesTotal[k];
+  });
+  var out = (events.resume_export_pdf||0) + (events.resume_download_html||0) + (events.resume_share||0);
   document.getElementById('kPv').textContent = fmt(pv);
-  document.getElementById('kUv').textContent = fmt(dauSum);
-  document.getElementById('kResume').textContent = fmt(resume);
-  document.getElementById('kAi').textContent = fmt(ai);
-  document.getElementById('kAiD').innerHTML = '口径：服务端转发次数，含失败。本期错误 ' + fmt(errors) + ' 次，Token 消耗 ' + fmt(tokens) + '（total_tokens）。';
+  document.getElementById('kUv').textContent = fmt(dau);
+  document.getElementById('kResumePv').textContent = fmt(resumePv);
+  document.getElementById('kOut').textContent = fmt(out);
 
-  var maxPv = Math.max.apply(null, rows.map(function(d){ return (d.traffic && d.traffic.pv) || 0; }).concat([1]));
-  document.getElementById('chart').innerHTML = rows.map(function(d){
-    var v = (d.traffic && d.traffic.pv) || 0;
-    var h = Math.max(4, Math.round(v / maxPv * 140));
-    return '<div class="bar" style="height:' + h + 'px" data-tip="' + d.day + ' · PV ' + v + '"></div>';
+  document.getElementById('chartAll').innerHTML = barChart(dates, dailyPv, '日期', 'PV');
+
+  var pageItems = Object.keys(pagesTotal).map(function(k){ return {k:k, name:pageName(k), v:pagesTotal[k]}; })
+    .sort(function(a,b){ return b.v - a.v; });
+  var merged = {};
+  pageItems.forEach(function(it){
+    merged[it.name] = (merged[it.name]||0) + it.v;
+  });
+  var mergedItems = Object.keys(merged).map(function(n){ return {name:n, v:merged[n]}; }).sort(function(a,b){ return b.v-a.v; }).slice(0, 8);
+  document.getElementById('chartPages').innerHTML = barChart(mergedItems.map(function(i){ return i.name; }), mergedItems.map(function(i){ return i.v; }), '页面', 'PV');
+
+  var topKeys = pageItems.slice(0, 6).map(function(i){ return i.k; });
+  var series = topKeys.map(function(k, idx){
+    return { name: pageName(k), color: COLORS[idx % COLORS.length], values: pageDaily[k] || dates.map(function(){ return 0; }) };
+  });
+  document.getElementById('chartPageTrend').innerHTML = lineChart(dates, series, '日期', 'PV');
+  document.getElementById('legend').innerHTML = series.map(function(s){
+    return '<span><i style="background:' + s.color + '"></i>' + esc(s.name) + '</span>';
   }).join('');
 
-  document.getElementById('pages').innerHTML = rankTable(pages, function(k){ return k || '/'; }, '落地页路径', '浏览量');
-  document.getElementById('refs').innerHTML = rankTable(refs, function(k){ return k || '直接/不可识别'; }, '来源域名', '浏览量');
+  var s0 = resumePv;
+  var s1 = events.resume_onboard || 0;
+  var s2 = (events.resume_import_run||0) + (events.resume_ai_polish_run||0) + (events.resume_ai_rewrite_run||0);
+  var s3 = out;
+  drawFunnel([
+    { name: '1. 访问简历页', v: s0 },
+    { name: '2. 完成引导', v: s1 },
+    { name: '3. 提交 AI / 导入', v: s2 },
+    { name: '4. 导出 / 分享', v: s3 }
+  ]);
+}
 
-  var eventRows = {};
-  Object.keys(events).forEach(function(k){
-    if (k === 'page_view') return;
-    eventRows[k] = events[k];
-  });
-  document.getElementById('events').innerHTML = rankTable(eventRows, eventLabel, '事件', '次数');
-
-  var polishOpen = events.resume_ai_polish_open || 0, polishRun = events.resume_ai_polish_run || 0;
-  var rewriteOpen = events.resume_ai_rewrite_open || 0, rewriteRun = events.resume_ai_rewrite_run || 0;
-  var importOpen = events.resume_import_open || 0, importRun = events.resume_import_run || 0;
-  document.getElementById('funnel').innerHTML = [
-    funnelItem('AI 润色提交率', polishRun, polishOpen),
-    funnelItem('AI 改写提交率', rewriteRun, rewriteOpen),
-    funnelItem('导入提交率', importRun, importOpen)
-  ].join('');
-  function funnelItem(name, num, den){
-    return '<div><div class="l">' + name + '</div><div class="n">' + pct(num, den) + '</div><div class="note">提交 ' + fmt(num) + ' / 打开 ' + fmt(den) + '</div></div>';
+function drawFunnel(steps){
+  var max = Math.max.apply(null, steps.map(function(s){ return s.v; }).concat([1]));
+  var html = '';
+  for (var i = 0; i < steps.length; i++) {
+    var w = Math.max(18, Math.round(steps[i].v / max * 100));
+    html += '<div class="f-step"><div class="f-bar" style="width:' + w + '%"><span>' + esc(steps[i].name) + '</span><strong>' + fmt(steps[i].v) + '</strong></div></div>';
+    if (i < steps.length - 1) {
+      var rate = steps[i].v ? Math.round(steps[i+1].v / steps[i].v * 100) + '%' : '—';
+      html += '<div class="f-conv">转化 ' + rate + '</div>';
+    }
   }
-
-  var kindLabel = { polish: '润色 polish', rewrite: '改写 rewrite', import: '导入 import', unknown: '未分类 unknown' };
-  var kindRows = {};
-  Object.keys(kinds).forEach(function(k){ kindRows[k] = kinds[k]; });
-  document.getElementById('ai').innerHTML = Object.keys(kindRows).length
-    ? rankTable(kindRows, function(k){ return kindLabel[k] || k; }, '调用类型', '调用次数')
-    : '<div class="note" style="margin-top:10px;">本期无 AI 接口调用。</div>';
+  document.getElementById('funnel').innerHTML = html;
 }
 
-function rankTable(map, labelFn, dimName, metricName){
-  var items = Object.keys(map).map(function(k){ return [k, map[k]]; }).sort(function(a,b){ return b[1]-a[1]; }).slice(0, 12);
-  if (!items.length) return '<div class="note" style="margin-top:10px;">本期无数据。</div>';
-  var max = items[0][1] || 1;
-  return '<table><thead><tr><th>' + dimName + '</th><th class="num">' + metricName + '</th></tr></thead><tbody>' +
-    items.map(function(it){
-      var p = Math.round(it[1] / max * 100);
-      return '<tr><td>' + esc(labelFn(it[0])) + '<div class="meter"><i style="width:' + p + '%"></i></div></td><td class="num">' + fmt(it[1]) + '</td></tr>';
-    }).join('') + '</tbody></table>';
+function barChart(labels, values, xTitle, yTitle){
+  var W = 640, H = 260, L = 48, R = 16, T = 16, B = 52;
+  var max = niceMax(Math.max.apply(null, values.concat([0])));
+  var iw = W - L - R, ih = H - T - B;
+  var n = Math.max(labels.length, 1);
+  var gap = 8, bw = Math.max(8, (iw / n) - gap);
+  var parts = [];
+  parts.push('<svg viewBox="0 0 ' + W + ' ' + H + '" role="img">');
+  parts.push('<text x="12" y="14" fill="#8b95a8" font-size="11">' + esc(yTitle) + '</text>');
+  parts.push('<text x="' + (W/2) + '" y="' + (H-6) + '" fill="#8b95a8" font-size="11" text-anchor="middle">' + esc(xTitle) + '</text>');
+  for (var t = 0; t <= 4; t++) {
+    var yv = max * (1 - t/4);
+    var y = T + ih * t/4;
+    parts.push('<line x1="' + L + '" x2="' + (W-R) + '" y1="' + y + '" y2="' + y + '" stroke="#243044" stroke-width="1"/>');
+    parts.push('<text x="' + (L-6) + '" y="' + (y+4) + '" fill="#8b95a8" font-size="10" text-anchor="end">' + fmt(yv) + '</text>');
+  }
+  values.forEach(function(v, i){
+    var h = max ? (v / max) * ih : 0;
+    var x = L + i * (iw / n) + gap/2;
+    var y = T + ih - h;
+    parts.push('<rect x="' + x + '" y="' + y + '" width="' + bw + '" height="' + Math.max(h,1) + '" fill="#818cf8" rx="3"><title>' + esc(labels[i]) + ' ' + v + '</title></rect>');
+    var lab = String(labels[i]);
+    if (lab.length > 6) lab = lab.slice(0,6);
+    parts.push('<text x="' + (x + bw/2) + '" y="' + (H-B+16) + '" fill="#8b95a8" font-size="10" text-anchor="middle">' + esc(lab) + '</text>');
+  });
+  parts.push('</svg>');
+  return parts.join('');
 }
+
+function lineChart(labels, series, xTitle, yTitle){
+  var W = 640, H = 260, L = 48, R = 16, T = 16, B = 52;
+  var all = [0];
+  series.forEach(function(s){ s.values.forEach(function(v){ all.push(v); }); });
+  var max = niceMax(Math.max.apply(null, all));
+  var iw = W - L - R, ih = H - T - B;
+  var n = Math.max(labels.length, 1);
+  function xAt(i){ return L + (n === 1 ? iw/2 : i * iw / (n-1)); }
+  function yAt(v){ return T + ih - (max ? v / max * ih : 0); }
+  var parts = ['<svg viewBox="0 0 ' + W + ' ' + H + '" role="img">'];
+  parts.push('<text x="12" y="14" fill="#8b95a8" font-size="11">' + esc(yTitle) + '</text>');
+  parts.push('<text x="' + (W/2) + '" y="' + (H-6) + '" fill="#8b95a8" font-size="11" text-anchor="middle">' + esc(xTitle) + '</text>');
+  for (var t = 0; t <= 4; t++) {
+    var yv = max * (1 - t/4);
+    var y = T + ih * t/4;
+    parts.push('<line x1="' + L + '" x2="' + (W-R) + '" y1="' + y + '" y2="' + y + '" stroke="#243044"/>');
+    parts.push('<text x="' + (L-6) + '" y="' + (y+4) + '" fill="#8b95a8" font-size="10" text-anchor="end">' + fmt(yv) + '</text>');
+  }
+  var step = n > 10 ? Math.ceil(n / 7) : 1;
+  labels.forEach(function(lab, i){
+    if (i % step && i !== n-1) return;
+    parts.push('<text x="' + xAt(i) + '" y="' + (H-B+16) + '" fill="#8b95a8" font-size="10" text-anchor="middle">' + esc(lab) + '</text>');
+  });
+  series.forEach(function(s){
+    var d = s.values.map(function(v,i){ return (i? 'L':'M') + xAt(i) + ' ' + yAt(v); }).join(' ');
+    parts.push('<path d="' + d + '" fill="none" stroke="' + s.color + '" stroke-width="2"/>');
+    s.values.forEach(function(v,i){
+      parts.push('<circle cx="' + xAt(i) + '" cy="' + yAt(v) + '" r="2.5" fill="' + s.color + '"><title>' + esc(s.name) + ' ' + labSafe(labels[i]) + ' ' + v + '</title></circle>');
+    });
+  });
+  parts.push('</svg>');
+  return parts.join('');
+}
+function labSafe(s){ return String(s||''); }
 
 if (token()) boot();
 </script>
