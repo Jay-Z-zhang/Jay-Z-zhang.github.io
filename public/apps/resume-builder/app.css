@@ -93,7 +93,7 @@ body{background:var(--app-bg);color:var(--app-text);font-family:'Inter','Noto Sa
 @media print{
   @page{size:A4;margin:12mm;}
   html,body{background:#fff!important;height:auto!important;overflow:visible!important;color:#111!important;}
-  .topbar,.sidebar,.onboard-overlay,.ai-dialog-overlay,.pg-break,#shareToast,#_printFrame{display:none!important;}
+  .topbar,.sidebar,.onboard-overlay,.ai-dialog-overlay,.pg-break,#shareToast{display:none!important;}
   .app-body{display:block!important;height:auto!important;overflow:visible!important;}
   .preview-wrap{display:block!important;overflow:visible!important;padding:0!important;background:#fff!important;position:static!important;}
   #resume-preview{width:100%!important;min-height:0!important;box-shadow:none!important;zoom:1!important;transform:none!important;-moz-transform:none!important;margin:0 auto!important;}

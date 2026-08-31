@@ -60,11 +60,19 @@ async function logEvent(env, ctx, {kind, tokens, ip, day, status}) {
   })());
 }
 
+/* 常量时字符串比较,防 timing attack */
+function _tokenEqual(a, b) {
+  if (typeof a !== 'string' || typeof b !== 'string' || a.length !== b.length) return false;
+  let diff = 0;
+  for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return diff === 0;
+}
+
 async function handleStats(env, request, url, headers) {
   const auth = request.headers.get('Authorization') || '';
   const bearer = auth.replace(/^Bearer\s+/i, '').trim();
   const token = url.searchParams.get('token') || bearer;
-  if (!env.STATS_TOKEN || token !== env.STATS_TOKEN) {
+  if (!env.STATS_TOKEN || !_tokenEqual(token, env.STATS_TOKEN)) {
     return new Response(JSON.stringify({ error: 'unauthorized' }), {
       status: 401,
       headers: { ...headers, 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' },
@@ -138,10 +146,12 @@ async function handleSubscribe(request, env, ctx, headers) {
   });
 }
 
-async function handleSubscribers(env, url) {
-  const token = url.searchParams.get('token');
-  if (!env.STATS_TOKEN || token !== env.STATS_TOKEN) {
-    return new Response('unauthorized', { status: 401 });
+async function handleSubscribers(env, request, url) {
+  const auth = request.headers.get('Authorization') || '';
+  const bearer = auth.replace(/^Bearer\s+/i, '').trim();
+  const token = url.searchParams.get('token') || bearer;
+  if (!env.STATS_TOKEN || !_tokenEqual(token, env.STATS_TOKEN)) {
+    return new Response('unauthorized', { status: 401, headers: { 'Cache-Control': 'no-store' } });
   }
   // 列出全部订阅(小规模使用可行,大量应该分页)
   const list = await env.RATE_LIMIT.list({ prefix: 'sub:', limit: 1000 });
@@ -278,7 +288,7 @@ export default {
     }
     // GET /subscribers?token=xxx — 列出所有订阅者
     if (request.method === 'GET' && url.pathname === '/subscribers') {
-      return handleSubscribers(env, url);
+      return handleSubscribers(env, request, url);
     }
 
     // POST /subscribe — 收集 email

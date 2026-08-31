@@ -25,6 +25,7 @@ const History = {
 function _getFullState() {
   const g = id => (document.getElementById(id) || {value:''}).value;
   const gc = id => (document.getElementById(id) || {checked:false}).checked;
+  const gn = id => { const el = document.getElementById(id); return el ? el.value : ''; };
   return {
     template: S.template, color: S.color, font: S.font, lang: S.lang,
     form: {
@@ -37,6 +38,13 @@ function _getFullState() {
       skillTools: g('skillTools'), skillLang: g('skillLang'), skillCerts: g('skillCerts'),
       showAwards: gc('showAwards'), showPubs: gc('showPubs'),
     },
+    typo: {
+      szName: gn('sz-name'), szSection: gn('sz-section'), szOrg: gn('sz-org'),
+      szRole: gn('sz-role'), szBody: gn('sz-body'), szMeta: gn('sz-meta'),
+      clName: gn('cl-name'), clSection: gn('cl-section'), clOrg: gn('cl-org'),
+      clRole: gn('cl-role'), clBody: gn('cl-body'), clMeta: gn('cl-meta'),
+    },
+    expanded: S.expanded ? Array.from(S.expanded) : [],
     edu: S.eduEntries.map(e => ({id: e.id, data: {...e.data}})),
     work: S.workEntries.map(e => ({id: e.id, data: {...e.data}})),
     project: S.projectEntries.map(e => ({id: e.id, data: {...e.data}})),
@@ -67,6 +75,16 @@ function _restoreState(state) {
   document.getElementById('wechatField').style.display = f.showWechat ? '' : 'none';
   document.getElementById('photoField').style.display = f.showPhoto ? '' : 'none';
   document.getElementById('summaryBody').style.display = f.showSummary ? '' : 'none';
+  // 恢复 typography
+  const t = state.typo || {};
+  const setNum = (id, v) => { const el = document.getElementById(id); if (el && v != null && v !== '') el.value = v; };
+  setNum('sz-name', t.szName); setNum('sz-section', t.szSection);
+  setNum('sz-org', t.szOrg); setNum('sz-role', t.szRole);
+  setNum('sz-body', t.szBody); setNum('sz-meta', t.szMeta);
+  setNum('cl-name', t.clName); setNum('cl-section', t.clSection);
+  setNum('cl-org', t.clOrg); setNum('cl-role', t.clRole);
+  setNum('cl-body', t.clBody); setNum('cl-meta', t.clMeta);
+  S.expanded = new Set(state.expanded || []);
   S.eduEntries = (state.edu || []).map(e => ({id: e.id, data: {...e.data}}));
   S.workEntries = (state.work || []).map(e => ({id: e.id, data: {...e.data}}));
   S.projectEntries = (state.project || []).map(e => ({id: e.id, data: {...e.data}}));
@@ -640,15 +658,24 @@ return `rgb(${Math.min(255,r+amt)},${Math.min(255,g+amt)},${Math.min(255,b+amt)}
 }
 function _th(hex, a) { const {r,g,b} = _tf(hex); return `rgba(${r},${g},${b},${a})`; }
 function _ti(hex) { const {r,g,b} = _tf(hex); return (r*299+g*587+b*114)/1000 < 140; }
+/* HTML 转义:所有渲染到预览的用户输入都必须先经过它,防止 XSS */
+function _esc(s) {
+  if (s == null) return '';
+  return String(s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
 function _md(text) {
 if (!text) return '';
-return text.replace(/\*\*(.+?)\*\*/g,'<strong style="font-weight:700;">$1</strong>');
+// 先转义,再把 **...** 恢复为 <strong>
+return _esc(text).replace(/\*\*(.+?)\*\*/g,'<strong style="font-weight:700;">$1</strong>');
 }
 function _tj(text) {
 if (!text) return '';
 return text.split('\n').filter(l=>l.trim()).map(l => {
 const hasBullet = l.startsWith('•') || l.startsWith('-');
-const content = l.replace(/^[•\-]\s*/,'').replace(/\*\*(.+?)\*\*/g,'<strong style="font-weight:700;">$1</strong>');
+const raw = l.replace(/^[•\-]\s*/,'');
+const content = _esc(raw).replace(/\*\*(.+?)\*\*/g,'<strong style="font-weight:700;">$1</strong>');
 return `<div style="margin-bottom:2px;padding-left:10px;position:relative;"><span style="position:absolute;left:0;top:0;">${hasBullet ? '' : '•'}</span>${content}</div>`;
 }).join('');
 }
@@ -659,46 +686,46 @@ if (v.email) items.push(v.email);
 if (v.city) items.push(v.city);
 if (v.linkedin) items.push(v.linkedin);
 if (v.wechat) items.push((v.L ? v.L.rWechat : ('WeC'+'hat')) + ': ' + v.wechat);
-return items.map(i => `<span style="margin:0 6px;color:${col}">${i}</span>`).join('<span style="color:#9ca3af">|</span>');
+return items.map(i => `<span style="margin:0 6px;color:${col}">${_esc(i)}</span>`).join('<span style="color:#9ca3af">|</span>');
 }
 function _tl(v, col, font) {
 const t = v.t;
 const sections = [];
 sections.push(`
 <div style="text-align:center;padding-bottom:12px;border-bottom:2px solid ${col};margin-bottom:14px;position:relative;">
-${v.showPhoto && v.photoUrl ? `<img src="${v.photoUrl}" alt="${v.name || 'Profile'}" style="position:absolute;right:0;top:0;width:62px;height:82px;object-fit:cover;border-radius:3px;">` : ''}
-<div style="font-size:${t.szName}px;font-weight:700;letter-spacing:.02em;color:${t.clName};">${v.name || '姓名'}${v.nameEn ? `<span style="font-size:${Math.round(t.szName*0.62)}px;font-weight:400;color:${t.clMeta};margin-left:10px;">${v.nameEn}</span>` : ''}</div>
-${v.jobTitle ? `<div style="font-size:${t.szRole}px;color:${col};margin-top:4px;font-weight:500;">${v.jobTitle}</div>` : ''}
+${v.showPhoto && v.photoUrl ? `<img src="${_esc(v.photoUrl)}" alt="${_esc(v.name || 'Profile')}" style="position:absolute;right:0;top:0;width:62px;height:82px;object-fit:cover;border-radius:3px;">` : ''}
+<div style="font-size:${t.szName}px;font-weight:700;letter-spacing:.02em;color:${t.clName};">${_esc(v.name || '姓名')}${_esc(v.nameEn ? `<span style="font-size:${Math.round(t.szName*0.62)}px;font-weight:400;color:${t.clMeta};margin-left:10px;">${_esc(v.nameEn)}</span>` : '')}</div>
+${_esc(v.jobTitle ? `<div style="font-size:${t.szRole}px;color:${col};margin-top:4px;font-weight:500;">${v.jobTitle}</div>` : '')}
 <div style="font-size:${t.szMeta}px;margin-top:6px;">${_tk(v, t.clBody)}</div>
 </div>`);
 if (v.showSummary && v.summary) sections.push(_tm(v.L.rSummary, `<p style="line-height:1.7;font-size:${t.szBody}px;color:${t.clBody};">${_md(v.summary)}</p>`, col, t));
 if (v.edu.length) sections.push(_tm(v.L.rEdu, v.edu.map(e=>`
 <div style="margin-bottom:8px;"><div style="display:flex;justify-content:space-between;">
-<strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${e.school||''}</strong><span style="font-size:${t.szMeta}px;color:${t.clMeta};">${e.period||''}</span>
-</div><div style="font-size:${t.szRole}px;color:${t.clRole};">${e.degree||''}${e.gpa?` &nbsp;|&nbsp; <span style="color:${col}">${e.gpa}</span>`:''}</div></div>`).join(''), col, t));
+<strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${_esc(e.school||'')}</strong><span style="font-size:${t.szMeta}px;color:${t.clMeta};">${_esc(e.period||'')}</span>
+</div><div style="font-size:${t.szRole}px;color:${t.clRole};">${_esc(e.degree||'')}${_esc(e.gpa?` &nbsp;|&nbsp; <span style="color:${col}">${e.gpa}</span>`:'')}</div></div>`).join(''), col, t));
 if (v.work.length) sections.push(_tm(v.L.rWork, v.work.map(e=>`
 <div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;">
-<strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${e.company||''}</strong><span style="font-size:${t.szMeta}px;color:${t.clMeta};">${e.period||''}</span>
-</div><div style="font-size:${t.szRole}px;color:${col};font-weight:500;margin-bottom:3px;">${e.role||''}</div>
+<strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${_esc(e.company||'')}</strong><span style="font-size:${t.szMeta}px;color:${t.clMeta};">${_esc(e.period||'')}</span>
+</div><div style="font-size:${t.szRole}px;color:${col};font-weight:500;margin-bottom:3px;">${_esc(e.role||'')}</div>
 <div style="font-size:${t.szBody}px;color:${t.clBody};line-height:1.65;">${_tj(e.desc)}</div></div>`).join(''), col, t));
 if (v.showProject && v.project.length) sections.push(_tm(v.L.rProject, v.project.map(e=>`
 <div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;align-items:baseline;">
-<strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${e.name||''}</strong><span style="font-size:${t.szMeta}px;color:${t.clMeta};">${e.period||''}</span>
-</div><div style="font-size:${t.szRole}px;color:${col};margin-bottom:2px;">${e.role||''}${e.link?` · <a href="${e.link}" style="color:${col};text-decoration:none;">${v.L.rViewLink}</a>`:''}</div>
+<strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${_esc(e.name||'')}</strong><span style="font-size:${t.szMeta}px;color:${t.clMeta};">${_esc(e.period||'')}</span>
+</div><div style="font-size:${t.szRole}px;color:${col};margin-bottom:2px;">${_esc(e.role||'')}${_esc(e.link?` · <a href="${e.link}" style="color:${col};text-decoration:none;">${v.L.rViewLink}</a>`:'')}</div>
 <div style="font-size:${t.szBody}px;color:${t.clBody};line-height:1.65;">${_tj(e.desc)}</div></div>`).join(''), col, t));
 if (v.showSkills && (v.skillTools||v.skillLang||v.skillCerts)) {
 const sk = [];
-if (v.skillTools) sk.push(`<div style="margin-bottom:4px;font-size:${t.szBody}px;color:${t.clBody};"><strong>${v.L.rSkillTools}：</strong>${v.skillTools}</div>`);
-if (v.skillLang) sk.push(`<div style="margin-bottom:4px;font-size:${t.szBody}px;color:${t.clBody};"><strong>${v.L.rSkillLang}：</strong>${v.skillLang}</div>`);
-if (v.skillCerts) sk.push(`<div style="font-size:${t.szBody}px;color:${t.clBody};"><strong>${v.L.rSkillCerts}：</strong>${v.skillCerts}</div>`);
+if (v.skillTools) sk.push(`<div style="margin-bottom:4px;font-size:${t.szBody}px;color:${t.clBody};"><strong>${v.L.rSkillTools}：</strong>${_esc(v.skillTools)}</div>`);
+if (v.skillLang) sk.push(`<div style="margin-bottom:4px;font-size:${t.szBody}px;color:${t.clBody};"><strong>${v.L.rSkillLang}：</strong>${_esc(v.skillLang)}</div>`);
+if (v.skillCerts) sk.push(`<div style="font-size:${t.szBody}px;color:${t.clBody};"><strong>${v.L.rSkillCerts}：</strong>${_esc(v.skillCerts)}</div>`);
 sections.push(_tm(v.L.rSkillsSection, sk.join(''), col, t));
 }
 if (v.showAwards && v.award.length) sections.push(_tm(v.L.rAwards, v.award.map(e=>`
 <div style="display:flex;justify-content:space-between;margin-bottom:4px;font-size:${t.szBody}px;">
-<span><strong style="color:${col}">${e.name||''}</strong>${e.org?` · <span style="color:${t.clBody}">${e.org}</span>`:''}</span><span style="color:${t.clMeta};">${e.year||''}</span>
+<span><strong style="color:${col}">${_esc(e.name||'')}</strong>${_esc(e.org?` · <span style="color:${t.clBody}">${e.org}</span>`:'')}</span><span style="color:${t.clMeta};">${_esc(e.year||'')}</span>
 </div>`).join(''), col, t));
 if (v.showPubs && v.pub.length) sections.push(_tm(v.L.rPubs, v.pub.map(e=>`
-<div style="margin-bottom:6px;font-size:${t.szBody}px;color:${t.clBody};"><strong>${e.title||''}</strong>${e.venue?` · <em style="color:${t.clMeta};">${e.venue}</em>`:''}${e.link?` · <a href="${e.link}" style="color:${col};">${e.link}</a>`:''}</div>`).join(''), col, t));
+<div style="margin-bottom:6px;font-size:${t.szBody}px;color:${t.clBody};"><strong>${_esc(e.title||'')}</strong>${_esc(e.venue?` · <em style="color:${t.clMeta};">${e.venue}</em>`:'')}${_esc(e.link?` · <a href="${e.link}" style="color:${col};">${e.link}</a>`:'')}</div>`).join(''), col, t));
 return `<div style="padding:32px 40px;font-family:${font};color:${t.clBody};">${sections.join('')}</div>`;
 }
 function _tm(title, body, col, t) {
@@ -715,35 +742,35 @@ const sections = [];
 if (v.showSummary && v.summary) sections.push(_to(v.L.rSummary, `<p style="font-size:${t.szBody}px;color:${t.clBody};line-height:1.7;">${_md(v.summary)}</p>`, col, t));
 if (v.edu.length) sections.push(_to(v.L.rEdu, v.edu.map(e=>`
 <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
-<div><strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${e.school||''}</strong><br><span style="font-size:${t.szRole}px;color:${t.clRole};">${e.degree||''}</span>${e.gpa?`<br><span style="font-size:${t.szMeta}px;color:${col}">${e.gpa}</span>`:''}</div>
-<span style="font-size:${t.szMeta}px;color:${t.clMeta};white-space:nowrap;padding-top:2px;">${e.period||''}</span>
+<div><strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${_esc(e.school||'')}</strong><br><span style="font-size:${t.szRole}px;color:${t.clRole};">${_esc(e.degree||'')}</span>${_esc(e.gpa?`<br><span style="font-size:${t.szMeta}px;color:${col}">${e.gpa}</span>`:'')}</div>
+<span style="font-size:${t.szMeta}px;color:${t.clMeta};white-space:nowrap;padding-top:2px;">${_esc(e.period||'')}</span>
 </div>`).join(''), col, t));
 if (v.work.length) sections.push(_to(v.L.rWork, v.work.map(e=>`
 <div style="margin-bottom:12px;padding:10px;background:${_th(col,.05)};border-radius:6px;border-left:3px solid ${col};">
-<div style="display:flex;justify-content:space-between;"><strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${e.company||''}</strong><span style="font-size:${t.szMeta}px;color:${t.clMeta};">${e.period||''}</span></div>
-<div style="font-size:${t.szRole}px;color:${col};font-weight:600;margin:2px 0 4px;">${e.role||''}</div>
+<div style="display:flex;justify-content:space-between;"><strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${_esc(e.company||'')}</strong><span style="font-size:${t.szMeta}px;color:${t.clMeta};">${_esc(e.period||'')}</span></div>
+<div style="font-size:${t.szRole}px;color:${col};font-weight:600;margin:2px 0 4px;">${_esc(e.role||'')}</div>
 <div style="font-size:${t.szBody}px;color:${t.clBody};line-height:1.65;">${_tj(e.desc)}</div>
 </div>`).join(''), col, t));
 if (v.showProject && v.project.length) sections.push(_to(v.L.rProject, v.project.map(e=>`
 <div style="margin-bottom:10px;padding:10px;background:#f8faff;border-radius:6px;border:1px solid ${_th(col,.2)};">
 <div style="display:flex;justify-content:space-between;align-items:center;">
-<strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${e.name||''}</strong>
-${e.link?`<a href="${e.link}" style="font-size:${t.szMeta}px;color:${col};text-decoration:none;background:${_th(col,.1)};padding:2px 6px;border-radius:4px;">${v.L.rViewLink}</a>`:''}
+<strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${_esc(e.name||'')}</strong>
+${_esc(e.link?`<a href="${e.link}" style="font-size:${t.szMeta}px;color:${col};text-decoration:none;background:${_th(col,.1)};padding:2px 6px;border-radius:4px;">${v.L.rViewLink}</a>`:'')}
 </div>
-<div style="font-size:${t.szRole}px;color:${t.clMeta};margin:2px 0;">${e.role||''} ${e.period?`· ${e.period}`:''}</div>
+<div style="font-size:${t.szRole}px;color:${t.clMeta};margin:2px 0;">${_esc(e.role||'')} ${_esc(e.period?`· ${e.period}`:'')}</div>
 <div style="font-size:${t.szBody}px;color:${t.clBody};line-height:1.65;">${_tj(e.desc)}</div>
 </div>`).join(''), col, t));
 if (v.showSkills && (v.skillTools||v.skillLang||v.skillCerts)) {
-const tags = (v.skillTools||'').split(',').filter(s=>s.trim()).map(s=>`<span style="background:${_th(col,.1)};color:${col};padding:2px 8px;border-radius:12px;font-size:${t.szBody}px;margin:2px;display:inline-block;">${s.trim()}</span>`).join('');
-sections.push(_to(v.L.rSkillsSection, `<div style="margin-bottom:4px;">${tags}</div>${v.skillLang?`<div style="font-size:${t.szBody}px;color:${t.clBody};margin-top:6px;"><strong>${v.L.rSkillLang}：</strong>${v.skillLang}</div>`:''}${v.skillCerts?`<div style="font-size:${t.szBody}px;color:${t.clBody};margin-top:3px;"><strong>${v.L.rSkillCerts}：</strong>${v.skillCerts}</div>`:''}`, col, t));
+const tags = (v.skillTools||'').split(',').filter(s=>s.trim()).map(s=>`<span style="background:${_th(col,.1)};color:${col};padding:2px 8px;border-radius:12px;font-size:${t.szBody}px;margin:2px;display:inline-block;">${_esc(s.trim())}</span>`).join('');
+sections.push(_to(v.L.rSkillsSection, `<div style="margin-bottom:4px;">${tags}</div>${_esc(v.skillLang?`<div style="font-size:${t.szBody}px;color:${t.clBody};margin-top:6px;"><strong>${v.L.rSkillLang}：</strong>${v.skillLang}</div>`:'')}${_esc(v.skillCerts?`<div style="font-size:${t.szBody}px;color:${t.clBody};margin-top:3px;"><strong>${v.L.rSkillCerts}：</strong>${v.skillCerts}</div>`:'')}`, col, t));
 }
-if (v.showAwards && v.award.length) sections.push(_to(v.L.rAwards, v.award.map(e=>`<div style="display:flex;justify-content:space-between;font-size:${t.szBody}px;margin-bottom:4px;"><span><strong style="color:${col}">${e.name||''}</strong>${e.org?` · <span style="color:${t.clBody}">${e.org}</span>`:''}</span><span style="color:${t.clMeta};">${e.year||''}</span></div>`).join(''), col, t));
-if (v.showPubs && v.pub.length) sections.push(_to(v.L.rPubs, v.pub.map(e=>`<div style="margin-bottom:6px;font-size:${t.szBody}px;color:${t.clBody};"><strong>${e.title||''}</strong>${e.venue?` · <em style="color:${t.clMeta};">${e.venue}</em>`:''}${e.link?` · <a href="${e.link}" style="color:${col};">${e.link}</a>`:''}</div>`).join(''), col, t));
+if (v.showAwards && v.award.length) sections.push(_to(v.L.rAwards, v.award.map(e=>`<div style="display:flex;justify-content:space-between;font-size:${t.szBody}px;margin-bottom:4px;"><span><strong style="color:${col}">${_esc(e.name||'')}</strong>${_esc(e.org?` · <span style="color:${t.clBody}">${e.org}</span>`:'')}</span><span style="color:${t.clMeta};">${_esc(e.year||'')}</span></div>`).join(''), col, t));
+if (v.showPubs && v.pub.length) sections.push(_to(v.L.rPubs, v.pub.map(e=>`<div style="margin-bottom:6px;font-size:${t.szBody}px;color:${t.clBody};"><strong>${_esc(e.title||'')}</strong>${_esc(e.venue?` · <em style="color:${t.clMeta};">${e.venue}</em>`:'')}${_esc(e.link?` · <a href="${e.link}" style="color:${col};">${e.link}</a>`:'')}</div>`).join(''), col, t));
 return `<div style="font-family:${font};color:${t.clBody};">
 <div style="background:${col};color:#fff;padding:28px 36px 20px;">
-${v.showPhoto && v.photoUrl ? `<img src="${v.photoUrl}" alt="${v.name || 'Profile'}" style="float:right;width:62px;height:82px;object-fit:cover;border-radius:4px;margin-left:12px;">` : ''}
-<div style="font-size:${t.szName}px;font-weight:700;letter-spacing:.01em;">${v.name||(v.L?v.L.lName:('Na'+'me'))}${v.nameEn?`<span style="font-size:${Math.round(t.szName*0.54)}px;font-weight:300;opacity:.85;margin-left:10px;">${v.nameEn}</span>`:''}</div>
-${v.jobTitle?`<div style="font-size:${t.szRole}px;opacity:.9;margin-top:4px;font-weight:400;">${v.jobTitle}</div>`:''}
+${v.showPhoto && v.photoUrl ? `<img src="${_esc(v.photoUrl)}" alt="${_esc(v.name || 'Profile')}" style="float:right;width:62px;height:82px;object-fit:cover;border-radius:4px;margin-left:12px;">` : ''}
+<div style="font-size:${t.szName}px;font-weight:700;letter-spacing:.01em;">${_esc(v.name||(v.L?v.L.lName:('Na'+'me')))}${_esc(v.nameEn?`<span style="font-size:${Math.round(t.szName*0.54)}px;font-weight:300;opacity:.85;margin-left:10px;">${_esc(v.nameEn)}</span>`:'')}</div>
+${_esc(v.jobTitle?`<div style="font-size:${t.szRole}px;opacity:.9;margin-top:4px;font-weight:400;">${v.jobTitle}</div>`:'')}
 <div style="font-size:${t.szMeta}px;opacity:.85;margin-top:8px;">${_tk(v,'rgba(255,255,255,.9)')}</div>
 </div>
 <div style="padding:24px 36px;">${sections.join('')}</div>
@@ -763,35 +790,35 @@ const sections = [];
 if (v.showSummary && v.summary) sections.push(_tq(v.L.rSummary, `<p style="font-size:${t.szBody}px;color:#94a3b8;line-height:1.7;">${_md(v.summary)}</p>`, col, t));
 if (v.edu.length) sections.push(_tq(v.L.rEdu, v.edu.map(e=>`
 <div style="margin-bottom:8px;padding:8px 10px;background:rgba(255,255,255,.04);border-radius:6px;">
-<div style="display:flex;justify-content:space-between;"><strong style="font-size:${t.szOrg}px;color:${textLight};">${e.school||''}</strong><span style="font-size:${t.szMeta}px;color:#64748b;">${e.period||''}</span></div>
-<div style="font-size:${t.szRole}px;color:#94a3b8;margin-top:2px;">${e.degree||''}${e.gpa?` | <span style="color:${col}">${e.gpa}</span>`:''}</div>
+<div style="display:flex;justify-content:space-between;"><strong style="font-size:${t.szOrg}px;color:${textLight};">${_esc(e.school||'')}</strong><span style="font-size:${t.szMeta}px;color:#64748b;">${_esc(e.period||'')}</span></div>
+<div style="font-size:${t.szRole}px;color:#94a3b8;margin-top:2px;">${_esc(e.degree||'')}${_esc(e.gpa?` | <span style="color:${col}">${e.gpa}</span>`:'')}</div>
 </div>`).join(''), col, t));
 if (v.work.length) sections.push(_tq(v.L.rWork, v.work.map(e=>`
 <div style="margin-bottom:12px;border-left:3px solid ${col};padding-left:12px;">
-<div style="display:flex;justify-content:space-between;"><strong style="font-size:${t.szOrg}px;color:${textLight};">${e.company||''}</strong><span style="font-size:${t.szMeta}px;color:#64748b;">${e.period||''}</span></div>
-<div style="font-size:${t.szRole}px;color:${col};font-weight:600;margin:2px 0 4px;">${e.role||''}</div>
+<div style="display:flex;justify-content:space-between;"><strong style="font-size:${t.szOrg}px;color:${textLight};">${_esc(e.company||'')}</strong><span style="font-size:${t.szMeta}px;color:#64748b;">${_esc(e.period||'')}</span></div>
+<div style="font-size:${t.szRole}px;color:${col};font-weight:600;margin:2px 0 4px;">${_esc(e.role||'')}</div>
 <div style="font-size:${t.szBody}px;color:#94a3b8;line-height:1.65;">${_tj(e.desc)}</div>
 </div>`).join(''), col, t));
 if (v.showProject && v.project.length) sections.push(_tq(v.L.rProject, v.project.map(e=>`
 <div style="margin-bottom:10px;padding:10px;background:rgba(255,255,255,.05);border-radius:8px;border:1px solid ${_th(col,.25)};">
 <div style="display:flex;justify-content:space-between;align-items:center;">
-<strong style="font-size:${t.szOrg}px;color:${textLight};">${e.name||''}</strong>
-${e.link?`<a href="${e.link}" style="font-size:${t.szMeta}px;color:${col};text-decoration:none;background:${_th(col,.15)};padding:2px 6px;border-radius:4px;">${v.L.rViewLink}</a>`:''}
+<strong style="font-size:${t.szOrg}px;color:${textLight};">${_esc(e.name||'')}</strong>
+${_esc(e.link?`<a href="${e.link}" style="font-size:${t.szMeta}px;color:${col};text-decoration:none;background:${_th(col,.15)};padding:2px 6px;border-radius:4px;">${v.L.rViewLink}</a>`:'')}
 </div>
-<div style="font-size:${t.szRole}px;color:#64748b;margin:2px 0;">${e.role||''} ${e.period?`· ${e.period}`:''}</div>
+<div style="font-size:${t.szRole}px;color:#64748b;margin:2px 0;">${_esc(e.role||'')} ${_esc(e.period?`· ${e.period}`:'')}</div>
 <div style="font-size:${t.szBody}px;color:#94a3b8;line-height:1.65;">${_tj(e.desc)}</div>
 </div>`).join(''), col, t));
 if (v.showSkills && (v.skillTools||v.skillLang||v.skillCerts)) {
-const tags = (v.skillTools||'').split(',').filter(s=>s.trim()).map(s=>`<span style="background:${_th(col,.15)};color:${col};border:1px solid ${_th(col,.3)};padding:2px 8px;border-radius:12px;font-size:${t.szBody}px;margin:2px;display:inline-block;">${s.trim()}</span>`).join('');
-sections.push(_tq(v.L.rSkillsSection, `<div>${tags}</div>${v.skillLang?`<div style="font-size:${t.szBody}px;color:#94a3b8;margin-top:6px;"><span style="color:${col};font-weight:600;">${v.L.rSkillLang} </span>${v.skillLang}</div>`:''}${v.skillCerts?`<div style="font-size:${t.szBody}px;color:#94a3b8;margin-top:3px;"><span style="color:${col};font-weight:600;">${v.L.rSkillCerts} </span>${v.skillCerts}</div>`:''}`, col, t));
+const tags = (v.skillTools||'').split(',').filter(s=>s.trim()).map(s=>`<span style="background:${_th(col,.15)};color:${col};border:1px solid ${_th(col,.3)};padding:2px 8px;border-radius:12px;font-size:${t.szBody}px;margin:2px;display:inline-block;">${_esc(s.trim())}</span>`).join('');
+sections.push(_tq(v.L.rSkillsSection, `<div>${tags}</div>${_esc(v.skillLang?`<div style="font-size:${t.szBody}px;color:#94a3b8;margin-top:6px;"><span style="color:${col};font-weight:600;">${v.L.rSkillLang} </span>${v.skillLang}</div>`:'')}${_esc(v.skillCerts?`<div style="font-size:${t.szBody}px;color:#94a3b8;margin-top:3px;"><span style="color:${col};font-weight:600;">${v.L.rSkillCerts} </span>${v.skillCerts}</div>`:'')}`, col, t));
 }
-if (v.showAwards && v.award.length) sections.push(_tq(v.L.rAwards, v.award.map(e=>`<div style="display:flex;justify-content:space-between;font-size:${t.szBody}px;margin-bottom:4px;color:#94a3b8;"><span><span style="display:inline-block;width:4px;height:4px;border-radius:50%;background:${col};margin-right:8px;vertical-align:middle;"></span><span style="color:${textLight}">${e.name||''}</span>${e.org?` · ${e.org}`:''}</span><span style="color:#64748b;">${e.year||''}</span></div>`).join(''), col, t));
-if (v.showPubs && v.pub.length) sections.push(_tq(v.L.rPubs, v.pub.map(e=>`<div style="margin-bottom:6px;font-size:${t.szBody}px;color:#94a3b8;"><span style="color:${textLight}">${e.title||''}</span>${e.venue?` · <em>${e.venue}</em>`:''}${e.link?` · <a href="${e.link}" style="color:${col};">${e.link}</a>`:''}</div>`).join(''), col, t));
+if (v.showAwards && v.award.length) sections.push(_tq(v.L.rAwards, v.award.map(e=>`<div style="display:flex;justify-content:space-between;font-size:${t.szBody}px;margin-bottom:4px;color:#94a3b8;"><span><span style="display:inline-block;width:4px;height:4px;border-radius:50%;background:${col};margin-right:8px;vertical-align:middle;"></span><span style="color:${textLight}">${_esc(e.name||'')}</span>${_esc(e.org?` · ${e.org}`:'')}</span><span style="color:#64748b;">${_esc(e.year||'')}</span></div>`).join(''), col, t));
+if (v.showPubs && v.pub.length) sections.push(_tq(v.L.rPubs, v.pub.map(e=>`<div style="margin-bottom:6px;font-size:${t.szBody}px;color:#94a3b8;"><span style="color:${textLight}">${_esc(e.title||'')}</span>${_esc(e.venue?` · <em>${e.venue}</em>`:'')}${_esc(e.link?` · <a href="${e.link}" style="color:${col};">${e.link}</a>`:'')}</div>`).join(''), col, t));
 return `<div style="font-family:${font};background:${bg};min-height:1123px;">
 <div style="background:linear-gradient(135deg,${col} 0%,${bg2} 60%);padding:28px 36px 20px;">
-${v.showPhoto && v.photoUrl ? `<img src="${v.photoUrl}" alt="${v.name || 'Profile'}" style="float:right;width:62px;height:82px;object-fit:cover;border-radius:6px;border:2px solid ${_th(col,.4)};margin-left:12px;">` : ''}
-<div style="font-size:${t.szName}px;font-weight:700;color:#fff;letter-spacing:.01em;">${v.name||(v.L?v.L.lName:('Na'+'me'))}${v.nameEn?`<span style="font-size:${Math.round(t.szName*0.54)}px;font-weight:300;opacity:.7;margin-left:10px;">${v.nameEn}</span>`:''}</div>
-${v.jobTitle?`<div style="font-size:${t.szRole}px;color:${_tg(col,120)};margin-top:4px;">${v.jobTitle}</div>`:''}
+${v.showPhoto && v.photoUrl ? `<img src="${_esc(v.photoUrl)}" alt="${_esc(v.name || 'Profile')}" style="float:right;width:62px;height:82px;object-fit:cover;border-radius:6px;border:2px solid ${_th(col,.4)};margin-left:12px;">` : ''}
+<div style="font-size:${t.szName}px;font-weight:700;color:#fff;letter-spacing:.01em;">${_esc(v.name||(v.L?v.L.lName:('Na'+'me')))}${_esc(v.nameEn?`<span style="font-size:${Math.round(t.szName*0.54)}px;font-weight:300;opacity:.7;margin-left:10px;">${_esc(v.nameEn)}</span>`:'')}</div>
+${_esc(v.jobTitle?`<div style="font-size:${t.szRole}px;color:${_tg(col,120)};margin-top:4px;">${v.jobTitle}</div>`:'')}
 <div style="font-size:${t.szMeta}px;color:rgba(255,255,255,.7);margin-top:8px;">${_tk(v,'rgba(255,255,255,.9)')}</div>
 </div>
 <div style="padding:24px 36px;">${sections.join('')}</div>
@@ -811,11 +838,11 @@ ${body}
 function _tr(v, col, font) {
 const t = v.t;
 const sideContent = [];
-if (v.showPhoto && v.photoUrl) sideContent.push(`<div style="text-align:center;margin-bottom:16px;"><img src="${v.photoUrl}" alt="${v.name || 'Profile'}" style="width:80px;height:107px;object-fit:cover;border-radius:6px;border:2px solid rgba(255,255,255,.3);"></div>`);
+if (v.showPhoto && v.photoUrl) sideContent.push(`<div style="text-align:center;margin-bottom:16px;"><img src="${_esc(v.photoUrl)}" alt="${_esc(v.name || 'Profile')}" style="width:80px;height:107px;object-fit:cover;border-radius:6px;border:2px solid rgba(255,255,255,.3);"></div>`);
 sideContent.push(`<div style="text-align:center;margin-bottom:16px;">
-<div style="font-size:${Math.round(t.szName*0.75)}px;font-weight:700;color:#fff;line-height:1.3;">${v.name||(v.L?v.L.lName:('Na'+'me'))}</div>
-${v.nameEn?`<div style="font-size:${t.szMeta}px;color:rgba(255,255,255,.6);margin-top:2px;">${v.nameEn}</div>`:''}
-${v.jobTitle?`<div style="font-size:${t.szMeta}px;color:rgba(255,255,255,.85);margin-top:6px;font-weight:500;">${v.jobTitle}</div>`:''}
+<div style="font-size:${Math.round(t.szName*0.75)}px;font-weight:700;color:#fff;line-height:1.3;">${_esc(v.name||(v.L?v.L.lName:('Na'+'me')))}</div>
+${_esc(v.nameEn?`<div style="font-size:${t.szMeta}px;color:rgba(255,255,255,.6);margin-top:2px;">${_esc(v.nameEn)}</div>`:'')}
+${_esc(v.jobTitle?`<div style="font-size:${t.szMeta}px;color:rgba(255,255,255,.85);margin-top:6px;font-weight:500;">${v.jobTitle}</div>`:'')}
 </div>`);
 const contacts = [];
 if (v.phone) contacts.push(v.phone);
@@ -823,28 +850,28 @@ if (v.email) contacts.push(v.email);
 if (v.city) contacts.push(v.city);
 if (v.linkedin) contacts.push(v.linkedin);
 if (v.wechat) contacts.push(v.wechat);
-if (contacts.length) sideContent.push(`<div style="margin-bottom:16px;">${_ts(v.L.rContact)}<div style="font-size:${t.szMeta}px;color:rgba(255,255,255,.8);line-height:2;">${contacts.join('<br>')}</div></div>`);
-if (v.showSkills && v.skillTools) sideContent.push(`<div style="margin-bottom:14px;">${_ts(v.L.rSkillsSection)}<div>${(v.skillTools||'').split(',').filter(s=>s.trim()).map(s=>`<div style="font-size:${t.szMeta}px;color:rgba(255,255,255,.8);padding:2px 0;border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:4px;">${s.trim()}</div>`).join('')}</div></div>`);
-if (v.showSkills && v.skillLang) sideContent.push(`<div style="margin-bottom:14px;">${_ts(v.L.rLangSide)}<div style="font-size:${t.szMeta}px;color:rgba(255,255,255,.8);line-height:1.8;">${v.skillLang}</div></div>`);
-if (v.showSkills && v.skillCerts) sideContent.push(`<div style="margin-bottom:14px;">${_ts(v.L.rCertsSide)}<div style="font-size:${t.szMeta}px;color:rgba(255,255,255,.8);line-height:1.8;">${v.skillCerts}</div></div>`);
-if (v.showAwards && v.award.length) sideContent.push(`<div style="margin-bottom:14px;">${_ts(v.L.rAwards)}${v.award.map(e=>`<div style="font-size:${t.szMeta}px;color:rgba(255,255,255,.8);margin-bottom:4px;"><strong>${e.name||''}</strong><br>${e.org||''} ${e.year||''}</div>`).join('')}</div>`);
+if (contacts.length) sideContent.push(`<div style="margin-bottom:16px;">${_ts(v.L.rContact)}<div style="font-size:${t.szMeta}px;color:rgba(255,255,255,.8);line-height:2;">${contacts.map(_esc).join('<br>')}</div></div>`);
+if (v.showSkills && v.skillTools) sideContent.push(`<div style="margin-bottom:14px;">${_ts(v.L.rSkillsSection)}<div>${(v.skillTools||'').split(',').filter(s=>s.trim()).map(s=>`<div style="font-size:${t.szMeta}px;color:rgba(255,255,255,.8);padding:2px 0;border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:4px;">${_esc(s.trim())}</div>`).join('')}</div></div>`);
+if (v.showSkills && v.skillLang) sideContent.push(`<div style="margin-bottom:14px;">${_ts(v.L.rLangSide)}<div style="font-size:${t.szMeta}px;color:rgba(255,255,255,.8);line-height:1.8;">${_esc(v.skillLang)}</div></div>`);
+if (v.showSkills && v.skillCerts) sideContent.push(`<div style="margin-bottom:14px;">${_ts(v.L.rCertsSide)}<div style="font-size:${t.szMeta}px;color:rgba(255,255,255,.8);line-height:1.8;">${_esc(v.skillCerts)}</div></div>`);
+if (v.showAwards && v.award.length) sideContent.push(`<div style="margin-bottom:14px;">${_ts(v.L.rAwards)}${v.award.map(e=>`<div style="font-size:${t.szMeta}px;color:rgba(255,255,255,.8);margin-bottom:4px;"><strong>${_esc(e.name||'')}</strong><br>${_esc(e.org||'')} ${_esc(e.year||'')}</div>`).join('')}</div>`);
 const mainContent = [];
 if (v.showSummary && v.summary) mainContent.push(_tt(v.L.rSummary, `<p style="font-size:${t.szBody}px;color:${t.clBody};line-height:1.7;">${_md(v.summary)}</p>`, col, t));
 if (v.edu.length) mainContent.push(_tt(v.L.rEdu, v.edu.map(e=>`
 <div style="margin-bottom:8px;"><div style="display:flex;justify-content:space-between;">
-<strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${e.school||''}</strong><span style="font-size:${t.szMeta}px;color:${t.clMeta};">${e.period||''}</span>
-</div><div style="font-size:${t.szRole}px;color:${t.clRole};">${e.degree||''}${e.gpa?` | <span style="color:${col}">${e.gpa}</span>`:''}</div></div>`).join(''), col, t));
+<strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${_esc(e.school||'')}</strong><span style="font-size:${t.szMeta}px;color:${t.clMeta};">${_esc(e.period||'')}</span>
+</div><div style="font-size:${t.szRole}px;color:${t.clRole};">${_esc(e.degree||'')}${_esc(e.gpa?` | <span style="color:${col}">${e.gpa}</span>`:'')}</div></div>`).join(''), col, t));
 if (v.work.length) mainContent.push(_tt(v.L.rWork, v.work.map(e=>`
 <div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;">
-<strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${e.company||''}</strong><span style="font-size:${t.szMeta}px;color:${t.clMeta};">${e.period||''}</span>
-</div><div style="font-size:${t.szRole}px;color:${col};font-weight:600;margin-bottom:3px;">${e.role||''}</div>
+<strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${_esc(e.company||'')}</strong><span style="font-size:${t.szMeta}px;color:${t.clMeta};">${_esc(e.period||'')}</span>
+</div><div style="font-size:${t.szRole}px;color:${col};font-weight:600;margin-bottom:3px;">${_esc(e.role||'')}</div>
 <div style="font-size:${t.szBody}px;color:${t.clBody};line-height:1.65;">${_tj(e.desc)}</div></div>`).join(''), col, t));
 if (v.showProject && v.project.length) mainContent.push(_tt(v.L.rProject, v.project.map(e=>`
 <div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;align-items:baseline;">
-<strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${e.name||''}</strong><span style="font-size:${t.szMeta}px;color:${t.clMeta};">${e.period||''}</span>
-</div><div style="font-size:${t.szRole}px;color:${col};margin-bottom:2px;">${e.role||''}${e.link?` · <a href="${e.link}" style="color:${col};">${v.L.rViewLink}</a>`:''}</div>
+<strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${_esc(e.name||'')}</strong><span style="font-size:${t.szMeta}px;color:${t.clMeta};">${_esc(e.period||'')}</span>
+</div><div style="font-size:${t.szRole}px;color:${col};margin-bottom:2px;">${_esc(e.role||'')}${_esc(e.link?` · <a href="${e.link}" style="color:${col};">${v.L.rViewLink}</a>`:'')}</div>
 <div style="font-size:${t.szBody}px;color:${t.clBody};line-height:1.65;">${_tj(e.desc)}</div></div>`).join(''), col, t));
-if (v.showPubs && v.pub.length) mainContent.push(_tt(v.L.rPubs, v.pub.map(e=>`<div style="margin-bottom:6px;font-size:${t.szBody}px;color:${t.clBody};"><strong>${e.title||''}</strong>${e.venue?` · <em style="color:${t.clMeta};">${e.venue}</em>`:''}${e.link?` · <a href="${e.link}" style="color:${col};">${e.link}</a>`:''}</div>`).join(''), col, t));
+if (v.showPubs && v.pub.length) mainContent.push(_tt(v.L.rPubs, v.pub.map(e=>`<div style="margin-bottom:6px;font-size:${t.szBody}px;color:${t.clBody};"><strong>${_esc(e.title||'')}</strong>${_esc(e.venue?` · <em style="color:${t.clMeta};">${e.venue}</em>`:'')}${_esc(e.link?` · <a href="${e.link}" style="color:${col};">${e.link}</a>`:'')}</div>`).join(''), col, t));
 return `<div style="font-family:${font};display:flex;min-height:1123px;color:${t.clBody};">
 <div style="width:220px;flex-shrink:0;background:${col};color:#fff;padding:28px 18px;min-height:1123px;">${sideContent.join('')}</div>
 <div style="flex:1;padding:28px 28px;">${mainContent.join('')}</div>
@@ -876,24 +903,24 @@ if (v.linkedin) ci.push(v.linkedin);
 if (v.wechat) ci.push((v.L?v.L.rWechat:'WeChat')+': '+v.wechat);
 let html = `<div style="font-family:${font};color:${t.clBody};padding:28px 36px 24px;">`;
 html += `<div style="position:relative;padding-right:${v.showPhoto&&v.photoUrl?'78px':'0'};">
-${v.showPhoto&&v.photoUrl?`<img src="${v.photoUrl}" alt="${v.name||'Profile'}" style="position:absolute;right:0;top:0;width:62px;height:82px;object-fit:cover;border-radius:3px;">`:'' }
-<div style="font-size:${t.szName}px;font-weight:700;color:${t.clName};">${v.name||'姓名'}${v.nameEn?`<span style="font-size:${Math.round(t.szName*.52)}px;font-weight:400;color:${t.clMeta};margin-left:10px;">${v.nameEn}</span>`:''}</div>
-${v.jobTitle?`<div style="font-size:${t.szRole}px;color:${col};font-weight:500;margin-top:4px;">${v.jobTitle}</div>`:''}
-${ci.length?`<div style="font-size:${t.szMeta}px;color:${t.clMeta};margin-top:6px;">${ci.join('<span style="margin:0 5px;opacity:.4;">|</span>')}</div>`:''}
+${v.showPhoto&&v.photoUrl?`<img src="${_esc(v.photoUrl)}" alt="${_esc(v.name||'Profile')}" style="position:absolute;right:0;top:0;width:62px;height:82px;object-fit:cover;border-radius:3px;">`:'' }
+<div style="font-size:${t.szName}px;font-weight:700;color:${t.clName};">${_esc(v.name||'姓名')}${_esc(v.nameEn?`<span style="font-size:${Math.round(t.szName*.52)}px;font-weight:400;color:${t.clMeta};margin-left:10px;">${_esc(v.nameEn)}</span>`:'')}</div>
+${_esc(v.jobTitle?`<div style="font-size:${t.szRole}px;color:${col};font-weight:500;margin-top:4px;">${v.jobTitle}</div>`:'')}
+${ci.length?`<div style="font-size:${t.szMeta}px;color:${t.clMeta};margin-top:6px;">${ci.map(_esc).join('<span style="margin:0 5px;opacity:.4;">|</span>')}</div>`:''}
 <div style="height:2px;background:${col};margin-top:12px;border-radius:1px;opacity:.7;"></div>
 </div>`;
 if (v.showSummary&&v.summary) html+=secH(v.L.rSummary)+`<p style="font-size:${t.szBody}px;color:${t.clBody};line-height:1.7;margin:0;">${_md(v.summary)}</p>`;
-if (v.edu.length) html+=secH(v.L.rEdu)+v.edu.map(e=>`<div style="margin-bottom:8px;"><div style="display:flex;justify-content:space-between;"><strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${e.school||''}</strong><span style="font-size:${t.szMeta}px;color:${t.clMeta};">${e.period||''}</span></div><div style="font-size:${t.szRole}px;color:${t.clRole};">${e.degree||''}${e.gpa?` &nbsp;·&nbsp; <span style="color:${col};">${e.gpa}</span>`:''}</div></div>`).join('');
-if (v.work.length) html+=secH(v.L.rWork)+v.work.map(e=>`<div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;"><strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${e.company||''}</strong><span style="font-size:${t.szMeta}px;color:${t.clMeta};">${e.period||''}</span></div><div style="font-size:${t.szRole}px;color:${col};font-weight:500;margin-bottom:3px;">${e.role||''}</div><div style="font-size:${t.szBody}px;color:${t.clBody};line-height:1.65;">${_tj(e.desc)}</div></div>`).join('');
-if (v.showProject&&v.project.length) html+=secH(v.L.rProject)+v.project.map(e=>`<div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;align-items:baseline;"><strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${e.name||''}</strong><span style="font-size:${t.szMeta}px;color:${t.clMeta};">${e.period||''}</span></div><div style="font-size:${t.szRole}px;color:${col};margin-bottom:2px;">${e.role||''}${e.link?` · <a href="${e.link}" style="color:${col};text-decoration:none;">${v.L.rViewLink}</a>`:''}</div><div style="font-size:${t.szBody}px;color:${t.clBody};line-height:1.65;">${_tj(e.desc)}</div></div>`).join('');
+if (v.edu.length) html+=secH(v.L.rEdu)+v.edu.map(e=>`<div style="margin-bottom:8px;"><div style="display:flex;justify-content:space-between;"><strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${_esc(e.school||'')}</strong><span style="font-size:${t.szMeta}px;color:${t.clMeta};">${_esc(e.period||'')}</span></div><div style="font-size:${t.szRole}px;color:${t.clRole};">${_esc(e.degree||'')}${_esc(e.gpa?` &nbsp;·&nbsp; <span style="color:${col};">${e.gpa}</span>`:'')}</div></div>`).join('');
+if (v.work.length) html+=secH(v.L.rWork)+v.work.map(e=>`<div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;"><strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${_esc(e.company||'')}</strong><span style="font-size:${t.szMeta}px;color:${t.clMeta};">${_esc(e.period||'')}</span></div><div style="font-size:${t.szRole}px;color:${col};font-weight:500;margin-bottom:3px;">${_esc(e.role||'')}</div><div style="font-size:${t.szBody}px;color:${t.clBody};line-height:1.65;">${_tj(e.desc)}</div></div>`).join('');
+if (v.showProject&&v.project.length) html+=secH(v.L.rProject)+v.project.map(e=>`<div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;align-items:baseline;"><strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${_esc(e.name||'')}</strong><span style="font-size:${t.szMeta}px;color:${t.clMeta};">${_esc(e.period||'')}</span></div><div style="font-size:${t.szRole}px;color:${col};margin-bottom:2px;">${_esc(e.role||'')}${_esc(e.link?` · <a href="${e.link}" style="color:${col};text-decoration:none;">${v.L.rViewLink}</a>`:'')}</div><div style="font-size:${t.szBody}px;color:${t.clBody};line-height:1.65;">${_tj(e.desc)}</div></div>`).join('');
 if (v.showSkills&&(v.skillTools||v.skillLang||v.skillCerts)){
   html+=secH(v.L.rSkillsSection);
-  if(v.skillTools) html+=`<div style="margin-bottom:4px;font-size:${t.szBody}px;color:${t.clBody};"><strong>${v.L.rSkillTools}：</strong>${v.skillTools}</div>`;
-  if(v.skillLang) html+=`<div style="margin-bottom:4px;font-size:${t.szBody}px;color:${t.clBody};"><strong>${v.L.rSkillLang}：</strong>${v.skillLang}</div>`;
-  if(v.skillCerts) html+=`<div style="font-size:${t.szBody}px;color:${t.clBody};"><strong>${v.L.rSkillCerts}：</strong>${v.skillCerts}</div>`;
+  if(v.skillTools) html+=`<div style="margin-bottom:4px;font-size:${t.szBody}px;color:${t.clBody};"><strong>${v.L.rSkillTools}：</strong>${_esc(v.skillTools)}</div>`;
+  if(v.skillLang) html+=`<div style="margin-bottom:4px;font-size:${t.szBody}px;color:${t.clBody};"><strong>${v.L.rSkillLang}：</strong>${_esc(v.skillLang)}</div>`;
+  if(v.skillCerts) html+=`<div style="font-size:${t.szBody}px;color:${t.clBody};"><strong>${v.L.rSkillCerts}：</strong>${_esc(v.skillCerts)}</div>`;
 }
-if (v.showAwards&&v.award.length) html+=secH(v.L.rAwards)+v.award.map(e=>`<div style="display:flex;justify-content:space-between;margin-bottom:4px;font-size:${t.szBody}px;"><span><strong style="color:${col};">${e.name||''}</strong>${e.org?` · <span style="color:${t.clBody};">${e.org}</span>`:''}</span><span style="color:${t.clMeta};">${e.year||''}</span></div>`).join('');
-if (v.showPubs&&v.pub.length) html+=secH(v.L.rPubs)+v.pub.map(e=>`<div style="margin-bottom:6px;font-size:${t.szBody}px;color:${t.clBody};"><strong>${e.title||''}</strong>${e.venue?` · <em style="color:${t.clMeta};">${e.venue}</em>`:''}${e.link?` · <a href="${e.link}" style="color:${col};">${e.link}</a>`:''}</div>`).join('');
+if (v.showAwards&&v.award.length) html+=secH(v.L.rAwards)+v.award.map(e=>`<div style="display:flex;justify-content:space-between;margin-bottom:4px;font-size:${t.szBody}px;"><span><strong style="color:${col};">${_esc(e.name||'')}</strong>${_esc(e.org?` · <span style="color:${t.clBody};">${e.org}</span>`:'')}</span><span style="color:${t.clMeta};">${_esc(e.year||'')}</span></div>`).join('');
+if (v.showPubs&&v.pub.length) html+=secH(v.L.rPubs)+v.pub.map(e=>`<div style="margin-bottom:6px;font-size:${t.szBody}px;color:${t.clBody};"><strong>${_esc(e.title||'')}</strong>${_esc(e.venue?` · <em style="color:${t.clMeta};">${e.venue}</em>`:'')}${_esc(e.link?` · <a href="${e.link}" style="color:${col};">${e.link}</a>`:'')}</div>`).join('');
 return html+'</div>';
 }
 
@@ -907,8 +934,8 @@ function mainH(title) {
   return `<div style="font-size:${t.szSection}px;font-weight:700;color:${t.clSection};padding-bottom:3px;margin:14px 0 7px;border-bottom:1px solid ${_th(col,.2)};">${title}</div>`;
 }
 const header = `<div style="background:${col};color:#fff;padding:18px 22px 14px;display:flex;justify-content:space-between;align-items:flex-start;">
-<div><div style="font-size:${t.szName}px;font-weight:700;">${v.name||'姓名'}${v.nameEn?`<span style="font-size:${Math.round(t.szName*.52)}px;font-weight:300;opacity:.8;margin-left:8px;">${v.nameEn}</span>`:''}</div>${v.jobTitle?`<div style="font-size:${t.szRole}px;opacity:.9;margin-top:4px;">${v.jobTitle}</div>`:''}</div>
-${v.showPhoto&&v.photoUrl?`<img src="${v.photoUrl}" alt="${v.name||'Profile'}" style="width:58px;height:77px;object-fit:cover;border-radius:4px;border:2px solid rgba(255,255,255,.35);">`:'' }
+<div><div style="font-size:${t.szName}px;font-weight:700;">${_esc(v.name||'姓名')}${_esc(v.nameEn?`<span style="font-size:${Math.round(t.szName*.52)}px;font-weight:300;opacity:.8;margin-left:8px;">${_esc(v.nameEn)}</span>`:'')}</div>${_esc(v.jobTitle?`<div style="font-size:${t.szRole}px;opacity:.9;margin-top:4px;">${v.jobTitle}</div>`:'')}</div>
+${v.showPhoto&&v.photoUrl?`<img src="${_esc(v.photoUrl)}" alt="${_esc(v.name||'Profile')}" style="width:58px;height:77px;object-fit:cover;border-radius:4px;border:2px solid rgba(255,255,255,.35);">`:'' }
 </div>`;
 const ci = [];
 if (v.phone) ci.push(v.phone);
@@ -917,17 +944,17 @@ if (v.city) ci.push(v.city);
 if (v.linkedin) ci.push(v.linkedin);
 if (v.wechat) ci.push(v.wechat);
 let side = '';
-if (ci.length) side+=sideH(v.L.rContact)+`<div style="font-size:${t.szMeta}px;color:#374151;line-height:2.0;">${ci.join('<br>')}</div>`;
-if (v.showSkills&&v.skillTools) side+=sideH(v.L.rSkillsSection)+(v.skillTools||'').split(',').filter(s=>s.trim()).map(s=>`<div style="font-size:${t.szMeta}px;color:#374151;padding:2px 0;border-bottom:1px solid ${_th(col,.1)};margin-bottom:3px;">${s.trim()}</div>`).join('');
-if (v.showSkills&&v.skillLang) side+=sideH(v.L.rLangSide)+`<div style="font-size:${t.szMeta}px;color:#374151;line-height:1.8;">${v.skillLang}</div>`;
-if (v.showSkills&&v.skillCerts) side+=sideH(v.L.rCertsSide)+`<div style="font-size:${t.szMeta}px;color:#374151;line-height:1.8;">${v.skillCerts}</div>`;
-if (v.showAwards&&v.award.length) side+=sideH(v.L.rAwards)+v.award.map(e=>`<div style="font-size:${t.szMeta}px;color:#374151;margin-bottom:6px;"><strong style="color:${col};display:block;">${e.name||''}</strong><span style="opacity:.65;">${e.org||''} ${e.year||''}</span></div>`).join('');
+if (ci.length) side+=sideH(v.L.rContact)+`<div style="font-size:${t.szMeta}px;color:#374151;line-height:2.0;">${ci.map(_esc).join('<br>')}</div>`;
+if (v.showSkills&&v.skillTools) side+=sideH(v.L.rSkillsSection)+(v.skillTools||'').split(',').filter(s=>s.trim()).map(s=>`<div style="font-size:${t.szMeta}px;color:#374151;padding:2px 0;border-bottom:1px solid ${_th(col,.1)};margin-bottom:3px;">${_esc(s.trim())}</div>`).join('');
+if (v.showSkills&&v.skillLang) side+=sideH(v.L.rLangSide)+`<div style="font-size:${t.szMeta}px;color:#374151;line-height:1.8;">${_esc(v.skillLang)}</div>`;
+if (v.showSkills&&v.skillCerts) side+=sideH(v.L.rCertsSide)+`<div style="font-size:${t.szMeta}px;color:#374151;line-height:1.8;">${_esc(v.skillCerts)}</div>`;
+if (v.showAwards&&v.award.length) side+=sideH(v.L.rAwards)+v.award.map(e=>`<div style="font-size:${t.szMeta}px;color:#374151;margin-bottom:6px;"><strong style="color:${col};display:block;">${_esc(e.name||'')}</strong><span style="opacity:.65;">${_esc(e.org||'')} ${_esc(e.year||'')}</span></div>`).join('');
 let main = '';
 if (v.showSummary&&v.summary) main+=mainH(v.L.rSummary)+`<p style="font-size:${t.szBody}px;color:${t.clBody};line-height:1.7;margin:0;">${_md(v.summary)}</p>`;
-if (v.work.length) main+=mainH(v.L.rWork)+v.work.map(e=>`<div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;"><strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${e.company||''}</strong><span style="font-size:${t.szMeta}px;color:${t.clMeta};">${e.period||''}</span></div><div style="font-size:${t.szRole}px;color:${col};font-weight:500;margin-bottom:3px;">${e.role||''}</div><div style="font-size:${t.szBody}px;color:${t.clBody};line-height:1.65;">${_tj(e.desc)}</div></div>`).join('');
-if (v.edu.length) main+=mainH(v.L.rEdu)+v.edu.map(e=>`<div style="margin-bottom:8px;"><div style="display:flex;justify-content:space-between;"><strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${e.school||''}</strong><span style="font-size:${t.szMeta}px;color:${t.clMeta};">${e.period||''}</span></div><div style="font-size:${t.szRole}px;color:${t.clRole};">${e.degree||''}${e.gpa?` · <span style="color:${col};">${e.gpa}</span>`:''}</div></div>`).join('');
-if (v.showProject&&v.project.length) main+=mainH(v.L.rProject)+v.project.map(e=>`<div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;align-items:baseline;"><strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${e.name||''}</strong><span style="font-size:${t.szMeta}px;color:${t.clMeta};">${e.period||''}</span></div><div style="font-size:${t.szRole}px;color:${col};margin-bottom:2px;">${e.role||''}${e.link?` · <a href="${e.link}" style="color:${col};">${v.L.rViewLink}</a>`:''}</div><div style="font-size:${t.szBody}px;color:${t.clBody};line-height:1.65;">${_tj(e.desc)}</div></div>`).join('');
-if (v.showPubs&&v.pub.length) main+=mainH(v.L.rPubs)+v.pub.map(e=>`<div style="margin-bottom:6px;font-size:${t.szBody}px;color:${t.clBody};"><strong>${e.title||''}</strong>${e.venue?` · <em style="color:${t.clMeta};">${e.venue}</em>`:''}${e.link?` · <a href="${e.link}" style="color:${col};">${e.link}</a>`:''}</div>`).join('');
+if (v.work.length) main+=mainH(v.L.rWork)+v.work.map(e=>`<div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;"><strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${_esc(e.company||'')}</strong><span style="font-size:${t.szMeta}px;color:${t.clMeta};">${_esc(e.period||'')}</span></div><div style="font-size:${t.szRole}px;color:${col};font-weight:500;margin-bottom:3px;">${_esc(e.role||'')}</div><div style="font-size:${t.szBody}px;color:${t.clBody};line-height:1.65;">${_tj(e.desc)}</div></div>`).join('');
+if (v.edu.length) main+=mainH(v.L.rEdu)+v.edu.map(e=>`<div style="margin-bottom:8px;"><div style="display:flex;justify-content:space-between;"><strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${_esc(e.school||'')}</strong><span style="font-size:${t.szMeta}px;color:${t.clMeta};">${_esc(e.period||'')}</span></div><div style="font-size:${t.szRole}px;color:${t.clRole};">${_esc(e.degree||'')}${_esc(e.gpa?` · <span style="color:${col};">${e.gpa}</span>`:'')}</div></div>`).join('');
+if (v.showProject&&v.project.length) main+=mainH(v.L.rProject)+v.project.map(e=>`<div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;align-items:baseline;"><strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${_esc(e.name||'')}</strong><span style="font-size:${t.szMeta}px;color:${t.clMeta};">${_esc(e.period||'')}</span></div><div style="font-size:${t.szRole}px;color:${col};margin-bottom:2px;">${_esc(e.role||'')}${_esc(e.link?` · <a href="${e.link}" style="color:${col};">${v.L.rViewLink}</a>`:'')}</div><div style="font-size:${t.szBody}px;color:${t.clBody};line-height:1.65;">${_tj(e.desc)}</div></div>`).join('');
+if (v.showPubs&&v.pub.length) main+=mainH(v.L.rPubs)+v.pub.map(e=>`<div style="margin-bottom:6px;font-size:${t.szBody}px;color:${t.clBody};"><strong>${_esc(e.title||'')}</strong>${_esc(e.venue?` · <em style="color:${t.clMeta};">${e.venue}</em>`:'')}${_esc(e.link?` · <a href="${e.link}" style="color:${col};">${e.link}</a>`:'')}</div>`).join('');
 return `<div style="font-family:${font};color:${t.clBody};">${header}<div style="display:flex;min-height:1050px;"><div style="width:196px;flex-shrink:0;background:${_th(col,.06)};border-right:1px solid ${_th(col,.15)};padding:16px 14px;">${side}</div><div style="flex:1;padding:16px 22px;">${main}</div></div></div>`;
 }
 
@@ -978,7 +1005,7 @@ return `<!DOCTYPE html><html lang="zh"><head><meta charset="UTF-8">
 <style>*{box-sizing:border-box;margin:0;padding:0;}body{background:#d1d5db;display:flex;justify-content:center;padding:24px;}
 @media print{body{background:#fff;padding:0;}#page{box-shadow:none;}}
 #page{width:794px;min-height:1123px;background:#fff;box-shadow:0 4px 24px rgba(0,0,0,.2);}</style>
-<title>${v.name||'简历'}</title></head>
+<title>${_esc(v.name||'简历')}</title></head>
 <body><div id="page">${body}</div></body></html>`;
 }
 function _tw() {
@@ -1073,7 +1100,9 @@ function _snapshotState() {
     expanded: Array.from(S.expanded),
     form: {
       name:v.name, nameEn:v.nameEn, jobTitle:v.jobTitle, phone:v.phone,
-      email:v.email, city:v.city, linkedin:v.linkedin, wechat:v.wechat,
+      email:v.email, city:v.city, linkedin:v.linkedin,
+      showWechat: (document.getElementById('showWechat') || {checked:false}).checked,
+      wechat: (document.getElementById('wechat') || {value:''}).value,
       showPhoto:v.showPhoto, photoUrl:v.photoUrl,
       showSummary:v.showSummary, summary:v.summary,
       showProject:v.showProject, showSkills:v.showSkills,
@@ -1138,13 +1167,15 @@ function _restore() {
     chk('showProject', f.showProject); chk('showSkills', f.showSkills);
     set('skillTools', f.skillTools); set('skillLang', f.skillLang); set('skillCerts', f.skillCerts);
     chk('showAwards', f.showAwards); chk('showPubs', f.showPubs);
-    // showWechat 的状态从 wechat 有无值反推(_snapshotState 里 wechat 空串代表已关闭)
-    const wechatHasValue = !!(f.wechat && f.wechat.length);
-    chk('showWechat', wechatHasValue);
+    // 优先使用显式 showWechat 字段;fallback 到旧数据(v.wechat 有值即认为开启)
+    const showWechatStored = (typeof f.showWechat === 'boolean') ? f.showWechat : !!(f.wechat && f.wechat.length);
+    chk('showWechat', showWechatStored);
+    const wechatInput = document.getElementById('wechat');
+    if (wechatInput && f.wechat != null) wechatInput.value = f.wechat;
     const photoField = document.getElementById('photoField');
     if (photoField) photoField.style.display = f.showPhoto ? '' : 'none';
     const wechatField = document.getElementById('wechatField');
-    if (wechatField) wechatField.style.display = wechatHasValue ? '' : 'none';
+    if (wechatField) wechatField.style.display = showWechatStored ? '' : 'none';
     const summaryBody = document.getElementById('summaryBody');
     if (summaryBody) summaryBody.style.display = f.showSummary ? '' : 'none';
     const t = data.typo || {};
@@ -1158,9 +1189,8 @@ function _restore() {
     document.querySelectorAll('.lang-tab').forEach((el, i) => {
       el.classList.toggle('active', (i === 0 ? 'zh' : 'en') === S.lang);
     });
-    document.querySelectorAll('.tpl-card').forEach((el, i) => {
-      const names = ['classic','modern','dark','twocol','lines','premium'];
-      el.classList.toggle('active', names[i] === S.template);
+    document.querySelectorAll('.tpl-card').forEach(el => {
+      el.classList.toggle('active', el.dataset.tpl === S.template);
     });
     document.querySelectorAll('.color-swatch').forEach(el => {
       el.classList.toggle('active', el.dataset.color === S.color);
@@ -1461,8 +1491,7 @@ window.runImport = function() {
     ],
     max_tokens: 3000,
     temperature: 0.2,
-    x_kind: 'import',
-    signal: controller.signal
+    x_kind: 'import'
   };
   if (workerUrl) {
     targetUrl = workerUrl.replace(/\/$/, '');
@@ -1541,15 +1570,23 @@ function _wrapSel(ta) {
   var end = ta.selectionEnd;
   var text = ta.value;
   var sel = text.substring(start, end);
-  var before = '**'; var after = '**';
-  // 已包裹 → 解除;未包裹 → 加粗
-  if (sel.startsWith(before) && sel.endsWith(after) && sel.length > before.length + after.length) {
-    var inner = sel.slice(before.length, -after.length);
+  // 空选区不处理,防止插入孤立 ****
+  if (start === end) return;
+  var M = '**';
+  // 情形 A: 选中本身是 **X**  → 去粗
+  if (sel.startsWith(M) && sel.endsWith(M) && sel.length >= M.length * 2 + 1) {
+    var inner = sel.slice(M.length, -M.length);
     ta.value = text.substring(0, start) + inner + text.substring(end);
     ta.setSelectionRange(start, start + inner.length);
+  // 情形 B: 选区两侧刚好是 **   **  → 去粗(把包裹符号也删掉)
+  } else if (text.substring(start - M.length, start) === M
+          && text.substring(end, end + M.length) === M) {
+    ta.value = text.substring(0, start - M.length) + sel + text.substring(end + M.length);
+    ta.setSelectionRange(start - M.length, start - M.length + sel.length);
+  // 情形 C: 加粗
   } else {
-    ta.value = text.substring(0, start) + before + sel + after + text.substring(end);
-    ta.setSelectionRange(start + before.length, start + before.length + sel.length);
+    ta.value = text.substring(0, start) + M + sel + M + text.substring(end);
+    ta.setSelectionRange(start + M.length, start + M.length + sel.length);
   }
   ta.dispatchEvent(new Event('input'));
 }
