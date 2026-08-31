@@ -8,48 +8,91 @@
 <style>
 :root{
   --bg:#0b0f18;--card:#121826;--line:#243044;--text:#e8eef7;--muted:#8b95a8;--accent:#818cf8;
+  --up:#34d399;--down:#f87171;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:Inter,ui-sans-serif,system-ui,"Noto Sans SC",sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
-.wrap{max-width:1180px;margin:0 auto;padding:24px 20px 56px;}
-h1{font-size:20px;font-weight:700;}
+.wrap{max-width:1260px;margin:0 auto;padding:16px 16px 40px;}
+h1{font-size:18px;font-weight:700;}
+h2{font-size:13px;font-weight:650;}
 .hidden{display:none!important;}
 .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+
+/* Gate */
 .gate{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
 .gate-card{width:100%;max-width:380px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:28px;}
 .gate-card p{color:var(--muted);font-size:13px;margin:8px 0 16px;line-height:1.5;}
 input[type=password]{width:100%;background:#0b0f18;border:1px solid var(--line);color:var(--text);border-radius:10px;padding:11px 12px;font-size:14px;outline:none;}
-.btn{border:0;border-radius:10px;padding:9px 14px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;}
+
+/* Common */
+.btn{border:0;border-radius:8px;padding:7px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s;}
 .btn-primary{background:#6366f1;color:#fff;}
+.btn-primary:hover{background:#4f46e5;}
 .btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--line);}
+.btn-ghost:hover{color:var(--text);border-color:#3a4a63;}
 .err{color:#f87171;font-size:12px;margin-top:10px;}
-.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;}
-select{background:#0b0f18;border:1px solid var(--line);color:var(--text);border-radius:8px;padding:8px 10px;font-size:13px;}
-.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px;}
-.kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;}
-.kpi .l{font-size:12px;color:var(--muted);}
-.kpi .n{font-size:26px;font-weight:700;margin-top:4px;letter-spacing:-.03em;}
-.grid2{display:grid;grid-template-columns:1fr;gap:12px;}
-.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;}
-.card h2{font-size:14px;font-weight:650;margin-bottom:4px;}
-.hint{font-size:11px;color:var(--muted);margin-bottom:8px;}
-.plot{width:100%;overflow:hidden;}
+select{background:#0b0f18;border:1px solid var(--line);color:var(--text);border-radius:8px;padding:7px 10px;font-size:12px;}
+
+/* Top bar */
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap;}
+
+/* KPIs */
+.kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:12px;}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative;}
+.kpi .l{font-size:11px;color:var(--muted);}
+.kpi .n{font-size:22px;font-weight:700;margin-top:2px;letter-spacing:-.03em;line-height:1.15;}
+.kpi .d{font-size:10px;margin-top:2px;font-weight:600;}
+.kpi .d.up{color:var(--up);}
+.kpi .d.down{color:var(--down);}
+.kpi .d.flat{color:var(--muted);}
+
+/* Cards grid */
+.grid{display:grid;grid-template-columns:2fr 1fr;gap:10px;margin-bottom:10px;}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px;}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;}
+.card .head{display:flex;align-items:center;justify-content:space-between;margin-bottom:2px;}
+.hint{font-size:10px;color:var(--muted);margin-bottom:6px;}
+.plot{width:100%;overflow:hidden;position:relative;}
 .plot svg{width:100%;height:auto;display:block;}
-.legend{display:flex;flex-wrap:wrap;gap:10px 16px;margin-top:8px;font-size:12px;color:var(--muted);}
-.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px;}
-.pages-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:12px;}
-.funnel{display:flex;flex-direction:column;gap:8px;margin-top:8px;}
+.legend{display:flex;flex-wrap:wrap;gap:6px 12px;margin-top:6px;font-size:11px;color:var(--muted);}
+.legend i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px;vertical-align:-1px;}
+
+/* Tooltip */
+.tt{position:absolute;pointer-events:none;background:rgba(11,15,24,.96);border:1px solid var(--line);border-radius:6px;padding:6px 9px;font-size:11px;color:var(--text);white-space:nowrap;box-shadow:0 4px 14px rgba(0,0,0,.4);z-index:10;opacity:0;transition:opacity .1s;}
+.tt.on{opacity:1;}
+.tt .t-t{color:var(--muted);font-size:10px;}
+.tt .t-v{font-weight:600;margin-top:1px;}
+
+/* Funnel */
+.funnel{display:flex;flex-direction:column;gap:6px;margin-top:6px;}
 .f-step{position:relative;}
-.f-bar{height:42px;border-radius:8px;background:linear-gradient(90deg,#6366f1,#4f46e5);display:flex;align-items:center;justify-content:space-between;padding:0 14px;color:#fff;font-size:13px;min-width:80px;margin:0 auto;}
-.f-conv{text-align:center;font-size:11px;color:var(--muted);padding:2px 0;}
-table{width:100%;border-collapse:collapse;font-size:13px;}
-th,td{padding:7px 4px;border-bottom:1px solid var(--line);}
-th{color:var(--muted);font-weight:500;text-align:left;}
-td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;}
-details{margin-top:12px;color:var(--muted);font-size:12px;line-height:1.65;}
+.f-bar{height:36px;border-radius:6px;background:linear-gradient(90deg,#6366f1,#4f46e5);display:flex;align-items:center;justify-content:space-between;padding:0 12px;color:#fff;font-size:12px;min-width:80px;margin:0 auto;}
+.f-conv{text-align:center;font-size:10px;color:var(--muted);padding:1px 0;}
+
+/* Sub / event dist */
+.sub-list{display:grid;grid-template-columns:1fr 1fr;gap:4px 12px;margin-top:6px;font-size:11px;}
+.sub-item{display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px dashed rgba(36,48,68,.5);}
+.sub-item .em{color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:180px;}
+.sub-item .ts{color:var(--muted);font-size:10px;}
+.ai-bars{display:flex;flex-direction:column;gap:6px;margin-top:6px;}
+.ai-row{display:grid;grid-template-columns:70px 1fr 60px;gap:8px;align-items:center;font-size:11px;}
+.ai-row .lbl{color:var(--muted);}
+.ai-row .barw{height:14px;background:rgba(129,140,248,.1);border-radius:4px;overflow:hidden;}
+.ai-row .barf{height:100%;background:linear-gradient(90deg,#818cf8,#a78bfa);border-radius:4px;transition:width .3s;}
+.ai-row .num{text-align:right;font-variant-numeric:tabular-nums;color:var(--text);}
+
+details{margin-top:12px;color:var(--muted);font-size:11px;line-height:1.65;}
 details summary{cursor:pointer;color:#a5b4fc;}
-@media (max-width:840px){.kpis,.pages-grid{grid-template-columns:1fr 1fr;}}
-@media (max-width:560px){.kpis,.pages-grid{grid-template-columns:1fr;}}
+
+@media (max-width:1024px){
+  .kpis{grid-template-columns:repeat(3,1fr);}
+  .grid{grid-template-columns:1fr;}
+  .grid3{grid-template-columns:1fr;}
+}
+@media (max-width:640px){
+  .kpis{grid-template-columns:1fr 1fr;}
+  .sub-list{grid-template-columns:1fr;}
+}
 </style>
 </head>
 <body>
@@ -74,46 +117,74 @@ details summary{cursor:pointer;color:#a5b4fc;}
         <option value="60">近 60 天</option>
       </select>
       <button class="btn btn-ghost" type="button" onclick="load()">刷新</button>
+      <button class="btn btn-ghost" type="button" onclick="exportCsv()">导出 CSV</button>
+      <button class="btn btn-ghost" type="button" onclick="exportJson()">导出 JSON</button>
       <button class="btn btn-ghost" type="button" onclick="logout()">退出</button>
     </div>
   </div>
+
+  <!-- KPI -->
   <div class="kpis">
-    <div class="kpi" title="page_view 次数之和，UTC 日"><div class="l">页面浏览量 PV</div><div class="n" id="kPv">—</div></div>
-    <div class="kpi" title="每日 IP 去重后加总，非周期 UV"><div class="l">日活加总 ΣDAU</div><div class="n" id="kUv">—</div></div>
-    <div class="kpi" title="简历工具页 pathname 的 PV"><div class="l">简历工具 PV</div><div class="n" id="kResumePv">—</div></div>
-    <div class="kpi" title="导出 PDF + 下载 HTML + 分享"><div class="l">简历产出次数</div><div class="n" id="kOut">—</div></div>
+    <div class="kpi" title="page_view 次数之和，UTC 日"><div class="l">页面浏览量 PV</div><div class="n" id="kPv">—</div><div class="d" id="dPv"></div></div>
+    <div class="kpi" title="每日 IP 去重后加总"><div class="l">日活加总 ΣDAU</div><div class="n" id="kUv">—</div><div class="d" id="dUv"></div></div>
+    <div class="kpi" title="订阅者数量"><div class="l">Newsletter 订阅</div><div class="n" id="kSub">—</div><div class="d" id="dSub"></div></div>
+    <div class="kpi" title="首页 PV → 订阅事件转化率"><div class="l">订阅转化率</div><div class="n" id="kSubCr">—</div><div class="d" id="dSubCr"></div></div>
+    <div class="kpi" title="简历工具页 pathname 的 PV"><div class="l">简历工具 PV</div><div class="n" id="kResumePv">—</div><div class="d" id="dResumePv"></div></div>
+    <div class="kpi" title="导出 PDF + 下载 HTML + 分享"><div class="l">简历产出次数</div><div class="n" id="kOut">—</div><div class="d" id="dOut"></div></div>
   </div>
 
-  <div class="grid2">
+  <!-- 全站每日 + 订阅列表 -->
+  <div class="grid">
     <div class="card">
-      <h2>全站每日浏览量</h2>
-      <div class="hint">X = 日期（UTC）　Y = PV</div>
+      <div class="head"><h2>全站每日浏览量</h2></div>
+      <div class="hint">X = 日期（UTC）　Y = PV　鼠标悬停查看详情</div>
       <div class="plot" id="chartAll"></div>
     </div>
-    <div class="pages-grid">
-      <div class="card">
-        <h2>各子页浏览量</h2>
-        <div class="hint">X = 页面　Y = PV</div>
-        <div class="plot" id="chartPages"></div>
-      </div>
-      <div class="card">
-        <h2>子页每日趋势</h2>
-        <div class="hint">X = 日期　Y = PV　点图例可隐藏</div>
-        <div class="plot" id="chartPageTrend"></div>
-        <div class="legend" id="legend"></div>
-      </div>
-    </div>
     <div class="card">
-      <h2>简历工具漏斗</h2>
-      <div class="hint">访问工具 → 完成引导 → 提交 AI/导入 → 导出或分享</div>
-      <div class="funnel" id="funnel"></div>
+      <div class="head">
+        <h2>Newsletter 订阅</h2>
+        <span class="hint" id="subMeta" style="margin-bottom:0;"></span>
+      </div>
+      <div class="hint">最近 20 位订阅者（脱敏显示）</div>
+      <div class="sub-list" id="subList"></div>
     </div>
   </div>
+
+  <!-- 页面分布 + 趋势 + AI 分布 -->
+  <div class="grid3">
+    <div class="card">
+      <div class="head"><h2>各子页浏览量</h2></div>
+      <div class="hint">按页面聚合 PV，Top 8</div>
+      <div class="plot" id="chartPages"></div>
+    </div>
+    <div class="card">
+      <div class="head"><h2>子页每日趋势</h2></div>
+      <div class="hint">Top 6 页面</div>
+      <div class="plot" id="chartPageTrend"></div>
+      <div class="legend" id="legend"></div>
+    </div>
+    <div class="card">
+      <div class="head"><h2>AI 功能使用分布</h2></div>
+      <div class="hint">AI 润色 / 单段改写 / 简历导入 调用次数</div>
+      <div class="ai-bars" id="aiBars"></div>
+    </div>
+  </div>
+
+  <!-- 漏斗 -->
+  <div class="card">
+    <div class="head"><h2>简历工具漏斗</h2></div>
+    <div class="hint">访问工具 → 完成引导 → 提交 AI/导入 → 导出或分享</div>
+    <div class="funnel" id="funnel"></div>
+  </div>
+
   <details>
     <summary>数据口径</summary>
-    PV 为 page_view 次数；切天为 UTC；日活加总是按天 IP 去重后再相加。漏斗分母为上一层次数。打开打印框即计入导出，取消打印仍计数。AI 提交不等于接口成功。
+    PV 为 page_view 次数；切天为 UTC；日活加总是按天 IP 去重后再相加。环比 = 与本区间同长度的上一区间对比。订阅转化率 = 订阅数 ÷ 首页 PV。漏斗分母为上一层次数。打开打印框即计入导出，取消打印仍计数。AI 提交不等于接口成功。
   </details>
 </div>
+
+<div id="tooltip" class="tt"></div>
+
 <script>
 var API = 'https://api.jayzzhang.online';
 var KEY = 'jz_stats_token';
@@ -136,8 +207,11 @@ var PAGE_NAME = {
   '/tags/': '标签'
 };
 
+var lastRender = null; // 供 CSV/JSON 导出
+
 function token(){ return sessionStorage.getItem(KEY) || ''; }
 function fmt(n){ n = +n || 0; return n >= 10000 ? (n/10000).toFixed(1)+'万' : String(Math.round(n)); }
+function pct(a, b){ if (!b) return null; return Math.round((a - b) / b * 1000) / 10; }
 function esc(s){ return String(s).replace(/[&<>"]/g,function(c){return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]);}); }
 function pageName(p){
   if (PAGE_NAME[p]) return PAGE_NAME[p];
@@ -155,6 +229,34 @@ function niceMax(v){
   else if (n > 2) n = 5;
   return n * p;
 }
+function maskEmail(e){
+  if (!e) return '';
+  var i = e.indexOf('@');
+  if (i <= 0) return e;
+  var name = e.slice(0, i), dom = e.slice(i);
+  if (name.length <= 2) return name[0] + '***' + dom;
+  return name.slice(0, 2) + '***' + name.slice(-1) + dom;
+}
+function relTime(iso){
+  if (!iso) return '';
+  var t = new Date(iso).getTime();
+  if (isNaN(t)) return '';
+  var d = Math.floor((Date.now() - t) / 1000);
+  if (d < 60) return d + ' 秒前';
+  if (d < 3600) return Math.floor(d/60) + ' 分钟前';
+  if (d < 86400) return Math.floor(d/3600) + ' 小时前';
+  return Math.floor(d/86400) + ' 天前';
+}
+function setDelta(id, cur, prev){
+  var el = document.getElementById(id);
+  if (!el) return;
+  var p = pct(cur, prev);
+  if (p === null) { el.textContent = ''; return; }
+  var arrow = p > 0 ? '↑' : p < 0 ? '↓' : '→';
+  var cls = p > 0 ? 'up' : p < 0 ? 'down' : 'flat';
+  el.className = 'd ' + cls;
+  el.textContent = arrow + ' ' + Math.abs(p) + '% 环比';
+}
 
 function login(e){
   e.preventDefault();
@@ -171,27 +273,152 @@ async function boot(){
   document.getElementById('app').classList.remove('hidden');
   await load();
 }
-async function load(){
-  var days = document.getElementById('daysSel').value;
-  try {
-    var res = await fetch(API + '/stats?days=' + days, { headers: { Authorization: 'Bearer ' + token() } });
-    if (res.status === 401) {
-      sessionStorage.removeItem(KEY);
-      document.getElementById('gate').classList.remove('hidden');
-      document.getElementById('app').classList.add('hidden');
-      document.getElementById('gateErr').textContent = 'token 无效';
-      return;
-    }
-    if (!res.ok) throw new Error('加载失败');
-    render(await res.json());
-  } catch (err) { alert(err.message || '加载失败'); }
+
+async function fetchJson(path){
+  var res = await fetch(API + path, { headers: { Authorization: 'Bearer ' + token() } });
+  if (res.status === 401) {
+    sessionStorage.removeItem(KEY);
+    document.getElementById('gate').classList.remove('hidden');
+    document.getElementById('app').classList.add('hidden');
+    document.getElementById('gateErr').textContent = 'token 无效';
+    throw new Error('unauth');
+  }
+  if (!res.ok) throw new Error('加载失败');
+  return res.json();
 }
 
-function render(data){
-  var rows = (data.days || []).slice().reverse();
+async function load(){
+  var days = +document.getElementById('daysSel').value;
+  try {
+    // 拉当前区间 + 上一同长度区间用于环比
+    var totalDays = days * 2;
+    var [stats, subs] = await Promise.all([
+      fetchJson('/stats?days=' + totalDays),
+      fetchJson('/subscribers').catch(function(){ return { total: 0, subscribers: [] }; })
+    ]);
+    render(stats, subs, days);
+  } catch (err) {
+    if (err.message !== 'unauth') alert(err.message || '加载失败');
+  }
+}
+
+function render(stats, subs, days){
+  var allDays = (stats.days || []).slice().reverse(); // 老 → 新
+  var cur = allDays.slice(-days);
+  var prev = allDays.slice(-days * 2, -days);
+  lastRender = { cur: cur, prev: prev, subs: subs, days: days };
+
+  // ── 聚合当前区间
+  var agg = aggregate(cur);
+  var prevAgg = aggregate(prev);
+
+  // ── 订阅计算
+  var subTotal = (subs && subs.total) || 0;
+  var subList = (subs && subs.subscribers) || [];
+  // 本区间新增订阅
+  var startMs = cur.length ? new Date(cur[0].day + 'T00:00:00Z').getTime() : 0;
+  var prevStartMs = prev.length ? new Date(prev[0].day + 'T00:00:00Z').getTime() : 0;
+  var subCurCount = subList.filter(function(s){
+    var t = new Date(s.ts || 0).getTime();
+    return t >= startMs;
+  }).length;
+  var subPrevCount = subList.filter(function(s){
+    var t = new Date(s.ts || 0).getTime();
+    return t >= prevStartMs && t < startMs;
+  }).length;
+
+  // 首页 PV 用于订阅转化率
+  var homePv = (agg.pages['/'] || 0) + (agg.pages[''] || 0);
+  var homePvPrev = (prevAgg.pages['/'] || 0) + (prevAgg.pages[''] || 0);
+  var subCr = homePv ? (subCurCount / homePv * 100).toFixed(1) + '%' : '—';
+  var subCrPrev = homePvPrev ? (subPrevCount / homePvPrev * 100) : 0;
+  var subCrCur = homePv ? (subCurCount / homePv * 100) : 0;
+
+  // ── KPI
+  document.getElementById('kPv').textContent = fmt(agg.pv);
+  document.getElementById('kUv').textContent = fmt(agg.dau);
+  document.getElementById('kSub').textContent = fmt(subTotal);
+  document.getElementById('kSubCr').textContent = subCr;
+  document.getElementById('kResumePv').textContent = fmt(agg.resumePv);
+  document.getElementById('kOut').textContent = fmt(agg.out);
+  setDelta('dPv', agg.pv, prevAgg.pv);
+  setDelta('dUv', agg.dau, prevAgg.dau);
+  setDelta('dSub', subCurCount, subPrevCount);
+  setDelta('dSubCr', subCrCur, subCrPrev);
+  setDelta('dResumePv', agg.resumePv, prevAgg.resumePv);
+  setDelta('dOut', agg.out, prevAgg.out);
+
+  // ── 图表:全站每日
+  var dates = cur.map(function(d){ return d.day.slice(5); });
+  var dailyPv = cur.map(function(d){ return (d.traffic && d.traffic.pv) || 0; });
+  document.getElementById('chartAll').innerHTML = barChart(dates, dailyPv, cur.map(function(d){ return d.day; }), '日期', 'PV');
+
+  // ── 页面总量(Top 8)
+  var pagesTotal = agg.pagesByName;
+  var mergedItems = Object.keys(pagesTotal).map(function(n){ return {name:n, v:pagesTotal[n]}; })
+    .sort(function(a,b){ return b.v-a.v; }).slice(0, 8);
+  document.getElementById('chartPages').innerHTML = barChart(
+    mergedItems.map(function(i){ return i.name; }),
+    mergedItems.map(function(i){ return i.v; }),
+    mergedItems.map(function(i){ return i.name; }),
+    '页面', 'PV'
+  );
+
+  // ── 子页每日趋势 Top 6
+  var pageItems = Object.keys(agg.pages).map(function(k){ return {k:k, name:pageName(k), v:agg.pages[k]}; })
+    .sort(function(a,b){ return b.v - a.v; });
+  var topKeys = pageItems.slice(0, 6).map(function(i){ return i.k; });
+  var series = topKeys.map(function(k, idx){
+    return { name: pageName(k), color: COLORS[idx % COLORS.length], values: agg.pageDaily[k] || dates.map(function(){ return 0; }) };
+  });
+  document.getElementById('chartPageTrend').innerHTML = lineChart(dates, series, cur.map(function(d){ return d.day; }), '日期', 'PV');
+  document.getElementById('legend').innerHTML = series.map(function(s){
+    return '<span><i style="background:' + s.color + '"></i>' + esc(s.name) + '</span>';
+  }).join('');
+
+  // ── AI 分布
+  var aiKinds = { polish: 'AI 润色', rewrite: '单段改写', import: '简历导入' };
+  var aiEvents = agg.events || {};
+  // Worker byKind 也是数据源(如果 stats 返回了)
+  var aiCounts = {
+    polish: (aiEvents.resume_ai_polish_run || 0),
+    rewrite: (aiEvents.resume_ai_rewrite_run || 0),
+    import: (aiEvents.resume_import_run || 0)
+  };
+  var aiMax = Math.max(aiCounts.polish, aiCounts.rewrite, aiCounts.import, 1);
+  document.getElementById('aiBars').innerHTML = Object.keys(aiKinds).map(function(k){
+    var v = aiCounts[k];
+    var w = v / aiMax * 100;
+    return '<div class="ai-row"><span class="lbl">' + aiKinds[k] + '</span><div class="barw"><div class="barf" style="width:' + w + '%"></div></div><span class="num">' + fmt(v) + '</span></div>';
+  }).join('');
+
+  // ── 订阅列表
+  var recent = subList.slice().sort(function(a,b){
+    return (b.ts || '').localeCompare(a.ts || '');
+  }).slice(0, 20);
+  document.getElementById('subMeta').textContent = '共 ' + subTotal + ' 位 · 本期新增 ' + subCurCount;
+  document.getElementById('subList').innerHTML = recent.length
+    ? recent.map(function(s){
+        return '<div class="sub-item"><span class="em" title="' + esc(s.email) + '">' + esc(maskEmail(s.email)) + '</span><span class="ts">' + esc(relTime(s.ts)) + '</span></div>';
+      }).join('')
+    : '<div style="color:var(--muted);font-size:11px;padding:16px;text-align:center;grid-column:1/-1;">还没有订阅者</div>';
+
+  // ── 漏斗
+  var s0 = agg.resumePv;
+  var s1 = agg.events.resume_onboard || 0;
+  var s2 = aiCounts.polish + aiCounts.rewrite + aiCounts.import;
+  var s3 = agg.out;
+  drawFunnel([
+    { name: '1. 访问简历页', v: s0 },
+    { name: '2. 完成引导', v: s1 },
+    { name: '3. 提交 AI / 导入', v: s2 },
+    { name: '4. 导出 / 分享', v: s3 }
+  ]);
+}
+
+function aggregate(rows){
+  var pv = 0, dau = 0, events = {}, pages = {}, pageDaily = {}, pagesByName = {};
   var dates = rows.map(function(d){ return d.day.slice(5); });
-  var dailyPv = rows.map(function(d){ return (d.traffic && d.traffic.pv) || 0; });
-  var pv = 0, dau = 0, events = {}, pagesTotal = {}, pageDaily = {};
   rows.forEach(function(d, i){
     var t = d.traffic || {};
     pv += t.pv || 0;
@@ -199,52 +426,17 @@ function render(data){
     Object.keys(t.events || {}).forEach(function(k){ events[k] = (events[k]||0) + t.events[k]; });
     Object.keys(t.pages || {}).forEach(function(k){
       if (k.indexOf('/ops') === 0) return;
-      pagesTotal[k] = (pagesTotal[k]||0) + t.pages[k];
+      pages[k] = (pages[k]||0) + t.pages[k];
       if (!pageDaily[k]) pageDaily[k] = rows.map(function(){ return 0; });
       pageDaily[k][i] += t.pages[k] || 0;
+      var name = pageName(k);
+      pagesByName[name] = (pagesByName[name]||0) + t.pages[k];
     });
   });
-
   var resumePv = 0;
-  Object.keys(pagesTotal).forEach(function(k){
-    if (k.indexOf('resume-builder') >= 0) resumePv += pagesTotal[k];
-  });
+  Object.keys(pages).forEach(function(k){ if (k.indexOf('resume-builder') >= 0) resumePv += pages[k]; });
   var out = (events.resume_export_pdf||0) + (events.resume_download_html||0) + (events.resume_share||0);
-  document.getElementById('kPv').textContent = fmt(pv);
-  document.getElementById('kUv').textContent = fmt(dau);
-  document.getElementById('kResumePv').textContent = fmt(resumePv);
-  document.getElementById('kOut').textContent = fmt(out);
-
-  document.getElementById('chartAll').innerHTML = barChart(dates, dailyPv, '日期', 'PV');
-
-  var pageItems = Object.keys(pagesTotal).map(function(k){ return {k:k, name:pageName(k), v:pagesTotal[k]}; })
-    .sort(function(a,b){ return b.v - a.v; });
-  var merged = {};
-  pageItems.forEach(function(it){
-    merged[it.name] = (merged[it.name]||0) + it.v;
-  });
-  var mergedItems = Object.keys(merged).map(function(n){ return {name:n, v:merged[n]}; }).sort(function(a,b){ return b.v-a.v; }).slice(0, 8);
-  document.getElementById('chartPages').innerHTML = barChart(mergedItems.map(function(i){ return i.name; }), mergedItems.map(function(i){ return i.v; }), '页面', 'PV');
-
-  var topKeys = pageItems.slice(0, 6).map(function(i){ return i.k; });
-  var series = topKeys.map(function(k, idx){
-    return { name: pageName(k), color: COLORS[idx % COLORS.length], values: pageDaily[k] || dates.map(function(){ return 0; }) };
-  });
-  document.getElementById('chartPageTrend').innerHTML = lineChart(dates, series, '日期', 'PV');
-  document.getElementById('legend').innerHTML = series.map(function(s){
-    return '<span><i style="background:' + s.color + '"></i>' + esc(s.name) + '</span>';
-  }).join('');
-
-  var s0 = resumePv;
-  var s1 = events.resume_onboard || 0;
-  var s2 = (events.resume_import_run||0) + (events.resume_ai_polish_run||0) + (events.resume_ai_rewrite_run||0);
-  var s3 = out;
-  drawFunnel([
-    { name: '1. 访问简历页', v: s0 },
-    { name: '2. 完成引导', v: s1 },
-    { name: '3. 提交 AI / 导入', v: s2 },
-    { name: '4. 导出 / 分享', v: s3 }
-  ]);
+  return { pv:pv, dau:dau, events:events, pages:pages, pageDaily:pageDaily, pagesByName:pagesByName, resumePv:resumePv, out:out, dates:dates };
 }
 
 function drawFunnel(steps){
@@ -261,37 +453,62 @@ function drawFunnel(steps){
   document.getElementById('funnel').innerHTML = html;
 }
 
-function barChart(labels, values, xTitle, yTitle){
-  var W = 640, H = 260, L = 48, R = 16, T = 16, B = 52;
+/* ── Tooltip ── */
+var tt = document.getElementById('tooltip');
+function bindTooltip(container){
+  container.querySelectorAll('[data-tt]').forEach(function(el){
+    el.addEventListener('mouseenter', function(ev){
+      tt.innerHTML = el.getAttribute('data-tt');
+      tt.classList.add('on');
+      moveTt(ev);
+    });
+    el.addEventListener('mousemove', moveTt);
+    el.addEventListener('mouseleave', function(){ tt.classList.remove('on'); });
+  });
+}
+function moveTt(ev){
+  tt.style.left = (ev.pageX + 12) + 'px';
+  tt.style.top = (ev.pageY - 24) + 'px';
+}
+
+function attrEsc(s){ return String(s).replace(/"/g,'&quot;'); }
+
+function barChart(labels, values, fullLabels, xTitle, yTitle){
+  var W = 640, H = 240, L = 44, R = 12, T = 14, B = 44;
   var max = niceMax(Math.max.apply(null, values.concat([0])));
   var iw = W - L - R, ih = H - T - B;
   var n = Math.max(labels.length, 1);
-  var gap = 8, bw = Math.max(8, (iw / n) - gap);
+  var gap = 6, bw = Math.max(6, (iw / n) - gap);
   var parts = [];
   parts.push('<svg viewBox="0 0 ' + W + ' ' + H + '" role="img">');
-  parts.push('<text x="12" y="14" fill="#8b95a8" font-size="11">' + esc(yTitle) + '</text>');
-  parts.push('<text x="' + (W/2) + '" y="' + (H-6) + '" fill="#8b95a8" font-size="11" text-anchor="middle">' + esc(xTitle) + '</text>');
+  parts.push('<text x="10" y="12" fill="#8b95a8" font-size="10">' + esc(yTitle) + '</text>');
+  parts.push('<text x="' + (W/2) + '" y="' + (H-4) + '" fill="#8b95a8" font-size="10" text-anchor="middle">' + esc(xTitle) + '</text>');
   for (var t = 0; t <= 4; t++) {
     var yv = max * (1 - t/4);
     var y = T + ih * t/4;
     parts.push('<line x1="' + L + '" x2="' + (W-R) + '" y1="' + y + '" y2="' + y + '" stroke="#243044" stroke-width="1"/>');
-    parts.push('<text x="' + (L-6) + '" y="' + (y+4) + '" fill="#8b95a8" font-size="10" text-anchor="end">' + fmt(yv) + '</text>');
+    parts.push('<text x="' + (L-6) + '" y="' + (y+3) + '" fill="#8b95a8" font-size="9" text-anchor="end">' + fmt(yv) + '</text>');
   }
   values.forEach(function(v, i){
     var h = max ? (v / max) * ih : 0;
     var x = L + i * (iw / n) + gap/2;
     var y = T + ih - h;
-    parts.push('<rect x="' + x + '" y="' + y + '" width="' + bw + '" height="' + Math.max(h,1) + '" fill="#818cf8" rx="3"><title>' + esc(labels[i]) + ' ' + v + '</title></rect>');
+    var tooltip = esc((fullLabels && fullLabels[i]) || labels[i]) + '<br><span style="color:#818cf8">PV: ' + v + '</span>';
+    parts.push('<rect x="' + x + '" y="' + y + '" width="' + bw + '" height="' + Math.max(h,1) + '" fill="#818cf8" rx="2" data-tt="' + attrEsc(tooltip) + '" style="cursor:pointer"/>');
     var lab = String(labels[i]);
     if (lab.length > 6) lab = lab.slice(0,6);
-    parts.push('<text x="' + (x + bw/2) + '" y="' + (H-B+16) + '" fill="#8b95a8" font-size="10" text-anchor="middle">' + esc(lab) + '</text>');
+    parts.push('<text x="' + (x + bw/2) + '" y="' + (H-B+14) + '" fill="#8b95a8" font-size="9" text-anchor="middle">' + esc(lab) + '</text>');
   });
   parts.push('</svg>');
-  return parts.join('');
+  var html = parts.join('');
+  setTimeout(function(){
+    document.querySelectorAll('.plot').forEach(bindTooltip);
+  }, 0);
+  return html;
 }
 
-function lineChart(labels, series, xTitle, yTitle){
-  var W = 640, H = 260, L = 48, R = 16, T = 16, B = 52;
+function lineChart(labels, series, fullLabels, xTitle, yTitle){
+  var W = 640, H = 240, L = 44, R = 12, T = 14, B = 44;
   var all = [0];
   series.forEach(function(s){ s.values.forEach(function(v){ all.push(v); }); });
   var max = niceMax(Math.max.apply(null, all));
@@ -300,30 +517,67 @@ function lineChart(labels, series, xTitle, yTitle){
   function xAt(i){ return L + (n === 1 ? iw/2 : i * iw / (n-1)); }
   function yAt(v){ return T + ih - (max ? v / max * ih : 0); }
   var parts = ['<svg viewBox="0 0 ' + W + ' ' + H + '" role="img">'];
-  parts.push('<text x="12" y="14" fill="#8b95a8" font-size="11">' + esc(yTitle) + '</text>');
-  parts.push('<text x="' + (W/2) + '" y="' + (H-6) + '" fill="#8b95a8" font-size="11" text-anchor="middle">' + esc(xTitle) + '</text>');
+  parts.push('<text x="10" y="12" fill="#8b95a8" font-size="10">' + esc(yTitle) + '</text>');
+  parts.push('<text x="' + (W/2) + '" y="' + (H-4) + '" fill="#8b95a8" font-size="10" text-anchor="middle">' + esc(xTitle) + '</text>');
   for (var t = 0; t <= 4; t++) {
     var yv = max * (1 - t/4);
     var y = T + ih * t/4;
     parts.push('<line x1="' + L + '" x2="' + (W-R) + '" y1="' + y + '" y2="' + y + '" stroke="#243044"/>');
-    parts.push('<text x="' + (L-6) + '" y="' + (y+4) + '" fill="#8b95a8" font-size="10" text-anchor="end">' + fmt(yv) + '</text>');
+    parts.push('<text x="' + (L-6) + '" y="' + (y+3) + '" fill="#8b95a8" font-size="9" text-anchor="end">' + fmt(yv) + '</text>');
   }
   var step = n > 10 ? Math.ceil(n / 7) : 1;
   labels.forEach(function(lab, i){
     if (i % step && i !== n-1) return;
-    parts.push('<text x="' + xAt(i) + '" y="' + (H-B+16) + '" fill="#8b95a8" font-size="10" text-anchor="middle">' + esc(lab) + '</text>');
+    parts.push('<text x="' + xAt(i) + '" y="' + (H-B+14) + '" fill="#8b95a8" font-size="9" text-anchor="middle">' + esc(lab) + '</text>');
   });
   series.forEach(function(s){
     var d = s.values.map(function(v,i){ return (i? 'L':'M') + xAt(i) + ' ' + yAt(v); }).join(' ');
-    parts.push('<path d="' + d + '" fill="none" stroke="' + s.color + '" stroke-width="2"/>');
+    parts.push('<path d="' + d + '" fill="none" stroke="' + s.color + '" stroke-width="1.6"/>');
     s.values.forEach(function(v,i){
-      parts.push('<circle cx="' + xAt(i) + '" cy="' + yAt(v) + '" r="2.5" fill="' + s.color + '"><title>' + esc(s.name) + ' ' + labSafe(labels[i]) + ' ' + v + '</title></circle>');
+      var tooltip = esc(s.name) + '<br><span class="t-t">' + esc((fullLabels && fullLabels[i]) || labels[i]) + '</span><br><span style="color:' + s.color + '">PV: ' + v + '</span>';
+      parts.push('<circle cx="' + xAt(i) + '" cy="' + yAt(v) + '" r="3" fill="' + s.color + '" data-tt="' + attrEsc(tooltip) + '" style="cursor:pointer"/>');
     });
   });
   parts.push('</svg>');
   return parts.join('');
 }
-function labSafe(s){ return String(s||''); }
+
+/* ── 导出 ── */
+function exportCsv(){
+  if (!lastRender) return;
+  var rows = [['date','pv','uv','resume_export_pdf','resume_download_html','resume_share','resume_ai_polish_run','resume_ai_rewrite_run','resume_import_run','resume_onboard']];
+  lastRender.cur.forEach(function(d){
+    var t = d.traffic || {}; var e = t.events || {};
+    rows.push([
+      d.day, t.pv||0, t.uv||0,
+      e.resume_export_pdf||0, e.resume_download_html||0, e.resume_share||0,
+      e.resume_ai_polish_run||0, e.resume_ai_rewrite_run||0, e.resume_import_run||0,
+      e.resume_onboard||0
+    ]);
+  });
+  var csv = rows.map(function(r){ return r.join(','); }).join('\n');
+  var blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' });
+  downloadBlob(blob, 'stats-' + new Date().toISOString().slice(0,10) + '.csv');
+}
+function exportJson(){
+  if (!lastRender) return;
+  var payload = {
+    exported_at: new Date().toISOString(),
+    range_days: lastRender.days,
+    stats_current: lastRender.cur,
+    stats_previous: lastRender.prev,
+    subscribers_total: (lastRender.subs && lastRender.subs.total) || 0
+  };
+  var blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+  downloadBlob(blob, 'stats-' + new Date().toISOString().slice(0,10) + '.json');
+}
+function downloadBlob(blob, name){
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url; a.download = name;
+  document.body.appendChild(a); a.click();
+  setTimeout(function(){ URL.revokeObjectURL(url); a.remove(); }, 100);
+}
 
 if (token()) boot();
 </script>
