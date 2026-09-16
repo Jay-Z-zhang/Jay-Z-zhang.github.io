@@ -88,12 +88,9 @@ const { Content, headings } = await render(post);
         post.data.tags && post.data.tags?.length > 0 ? (
           <div class="flex gap-2 pt-2">
             {post.data.tags.map((tag) => (
-              <a
-                href={`/tags/${tag}`}
-                class="rounded-sm border border-border bg-secondary px-2 py-1 text-sm text-muted-fg transition-colors duration-300 ease-in-out hover:border-primary/30 hover:text-primary"
-              >
+              <span class="rounded-sm border border-border bg-secondary px-2 py-1 text-sm text-muted-fg">
                 {tag}
-              </a>
+              </span>
             ))}
           </div>
         ) : null
