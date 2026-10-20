@@ -665,6 +665,10 @@ function _esc(s) {
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
+function _safeHref(u) {
+  const s = String(u || '').trim();
+  return /^https?:\/\//i.test(s) ? _esc(s) : '';
+}
 function _md(text) {
 if (!text) return '';
 // 先转义,再把 **...** 恢复为 <strong>
@@ -694,15 +698,15 @@ const sections = [];
 sections.push(`
 <div style="text-align:center;padding-bottom:12px;border-bottom:2px solid ${col};margin-bottom:14px;position:relative;">
 ${v.showPhoto && v.photoUrl ? `<img src="${_esc(v.photoUrl)}" alt="${_esc(v.name || 'Profile')}" style="position:absolute;right:0;top:0;width:62px;height:82px;object-fit:cover;border-radius:3px;">` : ''}
-<div style="font-size:${t.szName}px;font-weight:700;letter-spacing:.02em;color:${t.clName};">${_esc(v.name || '姓名')}${_esc(v.nameEn ? `<span style="font-size:${Math.round(t.szName*0.62)}px;font-weight:400;color:${t.clMeta};margin-left:10px;">${_esc(v.nameEn)}</span>` : '')}</div>
-${_esc(v.jobTitle ? `<div style="font-size:${t.szRole}px;color:${col};margin-top:4px;font-weight:500;">${v.jobTitle}</div>` : '')}
+<div style="font-size:${t.szName}px;font-weight:700;letter-spacing:.02em;color:${t.clName};">${_esc(v.name || '姓名')}${(v.nameEn ?`<span style="font-size:${Math.round(t.szName*0.62)}px;font-weight:400;color:${t.clMeta};margin-left:10px;">${_esc(v.nameEn)}</span>`:'')}</div>
+${(v.jobTitle ?`<div style="font-size:${t.szRole}px;color:${col};margin-top:4px;font-weight:500;">${_esc(v.jobTitle)}</div>`:'')}
 <div style="font-size:${t.szMeta}px;margin-top:6px;">${_tk(v, t.clBody)}</div>
 </div>`);
 if (v.showSummary && v.summary) sections.push(_tm(v.L.rSummary, `<p style="line-height:1.7;font-size:${t.szBody}px;color:${t.clBody};">${_md(v.summary)}</p>`, col, t));
 if (v.edu.length) sections.push(_tm(v.L.rEdu, v.edu.map(e=>`
 <div style="margin-bottom:8px;"><div style="display:flex;justify-content:space-between;">
 <strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${_esc(e.school||'')}</strong><span style="font-size:${t.szMeta}px;color:${t.clMeta};">${_esc(e.period||'')}</span>
-</div><div style="font-size:${t.szRole}px;color:${t.clRole};">${_esc(e.degree||'')}${_esc(e.gpa?` &nbsp;|&nbsp; <span style="color:${col}">${e.gpa}</span>`:'')}</div></div>`).join(''), col, t));
+</div><div style="font-size:${t.szRole}px;color:${t.clRole};">${_esc(e.degree||'')}${(e.gpa?` &nbsp;|&nbsp; <span style="color:${col}">${_esc(e.gpa)}</span>`:'')}</div></div>`).join(''), col, t));
 if (v.work.length) sections.push(_tm(v.L.rWork, v.work.map(e=>`
 <div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;">
 <strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${_esc(e.company||'')}</strong><span style="font-size:${t.szMeta}px;color:${t.clMeta};">${_esc(e.period||'')}</span>
@@ -711,7 +715,7 @@ if (v.work.length) sections.push(_tm(v.L.rWork, v.work.map(e=>`
 if (v.showProject && v.project.length) sections.push(_tm(v.L.rProject, v.project.map(e=>`
 <div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;align-items:baseline;">
 <strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${_esc(e.name||'')}</strong><span style="font-size:${t.szMeta}px;color:${t.clMeta};">${_esc(e.period||'')}</span>
-</div><div style="font-size:${t.szRole}px;color:${col};margin-bottom:2px;">${_esc(e.role||'')}${_esc(e.link?` · <a href="${e.link}" style="color:${col};text-decoration:none;">${v.L.rViewLink}</a>`:'')}</div>
+</div><div style="font-size:${t.szRole}px;color:${col};margin-bottom:2px;">${_esc(e.role||'')}${(e.link?` · <a href="${_safeHref(e.link)}" style="color:${col};text-decoration:none;">${v.L.rViewLink}</a>`:'')}</div>
 <div style="font-size:${t.szBody}px;color:${t.clBody};line-height:1.65;">${_tj(e.desc)}</div></div>`).join(''), col, t));
 if (v.showSkills && (v.skillTools||v.skillLang||v.skillCerts)) {
 const sk = [];
@@ -722,10 +726,10 @@ sections.push(_tm(v.L.rSkillsSection, sk.join(''), col, t));
 }
 if (v.showAwards && v.award.length) sections.push(_tm(v.L.rAwards, v.award.map(e=>`
 <div style="display:flex;justify-content:space-between;margin-bottom:4px;font-size:${t.szBody}px;">
-<span><strong style="color:${col}">${_esc(e.name||'')}</strong>${_esc(e.org?` · <span style="color:${t.clBody}">${e.org}</span>`:'')}</span><span style="color:${t.clMeta};">${_esc(e.year||'')}</span>
+<span><strong style="color:${col}">${_esc(e.name||'')}</strong>${(e.org?` · <span style="color:${t.clBody}">${_esc(e.org)}</span>`:'')}</span><span style="color:${t.clMeta};">${_esc(e.year||'')}</span>
 </div>`).join(''), col, t));
 if (v.showPubs && v.pub.length) sections.push(_tm(v.L.rPubs, v.pub.map(e=>`
-<div style="margin-bottom:6px;font-size:${t.szBody}px;color:${t.clBody};"><strong>${_esc(e.title||'')}</strong>${_esc(e.venue?` · <em style="color:${t.clMeta};">${e.venue}</em>`:'')}${_esc(e.link?` · <a href="${e.link}" style="color:${col};">${e.link}</a>`:'')}</div>`).join(''), col, t));
+<div style="margin-bottom:6px;font-size:${t.szBody}px;color:${t.clBody};"><strong>${_esc(e.title||'')}</strong>${(e.venue?` · <em style="color:${t.clMeta};">${_esc(e.venue)}</em>`:'')}${(e.link?` · <a href="${_safeHref(e.link)}" style="color:${col};">${_esc(e.link)}</a>`:'')}</div>`).join(''), col, t));
 return `<div style="padding:32px 40px;font-family:${font};color:${t.clBody};">${sections.join('')}</div>`;
 }
 function _tm(title, body, col, t) {
@@ -742,7 +746,7 @@ const sections = [];
 if (v.showSummary && v.summary) sections.push(_to(v.L.rSummary, `<p style="font-size:${t.szBody}px;color:${t.clBody};line-height:1.7;">${_md(v.summary)}</p>`, col, t));
 if (v.edu.length) sections.push(_to(v.L.rEdu, v.edu.map(e=>`
 <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
-<div><strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${_esc(e.school||'')}</strong><br><span style="font-size:${t.szRole}px;color:${t.clRole};">${_esc(e.degree||'')}</span>${_esc(e.gpa?`<br><span style="font-size:${t.szMeta}px;color:${col}">${e.gpa}</span>`:'')}</div>
+<div><strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${_esc(e.school||'')}</strong><br><span style="font-size:${t.szRole}px;color:${t.clRole};">${_esc(e.degree||'')}</span>${(e.gpa?`<br><span style="font-size:${t.szMeta}px;color:${col}">${_esc(e.gpa)}</span>`:'')}</div>
 <span style="font-size:${t.szMeta}px;color:${t.clMeta};white-space:nowrap;padding-top:2px;">${_esc(e.period||'')}</span>
 </div>`).join(''), col, t));
 if (v.work.length) sections.push(_to(v.L.rWork, v.work.map(e=>`
@@ -755,22 +759,22 @@ if (v.showProject && v.project.length) sections.push(_to(v.L.rProject, v.project
 <div style="margin-bottom:10px;padding:10px;background:#f8faff;border-radius:6px;border:1px solid ${_th(col,.2)};">
 <div style="display:flex;justify-content:space-between;align-items:center;">
 <strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${_esc(e.name||'')}</strong>
-${_esc(e.link?`<a href="${e.link}" style="font-size:${t.szMeta}px;color:${col};text-decoration:none;background:${_th(col,.1)};padding:2px 6px;border-radius:4px;">${v.L.rViewLink}</a>`:'')}
+${(e.link?`<a href="${_safeHref(e.link)}" style="font-size:${t.szMeta}px;color:${col};text-decoration:none;background:${_th(col,.1)};padding:2px 6px;border-radius:4px;">${v.L.rViewLink}</a>`:'')}
 </div>
 <div style="font-size:${t.szRole}px;color:${t.clMeta};margin:2px 0;">${_esc(e.role||'')} ${_esc(e.period?`· ${e.period}`:'')}</div>
 <div style="font-size:${t.szBody}px;color:${t.clBody};line-height:1.65;">${_tj(e.desc)}</div>
 </div>`).join(''), col, t));
 if (v.showSkills && (v.skillTools||v.skillLang||v.skillCerts)) {
 const tags = (v.skillTools||'').split(',').filter(s=>s.trim()).map(s=>`<span style="background:${_th(col,.1)};color:${col};padding:2px 8px;border-radius:12px;font-size:${t.szBody}px;margin:2px;display:inline-block;">${_esc(s.trim())}</span>`).join('');
-sections.push(_to(v.L.rSkillsSection, `<div style="margin-bottom:4px;">${tags}</div>${_esc(v.skillLang?`<div style="font-size:${t.szBody}px;color:${t.clBody};margin-top:6px;"><strong>${v.L.rSkillLang}：</strong>${v.skillLang}</div>`:'')}${_esc(v.skillCerts?`<div style="font-size:${t.szBody}px;color:${t.clBody};margin-top:3px;"><strong>${v.L.rSkillCerts}：</strong>${v.skillCerts}</div>`:'')}`, col, t));
+sections.push(_to(v.L.rSkillsSection, `<div style="margin-bottom:4px;">${tags}</div>${(v.skillLang?`<div style="font-size:${t.szBody}px;color:${t.clBody};margin-top:6px;"><strong>${v.L.rSkillLang}：</strong>${_esc(v.skillLang)}</div>`:'')}${(v.skillCerts?`<div style="font-size:${t.szBody}px;color:${t.clBody};margin-top:3px;"><strong>${v.L.rSkillCerts}：</strong>${_esc(v.skillCerts)}</div>`:'')}`, col, t));
 }
-if (v.showAwards && v.award.length) sections.push(_to(v.L.rAwards, v.award.map(e=>`<div style="display:flex;justify-content:space-between;font-size:${t.szBody}px;margin-bottom:4px;"><span><strong style="color:${col}">${_esc(e.name||'')}</strong>${_esc(e.org?` · <span style="color:${t.clBody}">${e.org}</span>`:'')}</span><span style="color:${t.clMeta};">${_esc(e.year||'')}</span></div>`).join(''), col, t));
-if (v.showPubs && v.pub.length) sections.push(_to(v.L.rPubs, v.pub.map(e=>`<div style="margin-bottom:6px;font-size:${t.szBody}px;color:${t.clBody};"><strong>${_esc(e.title||'')}</strong>${_esc(e.venue?` · <em style="color:${t.clMeta};">${e.venue}</em>`:'')}${_esc(e.link?` · <a href="${e.link}" style="color:${col};">${e.link}</a>`:'')}</div>`).join(''), col, t));
+if (v.showAwards && v.award.length) sections.push(_to(v.L.rAwards, v.award.map(e=>`<div style="display:flex;justify-content:space-between;font-size:${t.szBody}px;margin-bottom:4px;"><span><strong style="color:${col}">${_esc(e.name||'')}</strong>${(e.org?` · <span style="color:${t.clBody}">${_esc(e.org)}</span>`:'')}</span><span style="color:${t.clMeta};">${_esc(e.year||'')}</span></div>`).join(''), col, t));
+if (v.showPubs && v.pub.length) sections.push(_to(v.L.rPubs, v.pub.map(e=>`<div style="margin-bottom:6px;font-size:${t.szBody}px;color:${t.clBody};"><strong>${_esc(e.title||'')}</strong>${(e.venue?` · <em style="color:${t.clMeta};">${_esc(e.venue)}</em>`:'')}${(e.link?` · <a href="${_safeHref(e.link)}" style="color:${col};">${_esc(e.link)}</a>`:'')}</div>`).join(''), col, t));
 return `<div style="font-family:${font};color:${t.clBody};">
 <div style="background:${col};color:#fff;padding:28px 36px 20px;">
 ${v.showPhoto && v.photoUrl ? `<img src="${_esc(v.photoUrl)}" alt="${_esc(v.name || 'Profile')}" style="float:right;width:62px;height:82px;object-fit:cover;border-radius:4px;margin-left:12px;">` : ''}
-<div style="font-size:${t.szName}px;font-weight:700;letter-spacing:.01em;">${_esc(v.name||(v.L?v.L.lName:('Na'+'me')))}${_esc(v.nameEn?`<span style="font-size:${Math.round(t.szName*0.54)}px;font-weight:300;opacity:.85;margin-left:10px;">${_esc(v.nameEn)}</span>`:'')}</div>
-${_esc(v.jobTitle?`<div style="font-size:${t.szRole}px;opacity:.9;margin-top:4px;font-weight:400;">${v.jobTitle}</div>`:'')}
+<div style="font-size:${t.szName}px;font-weight:700;letter-spacing:.01em;">${_esc(v.name||(v.L?v.L.lName:('Na'+'me')))}${(v.nameEn?`<span style="font-size:${Math.round(t.szName*0.54)}px;font-weight:300;opacity:.85;margin-left:10px;">${_esc(v.nameEn)}</span>`:'')}</div>
+${(v.jobTitle?`<div style="font-size:${t.szRole}px;opacity:.9;margin-top:4px;font-weight:400;">${_esc(v.jobTitle)}</div>`:'')}
 <div style="font-size:${t.szMeta}px;opacity:.85;margin-top:8px;">${_tk(v,'rgba(255,255,255,.9)')}</div>
 </div>
 <div style="padding:24px 36px;">${sections.join('')}</div>
@@ -791,7 +795,7 @@ if (v.showSummary && v.summary) sections.push(_tq(v.L.rSummary, `<p style="font-
 if (v.edu.length) sections.push(_tq(v.L.rEdu, v.edu.map(e=>`
 <div style="margin-bottom:8px;padding:8px 10px;background:rgba(255,255,255,.04);border-radius:6px;">
 <div style="display:flex;justify-content:space-between;"><strong style="font-size:${t.szOrg}px;color:${textLight};">${_esc(e.school||'')}</strong><span style="font-size:${t.szMeta}px;color:#64748b;">${_esc(e.period||'')}</span></div>
-<div style="font-size:${t.szRole}px;color:#94a3b8;margin-top:2px;">${_esc(e.degree||'')}${_esc(e.gpa?` | <span style="color:${col}">${e.gpa}</span>`:'')}</div>
+<div style="font-size:${t.szRole}px;color:#94a3b8;margin-top:2px;">${_esc(e.degree||'')}${(e.gpa?` | <span style="color:${col}">${_esc(e.gpa)}</span>`:'')}</div>
 </div>`).join(''), col, t));
 if (v.work.length) sections.push(_tq(v.L.rWork, v.work.map(e=>`
 <div style="margin-bottom:12px;border-left:3px solid ${col};padding-left:12px;">
@@ -803,22 +807,22 @@ if (v.showProject && v.project.length) sections.push(_tq(v.L.rProject, v.project
 <div style="margin-bottom:10px;padding:10px;background:rgba(255,255,255,.05);border-radius:8px;border:1px solid ${_th(col,.25)};">
 <div style="display:flex;justify-content:space-between;align-items:center;">
 <strong style="font-size:${t.szOrg}px;color:${textLight};">${_esc(e.name||'')}</strong>
-${_esc(e.link?`<a href="${e.link}" style="font-size:${t.szMeta}px;color:${col};text-decoration:none;background:${_th(col,.15)};padding:2px 6px;border-radius:4px;">${v.L.rViewLink}</a>`:'')}
+${(e.link?`<a href="${_safeHref(e.link)}" style="font-size:${t.szMeta}px;color:${col};text-decoration:none;background:${_th(col,.15)};padding:2px 6px;border-radius:4px;">${v.L.rViewLink}</a>`:'')}
 </div>
 <div style="font-size:${t.szRole}px;color:#64748b;margin:2px 0;">${_esc(e.role||'')} ${_esc(e.period?`· ${e.period}`:'')}</div>
 <div style="font-size:${t.szBody}px;color:#94a3b8;line-height:1.65;">${_tj(e.desc)}</div>
 </div>`).join(''), col, t));
 if (v.showSkills && (v.skillTools||v.skillLang||v.skillCerts)) {
 const tags = (v.skillTools||'').split(',').filter(s=>s.trim()).map(s=>`<span style="background:${_th(col,.15)};color:${col};border:1px solid ${_th(col,.3)};padding:2px 8px;border-radius:12px;font-size:${t.szBody}px;margin:2px;display:inline-block;">${_esc(s.trim())}</span>`).join('');
-sections.push(_tq(v.L.rSkillsSection, `<div>${tags}</div>${_esc(v.skillLang?`<div style="font-size:${t.szBody}px;color:#94a3b8;margin-top:6px;"><span style="color:${col};font-weight:600;">${v.L.rSkillLang} </span>${v.skillLang}</div>`:'')}${_esc(v.skillCerts?`<div style="font-size:${t.szBody}px;color:#94a3b8;margin-top:3px;"><span style="color:${col};font-weight:600;">${v.L.rSkillCerts} </span>${v.skillCerts}</div>`:'')}`, col, t));
+sections.push(_tq(v.L.rSkillsSection, `<div>${tags}</div>${(v.skillLang?`<div style="font-size:${t.szBody}px;color:#94a3b8;margin-top:6px;"><span style="color:${col};font-weight:600;">${v.L.rSkillLang} </span>${_esc(v.skillLang)}</div>`:'')}${(v.skillCerts?`<div style="font-size:${t.szBody}px;color:#94a3b8;margin-top:3px;"><span style="color:${col};font-weight:600;">${v.L.rSkillCerts} </span>${_esc(v.skillCerts)}</div>`:'')}`, col, t));
 }
 if (v.showAwards && v.award.length) sections.push(_tq(v.L.rAwards, v.award.map(e=>`<div style="display:flex;justify-content:space-between;font-size:${t.szBody}px;margin-bottom:4px;color:#94a3b8;"><span><span style="display:inline-block;width:4px;height:4px;border-radius:50%;background:${col};margin-right:8px;vertical-align:middle;"></span><span style="color:${textLight}">${_esc(e.name||'')}</span>${_esc(e.org?` · ${e.org}`:'')}</span><span style="color:#64748b;">${_esc(e.year||'')}</span></div>`).join(''), col, t));
-if (v.showPubs && v.pub.length) sections.push(_tq(v.L.rPubs, v.pub.map(e=>`<div style="margin-bottom:6px;font-size:${t.szBody}px;color:#94a3b8;"><span style="color:${textLight}">${_esc(e.title||'')}</span>${_esc(e.venue?` · <em>${e.venue}</em>`:'')}${_esc(e.link?` · <a href="${e.link}" style="color:${col};">${e.link}</a>`:'')}</div>`).join(''), col, t));
+if (v.showPubs && v.pub.length) sections.push(_tq(v.L.rPubs, v.pub.map(e=>`<div style="margin-bottom:6px;font-size:${t.szBody}px;color:#94a3b8;"><span style="color:${textLight}">${_esc(e.title||'')}</span>${(e.venue?` · <em>${_esc(e.venue)}</em>`:'')}${(e.link?` · <a href="${_safeHref(e.link)}" style="color:${col};">${_esc(e.link)}</a>`:'')}</div>`).join(''), col, t));
 return `<div style="font-family:${font};background:${bg};min-height:1123px;">
 <div style="background:linear-gradient(135deg,${col} 0%,${bg2} 60%);padding:28px 36px 20px;">
 ${v.showPhoto && v.photoUrl ? `<img src="${_esc(v.photoUrl)}" alt="${_esc(v.name || 'Profile')}" style="float:right;width:62px;height:82px;object-fit:cover;border-radius:6px;border:2px solid ${_th(col,.4)};margin-left:12px;">` : ''}
-<div style="font-size:${t.szName}px;font-weight:700;color:#fff;letter-spacing:.01em;">${_esc(v.name||(v.L?v.L.lName:('Na'+'me')))}${_esc(v.nameEn?`<span style="font-size:${Math.round(t.szName*0.54)}px;font-weight:300;opacity:.7;margin-left:10px;">${_esc(v.nameEn)}</span>`:'')}</div>
-${_esc(v.jobTitle?`<div style="font-size:${t.szRole}px;color:${_tg(col,120)};margin-top:4px;">${v.jobTitle}</div>`:'')}
+<div style="font-size:${t.szName}px;font-weight:700;color:#fff;letter-spacing:.01em;">${_esc(v.name||(v.L?v.L.lName:('Na'+'me')))}${(v.nameEn?`<span style="font-size:${Math.round(t.szName*0.54)}px;font-weight:300;opacity:.7;margin-left:10px;">${_esc(v.nameEn)}</span>`:'')}</div>
+${(v.jobTitle?`<div style="font-size:${t.szRole}px;color:${_tg(col,120)};margin-top:4px;">${_esc(v.jobTitle)}</div>`:'')}
 <div style="font-size:${t.szMeta}px;color:rgba(255,255,255,.7);margin-top:8px;">${_tk(v,'rgba(255,255,255,.9)')}</div>
 </div>
 <div style="padding:24px 36px;">${sections.join('')}</div>
@@ -841,8 +845,8 @@ const sideContent = [];
 if (v.showPhoto && v.photoUrl) sideContent.push(`<div style="text-align:center;margin-bottom:16px;"><img src="${_esc(v.photoUrl)}" alt="${_esc(v.name || 'Profile')}" style="width:80px;height:107px;object-fit:cover;border-radius:6px;border:2px solid rgba(255,255,255,.3);"></div>`);
 sideContent.push(`<div style="text-align:center;margin-bottom:16px;">
 <div style="font-size:${Math.round(t.szName*0.75)}px;font-weight:700;color:#fff;line-height:1.3;">${_esc(v.name||(v.L?v.L.lName:('Na'+'me')))}</div>
-${_esc(v.nameEn?`<div style="font-size:${t.szMeta}px;color:rgba(255,255,255,.6);margin-top:2px;">${_esc(v.nameEn)}</div>`:'')}
-${_esc(v.jobTitle?`<div style="font-size:${t.szMeta}px;color:rgba(255,255,255,.85);margin-top:6px;font-weight:500;">${v.jobTitle}</div>`:'')}
+${(v.nameEn?`<div style="font-size:${t.szMeta}px;color:rgba(255,255,255,.6);margin-top:2px;">${_esc(v.nameEn)}</div>`:'')}
+${(v.jobTitle?`<div style="font-size:${t.szMeta}px;color:rgba(255,255,255,.85);margin-top:6px;font-weight:500;">${_esc(v.jobTitle)}</div>`:'')}
 </div>`);
 const contacts = [];
 if (v.phone) contacts.push(v.phone);
@@ -860,7 +864,7 @@ if (v.showSummary && v.summary) mainContent.push(_tt(v.L.rSummary, `<p style="fo
 if (v.edu.length) mainContent.push(_tt(v.L.rEdu, v.edu.map(e=>`
 <div style="margin-bottom:8px;"><div style="display:flex;justify-content:space-between;">
 <strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${_esc(e.school||'')}</strong><span style="font-size:${t.szMeta}px;color:${t.clMeta};">${_esc(e.period||'')}</span>
-</div><div style="font-size:${t.szRole}px;color:${t.clRole};">${_esc(e.degree||'')}${_esc(e.gpa?` | <span style="color:${col}">${e.gpa}</span>`:'')}</div></div>`).join(''), col, t));
+</div><div style="font-size:${t.szRole}px;color:${t.clRole};">${_esc(e.degree||'')}${(e.gpa?` | <span style="color:${col}">${_esc(e.gpa)}</span>`:'')}</div></div>`).join(''), col, t));
 if (v.work.length) mainContent.push(_tt(v.L.rWork, v.work.map(e=>`
 <div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;">
 <strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${_esc(e.company||'')}</strong><span style="font-size:${t.szMeta}px;color:${t.clMeta};">${_esc(e.period||'')}</span>
@@ -869,9 +873,9 @@ if (v.work.length) mainContent.push(_tt(v.L.rWork, v.work.map(e=>`
 if (v.showProject && v.project.length) mainContent.push(_tt(v.L.rProject, v.project.map(e=>`
 <div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;align-items:baseline;">
 <strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${_esc(e.name||'')}</strong><span style="font-size:${t.szMeta}px;color:${t.clMeta};">${_esc(e.period||'')}</span>
-</div><div style="font-size:${t.szRole}px;color:${col};margin-bottom:2px;">${_esc(e.role||'')}${_esc(e.link?` · <a href="${e.link}" style="color:${col};">${v.L.rViewLink}</a>`:'')}</div>
+</div><div style="font-size:${t.szRole}px;color:${col};margin-bottom:2px;">${_esc(e.role||'')}${(e.link?` · <a href="${_safeHref(e.link)}" style="color:${col};">${v.L.rViewLink}</a>`:'')}</div>
 <div style="font-size:${t.szBody}px;color:${t.clBody};line-height:1.65;">${_tj(e.desc)}</div></div>`).join(''), col, t));
-if (v.showPubs && v.pub.length) mainContent.push(_tt(v.L.rPubs, v.pub.map(e=>`<div style="margin-bottom:6px;font-size:${t.szBody}px;color:${t.clBody};"><strong>${_esc(e.title||'')}</strong>${_esc(e.venue?` · <em style="color:${t.clMeta};">${e.venue}</em>`:'')}${_esc(e.link?` · <a href="${e.link}" style="color:${col};">${e.link}</a>`:'')}</div>`).join(''), col, t));
+if (v.showPubs && v.pub.length) mainContent.push(_tt(v.L.rPubs, v.pub.map(e=>`<div style="margin-bottom:6px;font-size:${t.szBody}px;color:${t.clBody};"><strong>${_esc(e.title||'')}</strong>${(e.venue?` · <em style="color:${t.clMeta};">${_esc(e.venue)}</em>`:'')}${(e.link?` · <a href="${_safeHref(e.link)}" style="color:${col};">${_esc(e.link)}</a>`:'')}</div>`).join(''), col, t));
 return `<div style="font-family:${font};display:flex;min-height:1123px;color:${t.clBody};">
 <div style="width:220px;flex-shrink:0;background:${col};color:#fff;padding:28px 18px;min-height:1123px;">${sideContent.join('')}</div>
 <div style="flex:1;padding:28px 28px;">${mainContent.join('')}</div>
@@ -904,23 +908,23 @@ if (v.wechat) ci.push((v.L?v.L.rWechat:'WeChat')+': '+v.wechat);
 let html = `<div style="font-family:${font};color:${t.clBody};padding:28px 36px 24px;">`;
 html += `<div style="position:relative;padding-right:${v.showPhoto&&v.photoUrl?'78px':'0'};">
 ${v.showPhoto&&v.photoUrl?`<img src="${_esc(v.photoUrl)}" alt="${_esc(v.name||'Profile')}" style="position:absolute;right:0;top:0;width:62px;height:82px;object-fit:cover;border-radius:3px;">`:'' }
-<div style="font-size:${t.szName}px;font-weight:700;color:${t.clName};">${_esc(v.name||'姓名')}${_esc(v.nameEn?`<span style="font-size:${Math.round(t.szName*.52)}px;font-weight:400;color:${t.clMeta};margin-left:10px;">${_esc(v.nameEn)}</span>`:'')}</div>
-${_esc(v.jobTitle?`<div style="font-size:${t.szRole}px;color:${col};font-weight:500;margin-top:4px;">${v.jobTitle}</div>`:'')}
+<div style="font-size:${t.szName}px;font-weight:700;color:${t.clName};">${_esc(v.name||'姓名')}${(v.nameEn?`<span style="font-size:${Math.round(t.szName*.52)}px;font-weight:400;color:${t.clMeta};margin-left:10px;">${_esc(v.nameEn)}</span>`:'')}</div>
+${(v.jobTitle?`<div style="font-size:${t.szRole}px;color:${col};font-weight:500;margin-top:4px;">${_esc(v.jobTitle)}</div>`:'')}
 ${ci.length?`<div style="font-size:${t.szMeta}px;color:${t.clMeta};margin-top:6px;">${ci.map(_esc).join('<span style="margin:0 5px;opacity:.4;">|</span>')}</div>`:''}
 <div style="height:2px;background:${col};margin-top:12px;border-radius:1px;opacity:.7;"></div>
 </div>`;
 if (v.showSummary&&v.summary) html+=secH(v.L.rSummary)+`<p style="font-size:${t.szBody}px;color:${t.clBody};line-height:1.7;margin:0;">${_md(v.summary)}</p>`;
-if (v.edu.length) html+=secH(v.L.rEdu)+v.edu.map(e=>`<div style="margin-bottom:8px;"><div style="display:flex;justify-content:space-between;"><strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${_esc(e.school||'')}</strong><span style="font-size:${t.szMeta}px;color:${t.clMeta};">${_esc(e.period||'')}</span></div><div style="font-size:${t.szRole}px;color:${t.clRole};">${_esc(e.degree||'')}${_esc(e.gpa?` &nbsp;·&nbsp; <span style="color:${col};">${e.gpa}</span>`:'')}</div></div>`).join('');
+if (v.edu.length) html+=secH(v.L.rEdu)+v.edu.map(e=>`<div style="margin-bottom:8px;"><div style="display:flex;justify-content:space-between;"><strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${_esc(e.school||'')}</strong><span style="font-size:${t.szMeta}px;color:${t.clMeta};">${_esc(e.period||'')}</span></div><div style="font-size:${t.szRole}px;color:${t.clRole};">${_esc(e.degree||'')}${(e.gpa?` &nbsp;·&nbsp; <span style="color:${col};">${_esc(e.gpa)}</span>`:'')}</div></div>`).join('');
 if (v.work.length) html+=secH(v.L.rWork)+v.work.map(e=>`<div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;"><strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${_esc(e.company||'')}</strong><span style="font-size:${t.szMeta}px;color:${t.clMeta};">${_esc(e.period||'')}</span></div><div style="font-size:${t.szRole}px;color:${col};font-weight:500;margin-bottom:3px;">${_esc(e.role||'')}</div><div style="font-size:${t.szBody}px;color:${t.clBody};line-height:1.65;">${_tj(e.desc)}</div></div>`).join('');
-if (v.showProject&&v.project.length) html+=secH(v.L.rProject)+v.project.map(e=>`<div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;align-items:baseline;"><strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${_esc(e.name||'')}</strong><span style="font-size:${t.szMeta}px;color:${t.clMeta};">${_esc(e.period||'')}</span></div><div style="font-size:${t.szRole}px;color:${col};margin-bottom:2px;">${_esc(e.role||'')}${_esc(e.link?` · <a href="${e.link}" style="color:${col};text-decoration:none;">${v.L.rViewLink}</a>`:'')}</div><div style="font-size:${t.szBody}px;color:${t.clBody};line-height:1.65;">${_tj(e.desc)}</div></div>`).join('');
+if (v.showProject&&v.project.length) html+=secH(v.L.rProject)+v.project.map(e=>`<div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;align-items:baseline;"><strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${_esc(e.name||'')}</strong><span style="font-size:${t.szMeta}px;color:${t.clMeta};">${_esc(e.period||'')}</span></div><div style="font-size:${t.szRole}px;color:${col};margin-bottom:2px;">${_esc(e.role||'')}${(e.link?` · <a href="${_safeHref(e.link)}" style="color:${col};text-decoration:none;">${v.L.rViewLink}</a>`:'')}</div><div style="font-size:${t.szBody}px;color:${t.clBody};line-height:1.65;">${_tj(e.desc)}</div></div>`).join('');
 if (v.showSkills&&(v.skillTools||v.skillLang||v.skillCerts)){
   html+=secH(v.L.rSkillsSection);
   if(v.skillTools) html+=`<div style="margin-bottom:4px;font-size:${t.szBody}px;color:${t.clBody};"><strong>${v.L.rSkillTools}：</strong>${_esc(v.skillTools)}</div>`;
   if(v.skillLang) html+=`<div style="margin-bottom:4px;font-size:${t.szBody}px;color:${t.clBody};"><strong>${v.L.rSkillLang}：</strong>${_esc(v.skillLang)}</div>`;
   if(v.skillCerts) html+=`<div style="font-size:${t.szBody}px;color:${t.clBody};"><strong>${v.L.rSkillCerts}：</strong>${_esc(v.skillCerts)}</div>`;
 }
-if (v.showAwards&&v.award.length) html+=secH(v.L.rAwards)+v.award.map(e=>`<div style="display:flex;justify-content:space-between;margin-bottom:4px;font-size:${t.szBody}px;"><span><strong style="color:${col};">${_esc(e.name||'')}</strong>${_esc(e.org?` · <span style="color:${t.clBody};">${e.org}</span>`:'')}</span><span style="color:${t.clMeta};">${_esc(e.year||'')}</span></div>`).join('');
-if (v.showPubs&&v.pub.length) html+=secH(v.L.rPubs)+v.pub.map(e=>`<div style="margin-bottom:6px;font-size:${t.szBody}px;color:${t.clBody};"><strong>${_esc(e.title||'')}</strong>${_esc(e.venue?` · <em style="color:${t.clMeta};">${e.venue}</em>`:'')}${_esc(e.link?` · <a href="${e.link}" style="color:${col};">${e.link}</a>`:'')}</div>`).join('');
+if (v.showAwards&&v.award.length) html+=secH(v.L.rAwards)+v.award.map(e=>`<div style="display:flex;justify-content:space-between;margin-bottom:4px;font-size:${t.szBody}px;"><span><strong style="color:${col};">${_esc(e.name||'')}</strong>${(e.org?` · <span style="color:${t.clBody};">${_esc(e.org)}</span>`:'')}</span><span style="color:${t.clMeta};">${_esc(e.year||'')}</span></div>`).join('');
+if (v.showPubs&&v.pub.length) html+=secH(v.L.rPubs)+v.pub.map(e=>`<div style="margin-bottom:6px;font-size:${t.szBody}px;color:${t.clBody};"><strong>${_esc(e.title||'')}</strong>${(e.venue?` · <em style="color:${t.clMeta};">${_esc(e.venue)}</em>`:'')}${(e.link?` · <a href="${_safeHref(e.link)}" style="color:${col};">${_esc(e.link)}</a>`:'')}</div>`).join('');
 return html+'</div>';
 }
 
@@ -934,7 +938,7 @@ function mainH(title) {
   return `<div style="font-size:${t.szSection}px;font-weight:700;color:${t.clSection};padding-bottom:3px;margin:14px 0 7px;border-bottom:1px solid ${_th(col,.2)};">${title}</div>`;
 }
 const header = `<div style="background:${col};color:#fff;padding:18px 22px 14px;display:flex;justify-content:space-between;align-items:flex-start;">
-<div><div style="font-size:${t.szName}px;font-weight:700;">${_esc(v.name||'姓名')}${_esc(v.nameEn?`<span style="font-size:${Math.round(t.szName*.52)}px;font-weight:300;opacity:.8;margin-left:8px;">${_esc(v.nameEn)}</span>`:'')}</div>${_esc(v.jobTitle?`<div style="font-size:${t.szRole}px;opacity:.9;margin-top:4px;">${v.jobTitle}</div>`:'')}</div>
+<div><div style="font-size:${t.szName}px;font-weight:700;">${_esc(v.name||'姓名')}${(v.nameEn?`<span style="font-size:${Math.round(t.szName*.52)}px;font-weight:300;opacity:.8;margin-left:8px;">${_esc(v.nameEn)}</span>`:'')}</div>${(v.jobTitle?`<div style="font-size:${t.szRole}px;opacity:.9;margin-top:4px;">${_esc(v.jobTitle)}</div>`:'')}</div>
 ${v.showPhoto&&v.photoUrl?`<img src="${_esc(v.photoUrl)}" alt="${_esc(v.name||'Profile')}" style="width:58px;height:77px;object-fit:cover;border-radius:4px;border:2px solid rgba(255,255,255,.35);">`:'' }
 </div>`;
 const ci = [];
@@ -952,9 +956,9 @@ if (v.showAwards&&v.award.length) side+=sideH(v.L.rAwards)+v.award.map(e=>`<div 
 let main = '';
 if (v.showSummary&&v.summary) main+=mainH(v.L.rSummary)+`<p style="font-size:${t.szBody}px;color:${t.clBody};line-height:1.7;margin:0;">${_md(v.summary)}</p>`;
 if (v.work.length) main+=mainH(v.L.rWork)+v.work.map(e=>`<div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;"><strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${_esc(e.company||'')}</strong><span style="font-size:${t.szMeta}px;color:${t.clMeta};">${_esc(e.period||'')}</span></div><div style="font-size:${t.szRole}px;color:${col};font-weight:500;margin-bottom:3px;">${_esc(e.role||'')}</div><div style="font-size:${t.szBody}px;color:${t.clBody};line-height:1.65;">${_tj(e.desc)}</div></div>`).join('');
-if (v.edu.length) main+=mainH(v.L.rEdu)+v.edu.map(e=>`<div style="margin-bottom:8px;"><div style="display:flex;justify-content:space-between;"><strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${_esc(e.school||'')}</strong><span style="font-size:${t.szMeta}px;color:${t.clMeta};">${_esc(e.period||'')}</span></div><div style="font-size:${t.szRole}px;color:${t.clRole};">${_esc(e.degree||'')}${_esc(e.gpa?` · <span style="color:${col};">${e.gpa}</span>`:'')}</div></div>`).join('');
-if (v.showProject&&v.project.length) main+=mainH(v.L.rProject)+v.project.map(e=>`<div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;align-items:baseline;"><strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${_esc(e.name||'')}</strong><span style="font-size:${t.szMeta}px;color:${t.clMeta};">${_esc(e.period||'')}</span></div><div style="font-size:${t.szRole}px;color:${col};margin-bottom:2px;">${_esc(e.role||'')}${_esc(e.link?` · <a href="${e.link}" style="color:${col};">${v.L.rViewLink}</a>`:'')}</div><div style="font-size:${t.szBody}px;color:${t.clBody};line-height:1.65;">${_tj(e.desc)}</div></div>`).join('');
-if (v.showPubs&&v.pub.length) main+=mainH(v.L.rPubs)+v.pub.map(e=>`<div style="margin-bottom:6px;font-size:${t.szBody}px;color:${t.clBody};"><strong>${_esc(e.title||'')}</strong>${_esc(e.venue?` · <em style="color:${t.clMeta};">${e.venue}</em>`:'')}${_esc(e.link?` · <a href="${e.link}" style="color:${col};">${e.link}</a>`:'')}</div>`).join('');
+if (v.edu.length) main+=mainH(v.L.rEdu)+v.edu.map(e=>`<div style="margin-bottom:8px;"><div style="display:flex;justify-content:space-between;"><strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${_esc(e.school||'')}</strong><span style="font-size:${t.szMeta}px;color:${t.clMeta};">${_esc(e.period||'')}</span></div><div style="font-size:${t.szRole}px;color:${t.clRole};">${_esc(e.degree||'')}${(e.gpa?` · <span style="color:${col};">${_esc(e.gpa)}</span>`:'')}</div></div>`).join('');
+if (v.showProject&&v.project.length) main+=mainH(v.L.rProject)+v.project.map(e=>`<div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;align-items:baseline;"><strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${_esc(e.name||'')}</strong><span style="font-size:${t.szMeta}px;color:${t.clMeta};">${_esc(e.period||'')}</span></div><div style="font-size:${t.szRole}px;color:${col};margin-bottom:2px;">${_esc(e.role||'')}${(e.link?` · <a href="${_safeHref(e.link)}" style="color:${col};">${v.L.rViewLink}</a>`:'')}</div><div style="font-size:${t.szBody}px;color:${t.clBody};line-height:1.65;">${_tj(e.desc)}</div></div>`).join('');
+if (v.showPubs&&v.pub.length) main+=mainH(v.L.rPubs)+v.pub.map(e=>`<div style="margin-bottom:6px;font-size:${t.szBody}px;color:${t.clBody};"><strong>${_esc(e.title||'')}</strong>${(e.venue?` · <em style="color:${t.clMeta};">${_esc(e.venue)}</em>`:'')}${(e.link?` · <a href="${_safeHref(e.link)}" style="color:${col};">${_esc(e.link)}</a>`:'')}</div>`).join('');
 return `<div style="font-family:${font};color:${t.clBody};">${header}<div style="display:flex;min-height:1050px;"><div style="width:196px;flex-shrink:0;background:${_th(col,.06)};border-right:1px solid ${_th(col,.15)};padding:16px 14px;">${side}</div><div style="flex:1;padding:16px 22px;">${main}</div></div></div>`;
 }
 
