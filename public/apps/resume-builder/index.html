@@ -56,7 +56,7 @@
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@400;600;700&family=Inter:wght@300;400;500;600;700&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&family=Lato:wght@300;400;700&family=Raleway:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="app.css?v=20261020c">
+<link rel="stylesheet" href="app.css?v=20261021b">
 </head>
 <body>
 <!-- Top bar -->
@@ -132,7 +132,7 @@
 </div>
 <div class="app-body">
 <!-- ════ LEFT SIDEBAR ════ -->
-<div class="sidebar">
+<div class="sidebar" id="sidebar">
 
 <!-- 语言 -->
 <div class="sb-section">
@@ -221,6 +221,7 @@
         <div class="tpl-name">精英侧栏</div>
       </div>
     </div>
+    <div class="style-row">
     <!-- Accent color -->
     <div class="field" style="margin-top:12px;">
       <label>主题色</label>
@@ -250,6 +251,7 @@
         <div class="font-opt" data-font="'Raleway',sans-serif" onclick="setFont(this)" style="font-family:Arial,sans-serif">Raleway</div>
         <div class="font-opt" data-font="'JetBrains Mono',monospace" onclick="setFont(this)" style="font-family:monospace">Mono</div>
       </div>
+    </div>
     </div>
   </div>
 </div>
@@ -467,11 +469,14 @@
 <input type="hidden" id="aiApiKey" value="">
 <input type="hidden" id="aiWorkerUrl" value="https://api.jayzzhang.online">
 </div><!-- end sidebar -->
+<div class="pane-split" id="paneSplit" role="separator" aria-orientation="vertical" aria-label="拖动调整填写栏宽度" tabindex="0" title="拖动调整填写栏宽度，双击恢复默认"></div>
 
 <!-- ════ RIGHT PREVIEW ════ -->
 <div class="preview-wrap">
   <div id="pageWarn" class="page-warn" style="display:none;"></div>
-  <div id="resume-preview"></div>
+  <div id="previewFit">
+    <div id="resume-preview"></div>
+  </div>
 </div>
 </div><!-- end app-body -->
 

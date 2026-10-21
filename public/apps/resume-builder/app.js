@@ -1002,9 +1002,49 @@ if (warn) {
     warn.innerHTML = '';
   }
 }
+_fitPreview();
 });
 if (typeof _scheduleSave === 'function') _scheduleSave();
 _saveHistory();
+}
+var _fitLock = false;
+function _fitPreview() {
+  var wrap = document.querySelector('.preview-wrap');
+  var page = document.getElementById('resume-preview');
+  var fit = document.getElementById('previewFit');
+  if (!wrap || !page || !fit || _fitLock) return;
+  var mobile = window.matchMedia('(max-width: 768px)').matches;
+  if (mobile) {
+    page.style.position = '';
+    page.style.left = '';
+    page.style.top = '';
+    page.style.transform = '';
+    page.style.transformOrigin = '';
+    fit.style.width = '';
+    fit.style.height = '';
+    return;
+  }
+  var cs = getComputedStyle(wrap);
+  var padX = (parseFloat(cs.paddingLeft) || 0) + (parseFloat(cs.paddingRight) || 0);
+  var avail = Math.max(160, wrap.clientWidth - padX);
+  var naturalW = 794;
+  var scale = Math.min(1, avail / naturalW);
+  var h = page.scrollHeight || 1123;
+  var nextW = Math.round(naturalW * scale);
+  var nextH = Math.round(h * scale);
+  if (fit.dataset.scale === String(scale) && fit.offsetWidth === nextW && Math.abs(fit.offsetHeight - nextH) < 2) return;
+  _fitLock = true;
+  page.style.position = 'absolute';
+  page.style.left = '0';
+  page.style.top = '0';
+  page.style.transformOrigin = 'top left';
+  page.style.transform = 'scale(' + scale + ')';
+  fit.style.width = nextW + 'px';
+  fit.style.height = nextH + 'px';
+  fit.dataset.scale = String(scale);
+  var warn = document.getElementById('pageWarn');
+  if (warn) warn.style.maxWidth = nextW + 'px';
+  _fitLock = false;
 }
 function _tv() {
 const v = _te();
@@ -2303,6 +2343,65 @@ document.addEventListener('keydown', function(e) {
   else if (open('rewriteDialog') && typeof closeRewriteDialog === 'function') closeRewriteDialog();
   else if (open('aiPolishDialog')) closeAIPolish();
 });
+
+(function initPaneSplit() {
+  var split = document.getElementById('paneSplit');
+  var side = document.getElementById('sidebar');
+  if (!split || !side) return;
+  var KEY = 'resume-builder-side-w';
+  var DEFAULT_W = 380;
+  function maxW() {
+    var body = document.querySelector('.app-body');
+    return body ? Math.max(320, body.clientWidth - 220) : 760;
+  }
+  function apply(w, persist) {
+    w = Math.round(Math.max(280, Math.min(maxW(), w)));
+    document.documentElement.style.setProperty('--side-w', w + 'px');
+    if (persist) {
+      try { localStorage.setItem(KEY, String(w)); } catch (e) {}
+    }
+    _fitPreview();
+  }
+  try {
+    var saved = parseInt(localStorage.getItem(KEY), 10);
+    if (saved) apply(saved, false);
+  } catch (e) {}
+  split.addEventListener('pointerdown', function(e) {
+    if (e.button !== 0) return;
+    if (window.matchMedia('(max-width: 768px)').matches) return;
+    e.preventDefault();
+    split.classList.add('dragging');
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+    var startX = e.clientX;
+    var startW = side.getBoundingClientRect().width;
+    function move(ev) { apply(startW + (ev.clientX - startX), false); }
+    function up(ev) {
+      split.classList.remove('dragging');
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+      apply(startW + (ev.clientX - startX), true);
+      window.removeEventListener('pointermove', move);
+      window.removeEventListener('pointerup', up);
+    }
+    window.addEventListener('pointermove', move);
+    window.addEventListener('pointerup', up);
+  });
+  split.addEventListener('dblclick', function() { apply(DEFAULT_W, true); });
+  split.addEventListener('keydown', function(e) {
+    var cur = side.getBoundingClientRect().width;
+    if (e.key === 'ArrowRight') { e.preventDefault(); apply(cur + 24, true); }
+    else if (e.key === 'ArrowLeft') { e.preventDefault(); apply(cur - 24, true); }
+    else if (e.key === 'Home') { e.preventDefault(); apply(DEFAULT_W, true); }
+  });
+  window.addEventListener('resize', _fitPreview);
+  if (window.ResizeObserver) {
+    var ro = new ResizeObserver(function() { _fitPreview(); });
+    var wrap = document.querySelector('.preview-wrap');
+    if (wrap) ro.observe(wrap);
+  }
+  requestAnimationFrame(_fitPreview);
+})();
 
 (function() {
   try {

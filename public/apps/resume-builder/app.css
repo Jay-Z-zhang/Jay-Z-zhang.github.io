@@ -96,7 +96,9 @@ body{background:var(--app-bg);color:var(--app-text);font-family:'Inter','Noto Sa
   .topbar,.sidebar,.onboard-overlay,.ai-dialog-overlay,.pg-break,#shareToast,#pageWarn{display:none!important;}
   .app-body{display:block!important;height:auto!important;overflow:visible!important;}
   .preview-wrap{display:block!important;overflow:visible!important;padding:0!important;background:#fff!important;position:static!important;}
-  #resume-preview{width:100%!important;min-height:0!important;box-shadow:none!important;zoom:1!important;transform:none!important;-moz-transform:none!important;margin:0 auto!important;}
+  #resume-preview{width:100%!important;min-height:0!important;box-shadow:none!important;zoom:1!important;transform:none!important;-moz-transform:none!important;margin:0 auto!important;position:static!important;left:auto!important;top:auto!important;}
+  #previewFit{width:auto!important;height:auto!important;overflow:visible!important;}
+  .pane-split{display:none!important;}
 }
 
 /* ── Onboarding overlay ── */
@@ -124,12 +126,16 @@ body{background:var(--app-bg);color:var(--app-text);font-family:'Inter','Noto Sa
 /* ── Layout ── */
 .app-body{flex:1;display:flex;overflow:hidden;}
 /* ── Sidebar (left panel) ── */
-.sidebar{width:380px;flex-shrink:0;background:var(--app-surface);border-right:1px solid var(--app-border);overflow-y:auto;display:flex;flex-direction:column;}
+.sidebar{width:var(--side-w,380px);flex-shrink:0;background:var(--app-surface);border-right:1px solid var(--app-border);overflow-y:auto;display:flex;flex-direction:column;container-type:inline-size;container-name:side;}
+.pane-split{width:10px;flex-shrink:0;cursor:col-resize;position:relative;touch-action:none;background:transparent;}
+.pane-split::after{content:'';position:absolute;top:0;bottom:0;left:4px;width:2px;border-radius:2px;background:var(--app-border);transition:background .15s,width .15s;}
+.pane-split:hover::after,.pane-split.dragging::after,.pane-split:focus-visible::after{background:var(--app-accent);width:3px;left:3px;}
+.pane-split:focus{outline:none;}
 .sidebar::-webkit-scrollbar{width:4px;}
 .sidebar::-webkit-scrollbar-thumb{background:#2a2f3e;border-radius:2px;}
 /* ── Preview (right panel) ── */
 .preview-wrap{flex:1;background:#d1d5db;overflow:auto;display:flex;flex-direction:column;align-items:center;padding:28px 20px;}
-.page-warn{display:none;align-items:center;gap:10px;margin-bottom:12px;background:#fff7ed;color:#9a3412;border:1px solid #fdba74;border-radius:8px;padding:8px 12px;font-size:12px;line-height:1.5;max-width:794px;}
+.page-warn{display:none;align-items:center;gap:10px;margin-bottom:12px;background:#fff7ed;color:#9a3412;border:1px solid #fdba74;border-radius:8px;padding:8px 12px;font-size:12px;line-height:1.5;max-width:100%;}
 .page-warn button{border:1px solid #ea580c;background:#fff;color:#c2410c;border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer;white-space:nowrap;}
 .page-warn button:hover{background:#ffedd5;}
 #resume-preview.density-tight [style*="margin-bottom:16px"]{margin-bottom:8px!important;}
@@ -144,6 +150,7 @@ body{background:var(--app-bg);color:var(--app-text);font-family:'Inter','Noto Sa
 #resume-preview.density-tight [style*="padding:32px 40px"]{padding:20px 40px!important;}
 .preview-wrap::-webkit-scrollbar{width:6px;}
 .preview-wrap::-webkit-scrollbar-thumb{background:#9ca3af;border-radius:3px;}
+#previewFit{position:relative;margin:0 auto;flex-shrink:0;}
 #resume-preview{width:794px;min-height:1123px;background:#fff;box-shadow:0 4px 32px rgba(0,0,0,.3);flex-shrink:0;position:relative;}
 .pg-break{position:absolute;left:0;right:0;height:0;border-top:2px dashed #94a3b8;pointer-events:none;z-index:20;display:flex;justify-content:center;}
 .pg-break-label{position:absolute;top:-9px;background:#94a3b8;color:#fff;font-size:9px;font-family:'Inter',sans-serif;font-weight:600;letter-spacing:.08em;padding:1px 8px;border-radius:3px;white-space:nowrap;}
@@ -290,7 +297,8 @@ select option{background:#181b23;}
   .topbar-actions .btn svg{width:12px;height:12px;}
 
   /* Sidebar 全宽 */
-  .sidebar{width:100%;max-height:none;overflow:visible;border-right:none;border-bottom:1px solid var(--app-border);}
+  .pane-split{display:none;}
+  .sidebar{width:100%;max-width:none;min-width:0;max-height:none;overflow:visible;border-right:none;border-bottom:1px solid var(--app-border);}
   .sb-section-head{padding:12px 14px;}
   .sb-section-body{padding:4px 14px 14px;}
 
@@ -299,7 +307,8 @@ select option{background:#181b23;}
 
   /* Preview 缩放到屏宽 */
   .preview-wrap{padding:12px 8px;justify-content:center;align-items:flex-start;overflow:visible;flex:none;min-height:0;}
-  #resume-preview{zoom:0.44;-moz-transform:scale(0.44);-moz-transform-origin:top left;box-shadow:0 2px 12px rgba(0,0,0,.25);}
+  #previewFit{width:auto;height:auto;overflow:visible;}
+  #resume-preview{position:relative;left:auto;top:auto;transform:none;zoom:0.44;-moz-transform:scale(0.44);-moz-transform-origin:top left;box-shadow:0 2px 12px rgba(0,0,0,.25);}
 
   /* AI 对话框全宽 */
   .ai-dialog{width:calc(100vw - 20px);max-width:100%;max-height:88vh;}
@@ -312,4 +321,26 @@ select option{background:#181b23;}
   /* Rewrite 对话框：并排改堆叠 */
   .rewrite-compare{grid-template-columns:1fr;}
   .rewrite-col{max-height:180px;}
+}
+
+/* 填写栏随自身宽度重排，不跟浏览器窗口走 */
+@container side (min-width: 520px) {
+  .lang-tabs{max-width:420px;}
+  .typo-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 18px;}
+  .typo-row{justify-content:flex-start;gap:8px;}
+  .typo-label{flex:0 0 4.5em;}
+  .toggle-field{justify-content:flex-start;gap:16px;}
+}
+@container side (min-width: 640px) {
+  .tpl-grid{grid-template-columns:repeat(3,1fr);}
+  .style-row{display:grid;grid-template-columns:minmax(180px,240px) 1fr;gap:4px 24px;align-items:start;}
+  .style-row > .field{margin-top:12px;}
+  .entry-card.expanded{display:grid;grid-template-columns:1fr 1fr;column-gap:12px;align-items:start;}
+  .entry-card.expanded .entry-card-head,
+  .entry-card.expanded .field:has(textarea){grid-column:1 / -1;}
+  #skillBody{display:grid;grid-template-columns:1fr 1fr;column-gap:12px;}
+  #skillBody > .field:first-child{grid-column:1 / -1;}
+}
+@container side (min-width: 880px) {
+  .typo-grid{grid-template-columns:1fr 1fr 1fr;}
 }
