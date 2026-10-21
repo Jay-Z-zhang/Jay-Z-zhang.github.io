@@ -56,7 +56,7 @@
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@400;600;700&family=Inter:wght@300;400;500;600;700&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&family=Lato:wght@300;400;700&family=Raleway:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="app.css">
+<link rel="stylesheet" href="app.css?v=20261020c">
 </head>
 <body>
 <!-- Top bar -->
@@ -98,6 +98,10 @@
       <button class="btn btn-ai" id="aiPolishBtn" onclick="openAIPolish()">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
         AI 润色
+      </button>
+      <button class="btn btn-ai" id="jdMatchBtn" onclick="openJdMatch()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        按 JD 改
       </button>
     </div>
     
@@ -310,6 +314,10 @@
         </div>
       </div>
     </div>
+    <div class="toggle-field" style="margin-top:10px;">
+      <label>网申紧凑（收紧段间距）</label>
+      <label class="toggle"><input type="checkbox" id="densityTight" onchange="render()"><span class="toggle-slider"></span></label>
+    </div>
   </div>
 </div>
 
@@ -462,6 +470,7 @@
 
 <!-- ════ RIGHT PREVIEW ════ -->
 <div class="preview-wrap">
+  <div id="pageWarn" class="page-warn" style="display:none;"></div>
   <div id="resume-preview"></div>
 </div>
 </div><!-- end app-body -->
@@ -535,13 +544,40 @@
       <div class="onboard-card recommend" onclick="onboardChoose('import')">
         <div class="icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
         <h3>导入旧简历 <span class="badge">AI</span></h3>
-        <div class="desc">粘贴或上传旧简历，AI 自动拆解成结构化字段</div>
+        <div class="desc">拖入 PDF / Word，或粘贴文本，AI 拆成可编辑字段</div>
       </div>
       <div class="onboard-card" onclick="onboardChoose('blank')">
         <div class="icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>
         <h3>从零开始</h3>
         <div class="desc">空白模板，一步步填写你的信息</div>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ 按 JD 改写 ════ -->
+<div id="jdDialog" class="ai-dialog-overlay" style="display:none;">
+  <div class="ai-dialog" style="width:640px;">
+    <div class="ai-dialog-header">
+      <h3>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c084fc" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        按 JD 改简历
+      </h3>
+      <button class="ai-dialog-close" onclick="closeJdMatch()">×</button>
+    </div>
+    <div class="ai-dialog-body">
+      <div style="font-size:12px;color:var(--app-muted);margin-bottom:8px;">粘贴 BOSS / 智联 / 官网的职位描述。只改措辞和关键词，不编造经历。</div>
+      <textarea id="jdText" rows="6" placeholder="粘贴完整 JD：岗位职责、任职要求..." style="width:100%;background:rgba(15,17,23,.6);border:1px solid var(--app-border);color:var(--app-text);border-radius:7px;padding:8px 10px;font-size:12px;font-family:inherit;resize:vertical;"></textarea>
+      <div class="ai-dialog-actions">
+        <button class="btn btn-ghost" onclick="closeJdMatch()">取消</button>
+        <button class="btn btn-primary" id="jdRunBtn" onclick="runJdMatch()" style="background:rgba(168,85,247,.15);color:#c084fc;border-color:rgba(168,85,247,.3);">生成改写</button>
+      </div>
+      <div id="jdLoading" style="display:none;text-align:center;padding:20px;">
+        <div style="display:inline-block;width:22px;height:22px;border:2px solid var(--app-border);border-top-color:#c084fc;border-radius:50%;animation:spin .8s linear infinite;"></div>
+        <div style="font-size:12px;color:var(--app-muted);margin-top:10px;">正在对照 JD 改写，约 20-40 秒...</div>
+      </div>
+      <div id="jdError" style="display:none;margin-top:12px;font-size:12px;line-height:1.6;"></div>
+      <div id="jdResult" style="display:none;margin-top:14px;"></div>
     </div>
   </div>
 </div>
@@ -557,16 +593,17 @@
       <button class="ai-dialog-close" onclick="closeImportDialog()">×</button>
     </div>
     <div class="ai-dialog-body">
-      <div style="font-size:12px;color:var(--app-muted);margin-bottom:10px;">粘贴简历文本，或拖入 .txt / .md 文件，AI 会自动拆解成结构化字段。</div>
+      <div style="font-size:12px;color:var(--app-muted);margin-bottom:10px;">拖入可复制文字的 PDF 或 .docx，也可以直接粘贴。AI 会拆成左侧字段。</div>
 
       <label class="import-drop" id="importDrop">
-        <input type="file" id="importFile" accept=".txt,.md,.pdf,text/plain,application/pdf">
+        <input type="file" id="importFile" accept=".txt,.md,.pdf,.docx,text/plain,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
         <div style="font-size:12px;color:var(--app-text);display:flex;align-items:center;justify-content:center;gap:8px;">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity:.7"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
           点击选择文件 或 拖拽到此处
         </div>
-        <div class="hint">支持 .txt / .md，PDF 请复制文本后粘贴</div>
+        <div class="hint">支持 PDF、.docx、.txt、.md。扫描件和旧版 .doc 请先另存成可复制的 PDF。</div>
       </label>
+      <div id="importFileStatus" style="display:none;font-size:12px;color:#c084fc;margin-top:8px;line-height:1.5;"></div>
 
       <div style="font-size:11px;color:var(--app-muted);margin:12px 0 4px;">或直接粘贴：</div>
       <textarea id="importText" rows="6" placeholder="粘贴你的旧简历内容,支持中英文..." style="width:100%;background:rgba(15,17,23,.6);border:1px solid var(--app-border);color:var(--app-text);border-radius:7px;padding:8px 10px;font-size:12px;font-family:inherit;resize:vertical;"></textarea>
@@ -651,6 +688,8 @@
 </div><!-- end app-body -->
 
 <script src="/js/jz-analytics.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
 <script src="app.js"></script>
 <noscript>
   <article style="max-width:720px;margin:40px auto;padding:0 20px;color:#111;background:#fff;">

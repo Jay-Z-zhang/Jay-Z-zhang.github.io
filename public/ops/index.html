@@ -381,15 +381,15 @@ function render(stats, subs, days){
   }).join('');
 
   // ── AI 分布
-  var aiKinds = { polish: 'AI 润色', rewrite: '单段改写', import: '简历导入' };
+  var aiKinds = { polish: 'AI 润色', rewrite: '单段改写', import: '简历导入', jd: '按 JD 改' };
   var aiEvents = agg.events || {};
-  // Worker byKind 也是数据源(如果 stats 返回了)
   var aiCounts = {
     polish: (aiEvents.resume_ai_polish_run || 0),
     rewrite: (aiEvents.resume_ai_rewrite_run || 0),
-    import: (aiEvents.resume_import_run || 0)
+    import: (aiEvents.resume_import_run || 0),
+    jd: (aiEvents.resume_jd_run || 0)
   };
-  var aiMax = Math.max(aiCounts.polish, aiCounts.rewrite, aiCounts.import, 1);
+  var aiMax = Math.max(aiCounts.polish, aiCounts.rewrite, aiCounts.import, aiCounts.jd, 1);
   document.getElementById('aiBars').innerHTML = Object.keys(aiKinds).map(function(k){
     var v = aiCounts[k];
     var w = v / aiMax * 100;
@@ -410,7 +410,7 @@ function render(stats, subs, days){
   // ── 漏斗
   var s0 = agg.resumePv;
   var s1 = agg.events.resume_onboard || 0;
-  var s2 = aiCounts.polish + aiCounts.rewrite + aiCounts.import;
+  var s2 = aiCounts.polish + aiCounts.rewrite + aiCounts.import + aiCounts.jd;
   var s3 = agg.out;
   drawFunnel([
     { name: '1. 访问简历页', v: s0 },
@@ -549,13 +549,13 @@ function lineChart(labels, series, fullLabels, xTitle, yTitle){
 /* ── 导出 ── */
 function exportCsv(){
   if (!lastRender) return;
-  var rows = [['date','pv','uv','resume_export_pdf','resume_download_html','resume_share','resume_ai_polish_run','resume_ai_rewrite_run','resume_import_run','resume_onboard']];
+  var rows = [['date','pv','uv','resume_export_pdf','resume_download_html','resume_share','resume_ai_polish_run','resume_ai_rewrite_run','resume_import_run','resume_jd_run','resume_onboard']];
   lastRender.cur.forEach(function(d){
     var t = d.traffic || {}; var e = t.events || {};
     rows.push([
       d.day, t.pv||0, t.uv||0,
       e.resume_export_pdf||0, e.resume_download_html||0, e.resume_share||0,
-      e.resume_ai_polish_run||0, e.resume_ai_rewrite_run||0, e.resume_import_run||0,
+      e.resume_ai_polish_run||0, e.resume_ai_rewrite_run||0, e.resume_import_run||0, e.resume_jd_run||0,
       e.resume_onboard||0
     ]);
   });

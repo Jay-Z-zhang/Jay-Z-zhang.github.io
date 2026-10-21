@@ -976,6 +976,7 @@ else if (S.template === 'lines') html = _tlines(v, col, font);
 else if (S.template === 'premium') html = _tpremium(v, col, font);
 const el = document.getElementById('resume-preview');
 el.innerHTML = html;
+el.classList.toggle('density-tight', !!(document.getElementById('densityTight') || {}).checked);
 requestAnimationFrame(() => {
 el.querySelectorAll('.pg-break').forEach(n => n.remove());
 const PAGE_H = 1123;
@@ -985,8 +986,21 @@ for (let i = 1; i < pages; i++) {
 const marker = document.createElement(('d'+'iv'));
 marker.className = ('pg-b'+'reak');
 marker.style.top = (PAGE_H * i) + 'px';
-marker.innerHTML = `<span class="pg-break-label">第 ${i} 页 / 第 ${i+1} 页</span>`;
+marker.innerHTML = `<span class="pg-break-label">${i === 1 ? '已超出 1 页 · ' : ''}第 ${i} 页 / 第 ${pages} 页</span>`;
 el.appendChild(marker);
+}
+const warn = document.getElementById('pageWarn');
+if (warn) {
+  if (pages > 1) {
+    const tight = !!(document.getElementById('densityTight') || {}).checked;
+    warn.style.display = 'flex';
+    warn.innerHTML = '已超出 1 页，网申通常要求一页。' + (tight
+      ? '<span>已是紧凑行距。</span>'
+      : '<button type="button" onclick="tightenLayout()">收紧行距</button>');
+  } else {
+    warn.style.display = 'none';
+    warn.innerHTML = '';
+  }
 }
 });
 if (typeof _scheduleSave === 'function') _scheduleSave();
@@ -1112,6 +1126,7 @@ function _snapshotState() {
       showProject:v.showProject, showSkills:v.showSkills,
       skillTools:v.skillTools, skillLang:v.skillLang, skillCerts:v.skillCerts,
       showAwards:v.showAwards, showPubs:v.showPubs,
+      densityTight: !!(document.getElementById('densityTight') || {}).checked,
     },
     typo: v.t,
   };
@@ -1168,6 +1183,7 @@ function _restore() {
     set('linkedin', f.linkedin); set('wechat', f.wechat);
     chk('showPhoto', f.showPhoto); set('photoUrl', f.photoUrl);
     chk('showSummary', f.showSummary); set('summary', f.summary);
+    chk('densityTight', f.densityTight);
     chk('showProject', f.showProject); chk('showSkills', f.showSkills);
     set('skillTools', f.skillTools); set('skillLang', f.skillLang); set('skillCerts', f.skillCerts);
     chk('showAwards', f.showAwards); chk('showPubs', f.showPubs);
@@ -1388,64 +1404,146 @@ window.onboardChoose = function(choice) {
 /* ════ 导入旧简历对话框 ════ */
 window.openImportDialog = function() {
   _track('resume_import_open');
-  document.getElementById('importDialog').style.display = 'flex';
+  var dialog = document.getElementById('importDialog');
+  dialog.style.display = 'flex';
+  var body = dialog.querySelector('.ai-dialog-body');
+  if (body) body.scrollLeft = 0;
   document.getElementById('importResult').style.display = 'none';
   document.getElementById('importLoading').style.display = 'none';
   var btn = document.getElementById('importRunBtn');
   btn.disabled = false;
   btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block;vertical-align:-2px;margin-right:4px;"><path d="M22 2L11 13"/><path d="M22 2L15 22l-4-9-9-4 20-7z"/></svg>开始导入';
 };
+var _importCtrl = null;
+function _importNote(msg, isErr) {
+  var el = document.getElementById('importFileStatus');
+  if (!el) return;
+  el.style.display = msg ? 'block' : 'none';
+  el.style.color = isErr ? '#f59e0b' : '#c084fc';
+  el.textContent = msg || '';
+}
 window.closeImportDialog = function() {
+  if (_importCtrl) { _importCtrl.abort(); _importCtrl = null; }
   document.getElementById('importDialog').style.display = 'none';
 };
+
+function _readArrayBuffer(file) {
+  return new Promise(function(resolve, reject) {
+    var reader = new FileReader();
+    reader.onload = function() { resolve(reader.result); };
+    reader.onerror = function() { reject(new Error('文件读取失败')); };
+    reader.readAsArrayBuffer(file);
+  });
+}
+function _decodeTextBuffer(buf) {
+  try { return new TextDecoder('utf-8', { fatal: true }).decode(buf); }
+  catch (err) {
+    try { return new TextDecoder('gb18030', { fatal: false }).decode(buf); }
+    catch (err2) { return new TextDecoder('utf-8', { fatal: false }).decode(buf); }
+  }
+}
+async function _extractPdfText(buf) {
+  if (!window.pdfjsLib) throw new Error('PDF 解析库还没加载完，请刷新后再试');
+  if (!pdfjsLib.GlobalWorkerOptions.workerSrc) {
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  }
+  var pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+  var parts = [];
+  var pages = Math.min(pdf.numPages, 8);
+  for (var i = 1; i <= pages; i++) {
+    var page = await pdf.getPage(i);
+    var content = await page.getTextContent();
+    var line = '';
+    var lastY = null;
+    content.items.forEach(function(item) {
+      var y = item.transform ? item.transform[5] : null;
+      if (lastY != null && y != null && Math.abs(y - lastY) > 2) {
+        parts.push(line.trim());
+        line = '';
+      }
+      line += item.str || '';
+      lastY = y;
+    });
+    if (line.trim()) parts.push(line.trim());
+  }
+  return parts.filter(Boolean).join('\n');
+}
+async function extractResumeFile(file) {
+  var name = (file.name || '').toLowerCase();
+  if (/\.(png|jpe?g|webp|gif)$/.test(name) || /^image\//.test(file.type || '')) {
+    throw new Error('图片和扫描件还不能识别。请换可复制文字的 PDF 或 .docx。');
+  }
+  if (name.endsWith('.doc') && !name.endsWith('.docx')) {
+    throw new Error('旧版 .doc 请先在 Word 里另存为 .docx 或 PDF。');
+  }
+  if (file.size > 8 * 1024 * 1024) throw new Error('文件超过 8MB，请只保留简历正文后再上传');
+  var buf = await _readArrayBuffer(file);
+  var text = '';
+  if (name.endsWith('.pdf') || file.type === 'application/pdf') {
+    text = await _extractPdfText(buf);
+    if (text.replace(/\s/g, '').length < 20) {
+      throw new Error('这份 PDF 几乎没有可复制文字，多半是扫描件。请换可复制的 PDF，或把文字粘贴到下方。');
+    }
+  } else if (name.endsWith('.docx') || file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+    if (!window.mammoth) throw new Error('Word 解析库还没加载完，请刷新后再试');
+    var result = await mammoth.extractRawText({ arrayBuffer: buf });
+    text = (result && result.value) || '';
+    if (text.replace(/\s/g, '').length < 20) throw new Error('这份 Word 几乎没有正文，请检查文件。');
+  } else {
+    text = _decodeTextBuffer(buf);
+  }
+  text = text.replace(/\u0000/g, '').trim();
+  if (text.length > 20000) text = text.slice(0, 20000);
+  return text;
+}
+window.extractResumeFile = extractResumeFile;
 
 (function initImportDrop(){
   var drop = document.getElementById('importDrop');
   var fileInput = document.getElementById('importFile');
   var textarea = document.getElementById('importText');
   if (!drop || !fileInput) return;
+  var dialog = document.getElementById('importDialog');
   function readFile(file) {
     if (!file) return;
-    // PDF 无法在浏览器直接解析,给明确提示
-    if (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')) {
-      alert('PDF 暂不支持直接上传。\n\n请打开 PDF → 全选文字 → 复制 → 粘贴到下方文本框。');
-      return;
-    }
-    if (file.size > 500 * 1024) { alert('文件太大 (>500KB)，请截取核心内容后粘贴'); return; }
-    // 先读为 ArrayBuffer,自动检测编码(UTF-8 → GB18030 fallback)
-    var bufReader = new FileReader();
-    bufReader.onload = function(e) {
-      var buf = e.target.result;
-      var text;
-      try {
-        // 先尝试 UTF-8(严格模式,遇到非法字节会抛出)
-        text = new TextDecoder('utf-8', { fatal: true }).decode(buf);
-      } catch (err) {
-        // UTF-8 解码失败,尝试 GB18030(兼容 GBK/GB2312,Windows 中文默认)
-        try {
-          text = new TextDecoder('gb18030', { fatal: false }).decode(buf);
-        } catch (err2) {
-          text = new TextDecoder('utf-8', { fatal: false }).decode(buf);
-        }
-      }
+    _importNote('正在读取 ' + file.name + '…', false);
+    extractResumeFile(file).then(function(text) {
       textarea.value = text;
-    };
-    bufReader.readAsArrayBuffer(file);
+      _importNote('已从「' + file.name + '」抽出 ' + text.length + ' 字，确认后点「开始导入」。', false);
+    }).catch(function(err) {
+      _importNote(err.message || '读取失败', true);
+    });
   }
-  fileInput.addEventListener('change', function(){ readFile(this.files[0]); });
-  drop.addEventListener('dragover', function(e){ e.preventDefault(); drop.classList.add('dragover'); });
-  drop.addEventListener('dragleave', function(){ drop.classList.remove('dragover'); });
-  drop.addEventListener('drop', function(e){
-    e.preventDefault();
-    drop.classList.remove('dragover');
-    if (e.dataTransfer.files.length) readFile(e.dataTransfer.files[0]);
+  fileInput.addEventListener('change', function(){
+    var file = this.files && this.files[0];
+    this.value = '';
+    readFile(file);
   });
+  drop.addEventListener('dragenter', function(e){
+    e.preventDefault();
+    drop.classList.add('dragover');
+  });
+  drop.addEventListener('dragover', function(e){ e.preventDefault(); });
+  drop.addEventListener('dragleave', function(e){
+    if (e.relatedTarget && drop.contains(e.relatedTarget)) return;
+    drop.classList.remove('dragover');
+  });
+  if (dialog) {
+    dialog.addEventListener('dragover', function(e){ e.preventDefault(); });
+    dialog.addEventListener('drop', function(e){
+      e.preventDefault();
+      drop.classList.remove('dragover');
+      var file = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+      if (file) readFile(file);
+    });
+  }
 })();
 
 window.runImport = function() {
   var text = document.getElementById('importText').value.trim();
-  if (!text) { alert('请先粘贴简历内容或选择文件'); return; }
-  if (text.length < 50) { alert('内容太短，请粘贴完整简历'); return; }
+  if (!text) { _importNote('请先选择文件，或把简历文字粘贴到下方。', true); return; }
+  if (text.length < 50) { _importNote('内容太短，请换完整简历后再导入。', true); return; }
+  _importNote('', false);
   _track('resume_import_run');
 
   var workerUrl = document.getElementById('aiWorkerUrl')?.value.trim() || '';
@@ -1473,6 +1571,13 @@ window.runImport = function() {
     '## JSON Schema\n' + schema + '\n\n' +
     '## 规则\n' +
     '- 找不到的字段用空字符串 "" 或空数组 []\n' +
+    '- jobTitle 只在原文明确写了求职意向或目标岗位时填写，否则 ""\n' +
+    '- edu.degree 写成「专业 · 学历层次」。学历沿用原文，如硕博连读、硕士研究生、本科。括号里的「本科专业第一保送」是录取方式，写入 gpa，不要把研究生经历改成本科\n' +
+    '- edu.gpa 放 GPA、排名、保送、核心课程，合成一行；没有则 ""\n' +
+    '- 毕业论文、课程项目、竞赛作品都放入 project，不要省略，也不要翻译成另一种语言\n' +
+    '- work 收录实习、全职、学生工作、志愿服务、社团。组织名放 company，职务放 role\n' +
+    '- project.name 和 project.role 只写事情本身和担任角色，不要写入奖项名称\n' +
+    '- 奖学金、竞赛名次、荣誉称号只放 award，不要再写进项目标题或角色\n' +
     '- 数组类字段(edu/work/project/award)按简历中的时间倒序\n' +
     '- work.desc / project.desc 每条成就前加 "• "，用 \\n 分隔\n' +
     '- period 保持简历原文格式,不要重排\n\n' +
@@ -1484,8 +1589,10 @@ window.runImport = function() {
   btn.disabled = true;
   btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block;vertical-align:-2px;margin-right:4px;animation:spin 1s linear infinite;"><circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-dashoffset="12"/></svg>解析中...';
 
+  if (_importCtrl) _importCtrl.abort();
   var controller = new AbortController();
-  var timeoutId = setTimeout(function(){ controller.abort(); }, 45000);
+  _importCtrl = controller;
+  var timeoutId = setTimeout(function(){ controller.abort(); }, 60000);
   var targetUrl, fetchOptions;
   var payload = {
     model: 'deepseek-chat',
@@ -1493,7 +1600,7 @@ window.runImport = function() {
       { role: 'system', content: '你是精准的简历解析器,只输出 JSON,不解释。' },
       { role: 'user', content: prompt }
     ],
-    max_tokens: 3000,
+    max_tokens: 4000,
     temperature: 0.2,
     x_kind: 'import'
   };
@@ -1521,12 +1628,17 @@ window.runImport = function() {
       if (m) parsed = JSON.parse(m[0]);
       else throw new Error('AI 返回内容无法解析为 JSON');
     }
+    if (_importCtrl !== controller) return;
+    _importCtrl = null;
     applyImportedData(parsed);
     document.getElementById('importLoading').style.display = 'none';
     closeImportDialog();
   })
   .catch(function(err){
     clearTimeout(timeoutId);
+    if (document.getElementById('importDialog').style.display === 'none') return;
+    if (_importCtrl !== controller) return;
+    _importCtrl = null;
     document.getElementById('importLoading').style.display = 'none';
     document.getElementById('importResult').style.display = 'block';
     var isNet = err.name === 'AbortError' || /Failed to fetch|Load failed|NetworkError|ERR_TIMED_OUT|The network connection was lost/i.test(err.message);
@@ -1544,16 +1656,37 @@ window.runImport = function() {
   });
 };
 
+function _stripAwardsFromProjects(d) {
+  var names = (d.award || []).map(function(a){ return String(a && a.name || '').trim(); }).filter(function(n){ return n.length >= 4; });
+  (d.project || []).forEach(function(p) {
+    if (!p) return;
+    names.forEach(function(name) {
+      ['name', 'role'].forEach(function(key) {
+        if (!p[key] || p[key].indexOf(name) === -1) return;
+        p[key] = p[key].replace(name, '').replace(/[（(]\s*[）)]/g, '').replace(/^[\s|｜\-—:：]+|[\s|｜\-—:：]+$/g, '').trim();
+      });
+    });
+  });
+}
 function applyImportedData(d) {
   d = d || {};
-  var setV = function(id, v) { var el = document.getElementById(id); if (el && v != null) el.value = v; };
+  _stripAwardsFromProjects(d);
+  var setV = function(id, v) { var el = document.getElementById(id); if (el) el.value = v == null ? '' : v; };
   var setChk = function(id, v) { var el = document.getElementById(id); if (el) el.checked = !!v; };
+  var show = function(id, on) { var el = document.getElementById(id); if (el) el.style.display = on ? '' : 'none'; };
+  ['name','nameEn','jobTitle','phone','email','city','linkedin','wechat','photoUrl','summary','skillTools','skillLang','skillCerts'].forEach(function(id){ setV(id, ''); });
+  setChk('showWechat', false); setChk('showPhoto', false); setChk('showSummary', false);
+  setChk('showSkills', false); setChk('showProject', false); setChk('showAwards', false); setChk('showPubs', false);
+  show('summaryBody', false); show('wechatField', false); show('photoField', false);
+  S.pubEntries = [];
   setV('name', d.name); setV('nameEn', d.nameEn); setV('jobTitle', d.jobTitle);
   setV('phone', d.phone); setV('email', d.email); setV('city', d.city); setV('linkedin', d.linkedin);
-  if (d.summary) { setChk('showSummary', true); setV('summary', d.summary); document.getElementById('summaryBody').style.display = ''; }
-  if (d.skillTools || d.skillLang || d.skillCerts) {
+  if (String(d.summary || '').trim()) {
+    setChk('showSummary', true); setV('summary', d.summary); show('summaryBody', true);
+  }
+  if ([d.skillTools, d.skillLang, d.skillCerts].some(function(s){ return String(s || '').trim(); })) {
     setChk('showSkills', true);
-    setV('skillTools', d.skillTools); setV('skillLang', d.skillLang); setV('skillCerts', d.skillCerts);
+    setV('skillTools', d.skillTools || ''); setV('skillLang', d.skillLang || ''); setV('skillCerts', d.skillCerts || '');
   }
   S.eduEntries = (d.edu || []).map(function(e, i){ return {id: Date.now()+i, data: e}; });
   S.workEntries = (d.work || []).map(function(e, i){ return {id: Date.now()+100+i, data: e}; });
@@ -1561,11 +1694,15 @@ function applyImportedData(d) {
   if (S.projectEntries.length) setChk('showProject', true);
   S.awardEntries = (d.award || []).map(function(e, i){ return {id: Date.now()+300+i, data: e}; });
   if (S.awardEntries.length) setChk('showAwards', true);
-  // 导入的条目默认收起(有内容),用户想改再点开
   S.expanded = new Set();
   ['edu','work','project','award','pub'].forEach(function(t){ _t9(t); });
   _tu();
 }
+window.tightenLayout = function() {
+  var el = document.getElementById('densityTight');
+  if (el) el.checked = true;
+  _tu();
+};
 window._applyImportedData = applyImportedData;
 
 /* ── 加粗选中文字 (textarea **...**) ── */
@@ -1785,6 +1922,200 @@ function _mdInline(s) {
   return s;
 }
 
+/* ════ 按 JD 改写 ════ */
+var _jdItems = [];
+
+function _resumePlainText() {
+  var lines = [];
+  var nameEl = document.getElementById('name');
+  if (nameEl && nameEl.value) lines.push('姓名：' + nameEl.value);
+  var job = document.getElementById('jobTitle');
+  if (job && job.value) lines.push('求职意向：' + job.value);
+  var summary = document.getElementById('summary');
+  if (summary && summary.value) lines.push('【自我评价】\n' + summary.value);
+  (S.workEntries || []).forEach(function(e, i) {
+    lines.push('【工作 ' + i + '】' + (e.data.company || '') + ' | ' + (e.data.role || '') + ' | ' + (e.data.period || '') + '\n' + (e.data.desc || ''));
+  });
+  (S.projectEntries || []).forEach(function(e, i) {
+    lines.push('【项目 ' + i + '】' + (e.data.name || '') + ' | ' + (e.data.role || '') + '\n' + (e.data.desc || ''));
+  });
+  var tools = document.getElementById('skillTools');
+  if (tools && tools.value) lines.push('【技能】' + tools.value);
+  return lines.join('\n\n');
+}
+function _jdEsc(s) {
+  return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function _aiPost(payload, timeoutMs) {
+  var workerUrl = document.getElementById('aiWorkerUrl')?.value.trim() || '';
+  var apiKey = document.getElementById('aiApiKey')?.value.trim() || '';
+  if (!workerUrl && !apiKey) return Promise.reject(new Error('请确保 Worker 代理地址已配置'));
+  var controller = new AbortController();
+  var timer = setTimeout(function(){ controller.abort(); }, timeoutMs || 45000);
+  var targetUrl = workerUrl ? workerUrl.replace(/\/$/, '') : 'https://api.deepseek.com/chat/completions';
+  var headers = { 'Content-Type': 'application/json' };
+  if (!workerUrl) headers.Authorization = 'Bearer ' + apiKey;
+  return fetch(targetUrl, { method: 'POST', headers: headers, body: JSON.stringify(payload), signal: controller.signal })
+    .then(function(res) {
+      clearTimeout(timer);
+      if (!res.ok) throw new Error('API 请求失败: ' + res.status);
+      return res.json();
+    })
+    .then(function(data) {
+      var text = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
+      if (!text) throw new Error('AI 未返回结果');
+      return text;
+    })
+    .catch(function(err) { clearTimeout(timer); throw err; });
+}
+function _parseJsonLoose(raw) {
+  raw = String(raw).replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim();
+  try { return JSON.parse(raw); }
+  catch (e) {
+    var m = raw.match(/\{[\s\S]*\}/);
+    if (m) return JSON.parse(m[0]);
+    throw new Error('AI 返回内容无法解析为 JSON');
+  }
+}
+
+window.openJdMatch = function() {
+  if (!_resumePlainText().trim()) { alert('请先填好简历，或导入旧简历后再按 JD 改'); return; }
+  _track('resume_jd_open');
+  document.getElementById('jdDialog').style.display = 'flex';
+  document.getElementById('jdLoading').style.display = 'none';
+  document.getElementById('jdError').style.display = 'none';
+  document.getElementById('jdResult').style.display = 'none';
+  var btn = document.getElementById('jdRunBtn');
+  btn.disabled = false;
+  btn.textContent = '生成改写';
+};
+window.closeJdMatch = function() {
+  document.getElementById('jdDialog').style.display = 'none';
+};
+
+window.runJdMatch = function() {
+  var jd = document.getElementById('jdText').value.trim();
+  if (jd.length < 30) { alert('请粘贴更完整的职位描述'); return; }
+  var resume = _resumePlainText();
+  if (!resume.trim()) { alert('简历还是空的'); return; }
+  _track('resume_jd_run');
+  document.getElementById('jdLoading').style.display = 'block';
+  document.getElementById('jdError').style.display = 'none';
+  document.getElementById('jdResult').style.display = 'none';
+  var btn = document.getElementById('jdRunBtn');
+  btn.disabled = true;
+  var schema = '{"jobTitle":"","summary":"","skillTools":"","matched":[],"missing":[],"work":[{"i":0,"desc":""}],"project":[{"i":0,"desc":""}]}';
+  var prompt = '你是国内校招/社招简历顾问。对照 JD 改写已有简历，只输出 JSON，不要 markdown。\n\n' +
+    '## JSON\n' + schema + '\n\n' +
+    '## 规则\n' +
+    '- 只优化措辞、顺序和 JD 里候选人确实做过的关键词\n' +
+    '- 禁止编造公司、项目、数字、证书\n' +
+    '- 没改的字段用空字符串，没改的经历不要放进 work/project\n' +
+    '- work/project 的 i 是简历里从 0 开始的序号，desc 用换行，每条以「• 」开头\n' +
+    '- skillTools 用中文逗号或英文逗号分隔，只保留简历里已有或 JD 明确要求且简历能支撑的技能\n' +
+    '- matched 是简历已经覆盖的 JD 关键词，missing 是 JD 有但简历没有、因此不能写进去的要求\n' +
+    '- 求职意向 jobTitle 贴近 JD 岗位名，但不要改成候选人没投过的完全不同职能\n\n' +
+    '## JD\n' + jd.slice(0, 6000) + '\n\n## 简历\n' + resume.slice(0, 8000);
+  _aiPost({
+    model: 'deepseek-chat',
+    messages: [
+      { role: 'system', content: '你只输出 JSON。不编造经历。' },
+      { role: 'user', content: prompt }
+    ],
+    max_tokens: 2500,
+    temperature: 0.3,
+    x_kind: 'jd'
+  }, 50000).then(function(text) {
+    var plan = _parseJsonLoose(text);
+    _renderJdPlan(plan);
+    document.getElementById('jdLoading').style.display = 'none';
+    btn.disabled = false;
+    btn.textContent = '重新生成';
+  }).catch(function(err) {
+    document.getElementById('jdLoading').style.display = 'none';
+    document.getElementById('jdError').style.display = 'block';
+    var isNet = err.name === 'AbortError' || /Failed to fetch|Load failed|NetworkError/i.test(err.message);
+    document.getElementById('jdError').textContent = isNet
+      ? '连不上 AI 服务。可以换手机热点后再试。'
+      : ('改写失败：' + err.message);
+    btn.disabled = false;
+    btn.textContent = '重新生成';
+  });
+};
+
+function _renderJdPlan(plan) {
+  plan = plan || {};
+  _jdItems = [];
+  function pushItem(label, before, after, apply) {
+    if (!after || !String(after).trim()) return;
+    if (String(before || '').trim() === String(after).trim()) return;
+    _jdItems.push({ label: label, before: before || '', after: after, apply: apply });
+  }
+  pushItem('求职意向', (document.getElementById('jobTitle') || {}).value, plan.jobTitle, function(v) {
+    document.getElementById('jobTitle').value = v;
+  });
+  pushItem('自我评价', (document.getElementById('summary') || {}).value, plan.summary, function(v) {
+    document.getElementById('showSummary').checked = true;
+    document.getElementById('summaryBody').style.display = '';
+    document.getElementById('summary').value = v;
+  });
+  pushItem('专业技能', (document.getElementById('skillTools') || {}).value, plan.skillTools, function(v) {
+    document.getElementById('showSkills').checked = true;
+    document.getElementById('skillTools').value = v;
+  });
+  (plan.work || []).forEach(function(w) {
+    var i = parseInt(w && w.i, 10);
+    var entry = S.workEntries[i];
+    if (!entry || !w.desc) return;
+    pushItem('工作 ' + (i + 1) + ' · ' + (entry.data.company || entry.data.role || ''), entry.data.desc, w.desc, function(v) {
+      entry.data.desc = v;
+      _t9('work');
+    });
+  });
+  (plan.project || []).forEach(function(p) {
+    var i = parseInt(p && p.i, 10);
+    var entry = S.projectEntries[i];
+    if (!entry || !p.desc) return;
+    pushItem('项目 ' + (i + 1) + ' · ' + (entry.data.name || ''), entry.data.desc, p.desc, function(v) {
+      document.getElementById('showProject').checked = true;
+      entry.data.desc = v;
+      _t9('project');
+    });
+  });
+  var html = '';
+  var matched = (plan.matched || []).filter(Boolean).slice(0, 12);
+  var missing = (plan.missing || []).filter(Boolean).slice(0, 8);
+  if (matched.length) html += '<div style="font-size:12px;color:#86efac;margin-bottom:6px;">已覆盖：' + matched.map(_jdEsc).join('、') + '</div>';
+  if (missing.length) html += '<div style="font-size:12px;color:#fbbf24;margin-bottom:10px;">JD 有、简历里没有，所以不会写进去：' + missing.map(_jdEsc).join('、') + '</div>';
+  if (!_jdItems.length) {
+    html += '<div style="font-size:12px;color:var(--app-muted);">没有可安全写入的改动。可以换一份更具体的 JD 再试。</div>';
+  } else {
+    html += _jdItems.map(function(item, idx) {
+      return '<label style="display:block;border:1px solid var(--app-border);border-radius:8px;padding:10px;margin-bottom:8px;cursor:pointer;">' +
+        '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;"><input type="checkbox" data-jd="' + idx + '" checked><strong style="font-size:12px;">' + _jdEsc(item.label) + '</strong></div>' +
+        '<div style="font-size:11px;color:#94a3b8;white-space:pre-wrap;max-height:72px;overflow:auto;">' + _jdEsc(item.before) + '</div>' +
+        '<div style="font-size:12px;color:#e8eaf0;white-space:pre-wrap;margin-top:6px;max-height:120px;overflow:auto;">' + _jdEsc(item.after) + '</div>' +
+        '</label>';
+    }).join('');
+    html += '<div class="ai-dialog-actions"><button class="btn btn-primary" onclick="applyJdPlan()" style="background:rgba(168,85,247,.15);color:#c084fc;border-color:rgba(168,85,247,.3);">应用到简历</button></div>';
+  }
+  var box = document.getElementById('jdResult');
+  box.innerHTML = html;
+  box.style.display = 'block';
+}
+
+window.applyJdPlan = function() {
+  var boxes = document.querySelectorAll('#jdResult input[data-jd]:checked');
+  if (!boxes.length) { alert('请至少勾选一条'); return; }
+  boxes.forEach(function(box) {
+    var item = _jdItems[parseInt(box.getAttribute('data-jd'), 10)];
+    if (item) item.apply(item.after);
+  });
+  _tu();
+  _track('resume_jd_apply');
+  closeJdMatch();
+};
+
 /* ════ AI 润色对话框 ════ */
 window.openAIPolish = function() {
   _track('resume_ai_polish_open');
@@ -1955,12 +2286,22 @@ window.runAIPolish = function() {
 };
 
 document.addEventListener('click', function(e) {
-  var dialog = document.getElementById('aiPolishDialog');
-  if (e.target === dialog) closeAIPolish();
+  if (e.target.id === 'aiPolishDialog') closeAIPolish();
+  else if (e.target.id === 'importDialog') closeImportDialog();
+  else if (e.target.id === 'jdDialog' && typeof closeJdMatch === 'function') closeJdMatch();
+  else if (e.target.id === 'rewriteDialog' && typeof closeRewriteDialog === 'function') closeRewriteDialog();
 });
 
 document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape') closeAIPolish();
+  if (e.key !== 'Escape') return;
+  var open = function(id) {
+    var el = document.getElementById(id);
+    return el && el.style.display === 'flex';
+  };
+  if (open('importDialog')) closeImportDialog();
+  else if (open('jdDialog') && typeof closeJdMatch === 'function') closeJdMatch();
+  else if (open('rewriteDialog') && typeof closeRewriteDialog === 'function') closeRewriteDialog();
+  else if (open('aiPolishDialog')) closeAIPolish();
 });
 
 (function() {

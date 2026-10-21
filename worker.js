@@ -18,7 +18,7 @@ const ALLOWED_ORIGINS = [
   'https://jay-z-zhang.github.io',
 ];
 
-const VALID_KINDS = new Set(['polish', 'rewrite', 'import', 'unknown']);
+const VALID_KINDS = new Set(['polish', 'rewrite', 'import', 'jd', 'unknown']);
 
 function corsHeaders(origin) {
   const allow = ALLOWED_ORIGINS.includes(origin) || /^http:\/\/localhost(:\d+)?$/.test(origin || '');
@@ -189,6 +189,9 @@ const TRACK_EVENTS = new Set([
   'resume_ai_rewrite_run',
   'resume_import_open',
   'resume_import_run',
+  'resume_jd_open',
+  'resume_jd_run',
+  'resume_jd_apply',
   'resume_fill_demo',
   'resume_reset',
   'resume_template',
