@@ -832,11 +832,18 @@ function _customModuleEl(mod) {
     _renderCustomModules();
     _tu();
   });
+  var actions = document.createElement('div');
+  actions.className = 'custom-mod-actions';
+  var showText = document.createElement('span');
+  showText.className = 'custom-show';
+  showText.textContent = '显示';
   top.appendChild(name);
-  top.appendChild(layout);
-  top.appendChild(showLabel);
-  top.appendChild(del);
+  actions.appendChild(layout);
+  actions.appendChild(showText);
+  actions.appendChild(showLabel);
+  actions.appendChild(del);
   wrap.appendChild(top);
+  wrap.appendChild(actions);
   if (mod.show === false) return wrap;
   var hint = document.createElement('div');
   hint.className = 'hint';
@@ -910,7 +917,7 @@ function _customEntryField(mod, entry, fieldDef) {
   var nameInput = document.createElement('input');
   nameInput.type = 'text';
   nameInput.value = _customLabel(mod, fieldDef);
-  nameInput.style.cssText = 'width:88px;display:inline-block;margin-left:6px;padding:2px 6px;';
+  nameInput.className = 'custom-field-name';
   nameInput.title = '字段名称';
   nameInput.addEventListener('input', function() {
     if (!mod.labels) mod.labels = {};
