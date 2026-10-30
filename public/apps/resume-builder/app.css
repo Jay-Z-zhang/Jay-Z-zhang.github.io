@@ -344,3 +344,10 @@ select option{background:#181b23;}
 @container side (min-width: 880px) {
   .typo-grid{grid-template-columns:1fr 1fr 1fr;}
 }
+.custom-mod{border:1px solid var(--app-border);border-radius:10px;padding:10px;margin-bottom:10px;background:rgba(15,17,23,.35);}
+.custom-mod-top{display:flex;align-items:center;gap:8px;}
+.custom-mod-top input[type=text]{flex:1;min-width:0;}
+.custom-mod select{background:rgba(15,17,23,.6);border:1px solid var(--app-border);color:var(--app-text);border-radius:6px;padding:6px 8px;font-size:12px;font-family:inherit;}
+.custom-kind{font-size:10px;color:var(--app-muted);border:1px solid var(--app-border);border-radius:4px;padding:0 5px;line-height:18px;flex-shrink:0;}
+.custom-entry{margin-top:8px;padding-top:8px;border-top:1px solid var(--app-border);}
+.custom-mod .hint{margin-top:6px;}

@@ -56,7 +56,7 @@
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@400;600;700&family=Inter:wght@300;400;500;600;700&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&family=Lato:wght@300;400;700&family=Raleway:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="app.css?v=20261021b">
+<link rel="stylesheet" href="app.css?v=20261030a">
 </head>
 <body>
 <!-- Top bar -->
@@ -462,6 +462,22 @@
     </div>
     <div id="pubList"></div>
     <button class="add-btn" onclick="addEntry('pub')" data-i18n="btnAddPub">+ 添加论文/作品链接</button>
+  </div>
+</div>
+
+<!-- 自定义模块 -->
+<div class="sb-section">
+  <div class="sb-section-head open" onclick="toggleSection(this)">
+    <h3>
+      <svg class="sb-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 17h7M17.5 14v7"/></svg>
+      自定义模块
+    </h3>
+    <span class="chevron">▼</span>
+  </div>
+  <div class="sb-section-body">
+    <div id="customModuleList"></div>
+    <button class="add-btn" type="button" onclick="addCustomModule()">+ 添加自定义模块</button>
+    <div class="hint">经历适合校园、志愿；列表适合证书；文本适合一段说明。字号和颜色跟随上方排版设置。关闭后不出现在简历里。</div>
   </div>
 </div>
 

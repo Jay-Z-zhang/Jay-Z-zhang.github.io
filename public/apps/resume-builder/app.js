@@ -9,6 +9,7 @@ workEntries: [],
 projectEntries: [],
 awardEntries: [],
 pubEntries: [],
+customModules: [],
 expanded: new Set(),
 };
 
@@ -50,6 +51,7 @@ function _getFullState() {
     project: S.projectEntries.map(e => ({id: e.id, data: {...e.data}})),
     award: S.awardEntries.map(e => ({id: e.id, data: {...e.data}})),
     pub: S.pubEntries.map(e => ({id: e.id, data: {...e.data}})),
+    custom: JSON.parse(JSON.stringify(S.customModules || [])),
   };
 }
 
@@ -90,7 +92,9 @@ function _restoreState(state) {
   S.projectEntries = (state.project || []).map(e => ({id: e.id, data: {...e.data}}));
   S.awardEntries = (state.award || []).map(e => ({id: e.id, data: {...e.data}}));
   S.pubEntries = (state.pub || []).map(e => ({id: e.id, data: {...e.data}}));
+  S.customModules = JSON.parse(JSON.stringify(state.custom || []));
   _renderEntries('edu'); _renderEntries('work'); _renderEntries('project'); _renderEntries('award'); _renderEntries('pub');
+  if (typeof _renderCustomModules === 'function') _renderCustomModules();
   History.isRestoring = false;
   _tu();
 }
@@ -627,6 +631,7 @@ showSkills: gc(('showS'+'kills')),
 skillTools: g(('skill'+'Tools')), skillLang: g(('skil'+'lLang')), skillCerts: g(('skill'+'Certs')),
 showAwards: gc(('showA'+'wards')),
 showPubs: gc(('show'+'Pubs')),
+custom: S.customModules || [],
 edu: S.eduEntries.map(e => e.data),
 work: S.workEntries.map(e => e.data),
 project: S.projectEntries.map(e => e.data),
@@ -692,6 +697,253 @@ if (v.linkedin) items.push(v.linkedin);
 if (v.wechat) items.push((v.L ? v.L.rWechat : ('WeC'+'hat')) + ': ' + v.wechat);
 return items.map(i => `<span style="margin:0 6px;color:${col}">${_esc(i)}</span>`).join('<span style="color:#9ca3af">|</span>');
 }
+var CUSTOM_LAYOUTS = {
+  experience: [
+    { key:'title', type:'line', label:'主标题' },
+    { key:'period', type:'time', label:'时间' },
+    { key:'subtitle', type:'line', label:'副标题' },
+    { key:'desc', type:'multi', label:'描述' },
+    { key:'link', type:'link', label:'链接' }
+  ],
+  list: [
+    { key:'title', type:'line', label:'名称' },
+    { key:'extra', type:'line', label:'补充' },
+    { key:'year', type:'time', label:'时间' }
+  ],
+  text: [
+    { key:'text', type:'multi', label:'正文' }
+  ]
+};
+var CUSTOM_LAYOUT_NAME = { experience:'经历', list:'列表', text:'文本' };
+var CUSTOM_TYPE_NAME = { line:'单行', multi:'多行', time:'时间', link:'链接' };
+function _customFields(mod) {
+  return CUSTOM_LAYOUTS[mod.layout] || CUSTOM_LAYOUTS.experience;
+}
+function _customLabel(mod, field) {
+  return (mod.labels && mod.labels[field.key]) || field.label;
+}
+function _customHasContent(mod) {
+  if (!mod || mod.show === false) return false;
+  if (mod.layout === 'text') return !!(mod.text && String(mod.text).trim());
+  return (mod.entries || []).some(function(e) {
+    var d = e.data || {};
+    return _customFields(mod).some(function(f) { return String(d[f.key] || '').trim(); });
+  });
+}
+function _customBody(mod, t, col) {
+  if (mod.layout === 'text') {
+    return `<p style="line-height:1.7;font-size:${t.szBody}px;color:${t.clBody};margin:0;">${_md(mod.text || '')}</p>`;
+  }
+  if (mod.layout === 'list') {
+    return (mod.entries || []).map(function(e) {
+      var d = e.data || {};
+      if (!_customFields(mod).some(function(f){ return String(d[f.key] || '').trim(); })) return '';
+      return `<div style="display:flex;justify-content:space-between;gap:12px;margin-bottom:4px;font-size:${t.szBody}px;">
+<span><strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${_esc(d.title || '')}</strong>${d.extra ? ` · <span style="font-size:${t.szRole}px;color:${t.clRole};">${_esc(d.extra)}</span>` : ''}</span>
+<span style="font-size:${t.szMeta}px;color:${t.clMeta};white-space:nowrap;">${_esc(d.year || '')}</span></div>`;
+    }).join('');
+  }
+  return (mod.entries || []).map(function(e) {
+    var d = e.data || {};
+    if (!_customFields(mod).some(function(f){ return String(d[f.key] || '').trim(); })) return '';
+    var href = _safeHref(d.link);
+    var linkLabel = _customLabel(mod, { key:'link', label:'链接' });
+    return `<div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;gap:12px;">
+<strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${_esc(d.title || '')}</strong>
+<span style="font-size:${t.szMeta}px;color:${t.clMeta};white-space:nowrap;">${_esc(d.period || '')}</span></div>
+${d.subtitle ? `<div style="font-size:${t.szRole}px;color:${t.clRole};margin-bottom:2px;">${_esc(d.subtitle)}</div>` : ''}
+${href ? `<div style="font-size:${t.szMeta}px;margin-bottom:2px;"><a href="${href}" style="color:${col};text-decoration:none;">${_esc(linkLabel)}</a></div>` : ''}
+<div style="font-size:${t.szBody}px;color:${t.clBody};line-height:1.65;">${_tj(d.desc)}</div></div>`;
+  }).join('');
+}
+function _customPieces(v, col, t) {
+  return (v.custom || []).filter(_customHasContent).map(function(mod) {
+    return { title: _esc(mod.name || '自定义'), body: _customBody(mod, t, col) };
+  });
+}
+function _pushCustom(arr, wrap, v, col, t) {
+  _customPieces(v, col, t).forEach(function(p) { arr.push(wrap(p.title, p.body, col, t)); });
+}
+function _customHtmlString(v, col, t, secH) {
+  return _customPieces(v, col, t).map(function(p) { return secH(p.title) + p.body; }).join('');
+}
+function _customFind(id) {
+  return (S.customModules || []).find(function(m) { return m.id === id; });
+}
+function _blankCustomEntry() {
+  return { id: Date.now() + Math.floor(Math.random() * 1000), data: { title:'', period:'', subtitle:'', desc:'', link:'', extra:'', year:'' } };
+}
+function _newCustomModule(layout) {
+  var fields = CUSTOM_LAYOUTS[layout] || CUSTOM_LAYOUTS.experience;
+  var labels = {};
+  fields.forEach(function(f) { labels[f.key] = f.label; });
+  var mod = { id: Date.now() + Math.floor(Math.random() * 1000), show: true, name: '自定义模块', layout: layout, labels: labels, text: '', entries: [] };
+  if (layout !== 'text') mod.entries.push(_blankCustomEntry());
+  return mod;
+}
+function _renderCustomModules() {
+  var box = document.getElementById('customModuleList');
+  if (!box) return;
+  box.innerHTML = '';
+  (S.customModules || []).forEach(function(mod) { box.appendChild(_customModuleEl(mod)); });
+}
+function _customModuleEl(mod) {
+  var wrap = document.createElement('div');
+  wrap.className = 'custom-mod';
+  var top = document.createElement('div');
+  top.className = 'custom-mod-top';
+  var name = document.createElement('input');
+  name.type = 'text';
+  name.value = mod.name || '';
+  name.placeholder = '模块名称，如校园经历';
+  name.addEventListener('input', function() { mod.name = name.value; _tu(); });
+  var layout = document.createElement('select');
+  ['experience','list','text'].forEach(function(key) {
+    var opt = document.createElement('option');
+    opt.value = key;
+    opt.textContent = CUSTOM_LAYOUT_NAME[key];
+    if (mod.layout === key) opt.selected = true;
+    layout.appendChild(opt);
+  });
+  layout.addEventListener('change', function() {
+    mod.layout = layout.value;
+    if (mod.layout !== 'text' && !(mod.entries || []).length) mod.entries = [_blankCustomEntry()];
+    _renderCustomModules();
+    _tu();
+  });
+  var showLabel = document.createElement('label');
+  showLabel.className = 'toggle';
+  showLabel.title = '显示此模块';
+  var show = document.createElement('input');
+  show.type = 'checkbox';
+  show.checked = mod.show !== false;
+  show.addEventListener('change', function() { mod.show = show.checked; _renderCustomModules(); _tu(); });
+  var slider = document.createElement('span');
+  slider.className = 'toggle-slider';
+  showLabel.appendChild(show);
+  showLabel.appendChild(slider);
+  var del = document.createElement('button');
+  del.type = 'button';
+  del.className = 'entry-del';
+  del.title = '删除模块';
+  del.textContent = '×';
+  del.addEventListener('click', function() {
+    S.customModules = S.customModules.filter(function(m) { return m.id !== mod.id; });
+    _renderCustomModules();
+    _tu();
+  });
+  top.appendChild(name);
+  top.appendChild(layout);
+  top.appendChild(showLabel);
+  top.appendChild(del);
+  wrap.appendChild(top);
+  if (mod.show === false) return wrap;
+  var hint = document.createElement('div');
+  hint.className = 'hint';
+  hint.textContent = mod.layout === 'experience' ? '单行、时间、单行、多行、链接。主标题用机构样式，时间用辅助信息。'
+    : mod.layout === 'list' ? '名称、补充、时间。名称用机构样式，时间用辅助信息。'
+    : '一段正文，使用正文样式。';
+  wrap.appendChild(hint);
+  if (mod.layout === 'text') {
+    var field = _customTextField(_customLabel(mod, _customFields(mod)[0]), mod.text || '', function(val) { mod.text = val; _tu(); });
+    wrap.appendChild(field);
+    return wrap;
+  }
+  (mod.entries || []).forEach(function(entry, idx) {
+    var card = document.createElement('div');
+    card.className = 'custom-entry';
+    var head = document.createElement('div');
+    head.className = 'custom-mod-top';
+    var title = document.createElement('span');
+    title.className = 'hint';
+    title.textContent = '第 ' + (idx + 1) + ' 条';
+    var remove = document.createElement('button');
+    remove.type = 'button';
+    remove.className = 'entry-del';
+    remove.textContent = '×';
+    remove.title = '删除这条';
+    remove.addEventListener('click', function() {
+      mod.entries = mod.entries.filter(function(e) { return e.id !== entry.id; });
+      _renderCustomModules();
+      _tu();
+    });
+    head.appendChild(title);
+    head.appendChild(remove);
+    card.appendChild(head);
+    _customFields(mod).forEach(function(fieldDef) {
+      card.appendChild(_customEntryField(mod, entry, fieldDef));
+    });
+    wrap.appendChild(card);
+  });
+  var add = document.createElement('button');
+  add.type = 'button';
+  add.className = 'add-btn';
+  add.textContent = '+ 添加一条';
+  add.addEventListener('click', function() {
+    mod.entries.push(_blankCustomEntry());
+    _renderCustomModules();
+    _tu();
+  });
+  wrap.appendChild(add);
+  return wrap;
+}
+function _customTextField(labelText, value, onInput) {
+  var field = document.createElement('div');
+  field.className = 'field';
+  var label = document.createElement('label');
+  label.textContent = labelText + ' · 多行';
+  var ta = document.createElement('textarea');
+  ta.rows = 4;
+  ta.value = value;
+  ta.addEventListener('input', function() { onInput(ta.value); });
+  field.appendChild(label);
+  field.appendChild(ta);
+  return field;
+}
+function _customEntryField(mod, entry, fieldDef) {
+  var field = document.createElement('div');
+  field.className = 'field';
+  var label = document.createElement('label');
+  var kind = document.createElement('span');
+  kind.className = 'custom-kind';
+  kind.textContent = CUSTOM_TYPE_NAME[fieldDef.type] || '';
+  var nameInput = document.createElement('input');
+  nameInput.type = 'text';
+  nameInput.value = _customLabel(mod, fieldDef);
+  nameInput.style.cssText = 'width:88px;display:inline-block;margin-left:6px;padding:2px 6px;';
+  nameInput.title = '字段名称';
+  nameInput.addEventListener('input', function() {
+    if (!mod.labels) mod.labels = {};
+    mod.labels[fieldDef.key] = nameInput.value;
+    _tu();
+  });
+  label.appendChild(kind);
+  label.appendChild(nameInput);
+  field.appendChild(label);
+  var value = (entry.data && entry.data[fieldDef.key]) || '';
+  if (fieldDef.type === 'multi') {
+    var ta = document.createElement('textarea');
+    ta.rows = 3;
+    ta.value = value;
+    ta.placeholder = '每行一条，可加 •';
+    ta.addEventListener('input', function() { entry.data[fieldDef.key] = ta.value; _tu(); });
+    field.appendChild(ta);
+  } else {
+    var input = document.createElement('input');
+    input.type = fieldDef.type === 'link' ? 'url' : 'text';
+    input.value = value;
+    input.placeholder = fieldDef.type === 'time' ? '2024.03 — 至今' : (fieldDef.type === 'link' ? 'https://' : '');
+    input.addEventListener('input', function() { entry.data[fieldDef.key] = input.value; _tu(); });
+    field.appendChild(input);
+  }
+  return field;
+}
+window.addCustomModule = function() {
+  if (!S.customModules) S.customModules = [];
+  S.customModules.push(_newCustomModule('experience'));
+  _renderCustomModules();
+  _tu();
+};
 function _tl(v, col, font) {
 const t = v.t;
 const sections = [];
@@ -730,6 +982,7 @@ if (v.showAwards && v.award.length) sections.push(_tm(v.L.rAwards, v.award.map(e
 </div>`).join(''), col, t));
 if (v.showPubs && v.pub.length) sections.push(_tm(v.L.rPubs, v.pub.map(e=>`
 <div style="margin-bottom:6px;font-size:${t.szBody}px;color:${t.clBody};"><strong>${_esc(e.title||'')}</strong>${(e.venue?` · <em style="color:${t.clMeta};">${_esc(e.venue)}</em>`:'')}${(e.link?` · <a href="${_safeHref(e.link)}" style="color:${col};">${_esc(e.link)}</a>`:'')}</div>`).join(''), col, t));
+_pushCustom(sections, _tm, v, col, t);
 return `<div style="padding:32px 40px;font-family:${font};color:${t.clBody};">${sections.join('')}</div>`;
 }
 function _tm(title, body, col, t) {
@@ -770,6 +1023,7 @@ sections.push(_to(v.L.rSkillsSection, `<div style="margin-bottom:4px;">${tags}</
 }
 if (v.showAwards && v.award.length) sections.push(_to(v.L.rAwards, v.award.map(e=>`<div style="display:flex;justify-content:space-between;font-size:${t.szBody}px;margin-bottom:4px;"><span><strong style="color:${col}">${_esc(e.name||'')}</strong>${(e.org?` · <span style="color:${t.clBody}">${_esc(e.org)}</span>`:'')}</span><span style="color:${t.clMeta};">${_esc(e.year||'')}</span></div>`).join(''), col, t));
 if (v.showPubs && v.pub.length) sections.push(_to(v.L.rPubs, v.pub.map(e=>`<div style="margin-bottom:6px;font-size:${t.szBody}px;color:${t.clBody};"><strong>${_esc(e.title||'')}</strong>${(e.venue?` · <em style="color:${t.clMeta};">${_esc(e.venue)}</em>`:'')}${(e.link?` · <a href="${_safeHref(e.link)}" style="color:${col};">${_esc(e.link)}</a>`:'')}</div>`).join(''), col, t));
+_pushCustom(sections, _to, v, col, t);
 return `<div style="font-family:${font};color:${t.clBody};">
 <div style="background:${col};color:#fff;padding:28px 36px 20px;">
 ${v.showPhoto && v.photoUrl ? `<img src="${_esc(v.photoUrl)}" alt="${_esc(v.name || 'Profile')}" style="float:right;width:62px;height:82px;object-fit:cover;border-radius:4px;margin-left:12px;">` : ''}
@@ -818,6 +1072,7 @@ sections.push(_tq(v.L.rSkillsSection, `<div>${tags}</div>${(v.skillLang?`<div st
 }
 if (v.showAwards && v.award.length) sections.push(_tq(v.L.rAwards, v.award.map(e=>`<div style="display:flex;justify-content:space-between;font-size:${t.szBody}px;margin-bottom:4px;color:#94a3b8;"><span><span style="display:inline-block;width:4px;height:4px;border-radius:50%;background:${col};margin-right:8px;vertical-align:middle;"></span><span style="color:${textLight}">${_esc(e.name||'')}</span>${_esc(e.org?` · ${e.org}`:'')}</span><span style="color:#64748b;">${_esc(e.year||'')}</span></div>`).join(''), col, t));
 if (v.showPubs && v.pub.length) sections.push(_tq(v.L.rPubs, v.pub.map(e=>`<div style="margin-bottom:6px;font-size:${t.szBody}px;color:#94a3b8;"><span style="color:${textLight}">${_esc(e.title||'')}</span>${(e.venue?` · <em>${_esc(e.venue)}</em>`:'')}${(e.link?` · <a href="${_safeHref(e.link)}" style="color:${col};">${_esc(e.link)}</a>`:'')}</div>`).join(''), col, t));
+_pushCustom(sections, _tq, v, col, t);
 return `<div style="font-family:${font};background:${bg};min-height:1123px;">
 <div style="background:linear-gradient(135deg,${col} 0%,${bg2} 60%);padding:28px 36px 20px;">
 ${v.showPhoto && v.photoUrl ? `<img src="${_esc(v.photoUrl)}" alt="${_esc(v.name || 'Profile')}" style="float:right;width:62px;height:82px;object-fit:cover;border-radius:6px;border:2px solid ${_th(col,.4)};margin-left:12px;">` : ''}
@@ -876,6 +1131,7 @@ if (v.showProject && v.project.length) mainContent.push(_tt(v.L.rProject, v.proj
 </div><div style="font-size:${t.szRole}px;color:${col};margin-bottom:2px;">${_esc(e.role||'')}${(e.link?` · <a href="${_safeHref(e.link)}" style="color:${col};">${v.L.rViewLink}</a>`:'')}</div>
 <div style="font-size:${t.szBody}px;color:${t.clBody};line-height:1.65;">${_tj(e.desc)}</div></div>`).join(''), col, t));
 if (v.showPubs && v.pub.length) mainContent.push(_tt(v.L.rPubs, v.pub.map(e=>`<div style="margin-bottom:6px;font-size:${t.szBody}px;color:${t.clBody};"><strong>${_esc(e.title||'')}</strong>${(e.venue?` · <em style="color:${t.clMeta};">${_esc(e.venue)}</em>`:'')}${(e.link?` · <a href="${_safeHref(e.link)}" style="color:${col};">${_esc(e.link)}</a>`:'')}</div>`).join(''), col, t));
+_pushCustom(mainContent, _tt, v, col, t);
 return `<div style="font-family:${font};display:flex;min-height:1123px;color:${t.clBody};">
 <div style="width:220px;flex-shrink:0;background:${col};color:#fff;padding:28px 18px;min-height:1123px;">${sideContent.join('')}</div>
 <div style="flex:1;padding:28px 28px;">${mainContent.join('')}</div>
@@ -925,6 +1181,7 @@ if (v.showSkills&&(v.skillTools||v.skillLang||v.skillCerts)){
 }
 if (v.showAwards&&v.award.length) html+=secH(v.L.rAwards)+v.award.map(e=>`<div style="display:flex;justify-content:space-between;margin-bottom:4px;font-size:${t.szBody}px;"><span><strong style="color:${col};">${_esc(e.name||'')}</strong>${(e.org?` · <span style="color:${t.clBody};">${_esc(e.org)}</span>`:'')}</span><span style="color:${t.clMeta};">${_esc(e.year||'')}</span></div>`).join('');
 if (v.showPubs&&v.pub.length) html+=secH(v.L.rPubs)+v.pub.map(e=>`<div style="margin-bottom:6px;font-size:${t.szBody}px;color:${t.clBody};"><strong>${_esc(e.title||'')}</strong>${(e.venue?` · <em style="color:${t.clMeta};">${_esc(e.venue)}</em>`:'')}${(e.link?` · <a href="${_safeHref(e.link)}" style="color:${col};">${_esc(e.link)}</a>`:'')}</div>`).join('');
+html += _customHtmlString(v, col, t, secH);
 return html+'</div>';
 }
 
@@ -959,6 +1216,7 @@ if (v.work.length) main+=mainH(v.L.rWork)+v.work.map(e=>`<div style="margin-bott
 if (v.edu.length) main+=mainH(v.L.rEdu)+v.edu.map(e=>`<div style="margin-bottom:8px;"><div style="display:flex;justify-content:space-between;"><strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${_esc(e.school||'')}</strong><span style="font-size:${t.szMeta}px;color:${t.clMeta};">${_esc(e.period||'')}</span></div><div style="font-size:${t.szRole}px;color:${t.clRole};">${_esc(e.degree||'')}${(e.gpa?` · <span style="color:${col};">${_esc(e.gpa)}</span>`:'')}</div></div>`).join('');
 if (v.showProject&&v.project.length) main+=mainH(v.L.rProject)+v.project.map(e=>`<div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;align-items:baseline;"><strong style="font-size:${t.szOrg}px;color:${t.clOrg};">${_esc(e.name||'')}</strong><span style="font-size:${t.szMeta}px;color:${t.clMeta};">${_esc(e.period||'')}</span></div><div style="font-size:${t.szRole}px;color:${col};margin-bottom:2px;">${_esc(e.role||'')}${(e.link?` · <a href="${_safeHref(e.link)}" style="color:${col};">${v.L.rViewLink}</a>`:'')}</div><div style="font-size:${t.szBody}px;color:${t.clBody};line-height:1.65;">${_tj(e.desc)}</div></div>`).join('');
 if (v.showPubs&&v.pub.length) main+=mainH(v.L.rPubs)+v.pub.map(e=>`<div style="margin-bottom:6px;font-size:${t.szBody}px;color:${t.clBody};"><strong>${_esc(e.title||'')}</strong>${(e.venue?` · <em style="color:${t.clMeta};">${_esc(e.venue)}</em>`:'')}${(e.link?` · <a href="${_safeHref(e.link)}" style="color:${col};">${_esc(e.link)}</a>`:'')}</div>`).join('');
+main += _customHtmlString(v, col, t, mainH);
 return `<div style="font-family:${font};color:${t.clBody};">${header}<div style="display:flex;min-height:1050px;"><div style="width:196px;flex-shrink:0;background:${_th(col,.06)};border-right:1px solid ${_th(col,.15)};padding:16px 14px;">${side}</div><div style="flex:1;padding:16px 22px;">${main}</div></div></div>`;
 }
 
@@ -1154,6 +1412,7 @@ function _snapshotState() {
     entries: {
       edu: S.eduEntries, work: S.workEntries, project: S.projectEntries,
       award: S.awardEntries, pub: S.pubEntries,
+      custom: S.customModules || [],
     },
     expanded: Array.from(S.expanded),
     form: {
@@ -1213,6 +1472,7 @@ function _restore() {
       S.projectEntries = data.entries.project || [];
       S.awardEntries = data.entries.award || [];
       S.pubEntries = data.entries.pub || [];
+      S.customModules = data.entries.custom || [];
     }
     S.expanded = new Set(data.expanded || []);
     const f = data.form || {};
@@ -1258,27 +1518,63 @@ function _restore() {
     document.querySelectorAll('.font-opt').forEach(el => {
       el.classList.toggle('active', el.dataset.font === S.font);
     });
+    _renderCustomModules();
   } finally {
     _restoring = false;
   }
   return true;
 }
+function _demoCustom(en) {
+  var base = Date.now();
+  if (en) {
+    return [
+      { id: base+1, show: true, name: 'Campus Involvement', layout: 'experience',
+        labels: { title:'Organization', period:'Dates', subtitle:'Role', desc:'Details', link:'Link' }, text:'',
+        entries: [{ id: base+11, data: { title:'University Student Union', period:'Sep 2018 — Jun 2020', subtitle:'Head of Arts', desc:'• Organized 12 campus events for students and faculty\n• Built a volunteer rota that cut no-show rate by 30%', link:'', extra:'', year:'' } }] },
+      { id: base+2, show: true, name: 'Training', layout: 'list',
+        labels: { title:'Name', extra:'Detail', year:'Year' }, text:'',
+        entries: [
+          { id: base+21, data: { title:'Growth Case Workshop', extra:'Internal instructor', year:'2023', period:'', subtitle:'', desc:'', link:'' } },
+          { id: base+22, data: { title:'SQL and Experiment Design', extra:'Completed the data course', year:'2021', period:'', subtitle:'', desc:'', link:'' } }
+        ] },
+      { id: base+3, show: true, name: 'Additional', layout: 'text',
+        labels: { text:'Note' }, text:'Available to start within one week. Based in Shanghai, open to on-site work.', entries: [] }
+    ];
+  }
+  return [
+    { id: base+1, show: true, name: '校园经历', layout: 'experience',
+      labels: { title:'组织', period:'时间', subtitle:'职务', desc:'描述', link:'链接' }, text:'',
+      entries: [{ id: base+11, data: { title:'某重点高校学生会', period:'2018.09 — 2020.06', subtitle:'文艺部负责人', desc:'• 组织面向师生的校园活动 12 场\n• 建立志愿者排班，缺席率下降 30%', link:'', extra:'', year:'' } }] },
+    { id: base+2, show: true, name: '培训经历', layout: 'list',
+      labels: { title:'名称', extra:'补充', year:'时间' }, text:'',
+      entries: [
+        { id: base+21, data: { title:'增长案例工作坊', extra:'内部讲师', year:'2023', period:'', subtitle:'', desc:'', link:'' } },
+        { id: base+22, data: { title:'SQL 与实验设计', extra:'完成数据分析课程', year:'2021', period:'', subtitle:'', desc:'', link:'' } }
+      ] },
+    { id: base+3, show: true, name: '补充说明', layout: 'text',
+      labels: { text:'正文' }, text:'可一周内到岗，坐标上海，接受线下办公。', entries: [] }
+  ];
+}
 function _tz() {
 _track('resume_fill_demo');
 if (S.lang === 'en') {
-document.getElementById(('na'+'me')).value = 'Alex Zhang';
-document.getElementById(('nam'+'eEn')).value = '';
+document.getElementById(('na'+'me')).value = 'Mingyuan Li';
+document.getElementById(('nam'+'eEn')).value = 'Alex Li';
 document.getElementById(('jobT'+'itle')).value = 'Growth Product Manager';
-document.getElementById(('ph'+'one')).value = '+1 (555) 000-****';
-document.getElementById(('em'+'ail')).value = 'alex.zhang@example.com';
-document.getElementById(('ci'+'ty')).value = 'San Francisco, CA';
-document.getElementById(('link'+'edin')).value = 'linkedin.com/in/alexzhang';
+document.getElementById(('ph'+'one')).value = '+86 138 **** 8888';
+document.getElementById(('em'+'ail')).value = 'alex.li@example.com';
+document.getElementById(('ci'+'ty')).value = 'Shanghai';
+document.getElementById(('link'+'edin')).value = 'linkedin.com/in/alexli';
+document.getElementById(('showW'+'echat')).checked = false;
+document.getElementById(('wec'+'hat')).value = '';
+var wechatField = document.getElementById('wechatField');
+if (wechatField) wechatField.style.display = 'none';
 document.getElementById(('showS'+'ummary')).checked = true;
 document.getElementById(('summa'+'ryBody')).style.display = '';
-document.getElementById(('sum'+'mary')).value = 'Growth PM with 5+ years of experience driving user acquisition and retention. Led viral referral programs generating 300K+ new registrations. Skilled in A/B experimentation, data-driven attribution, and cross-functional execution across two high-growth consumer tech companies.';
+document.getElementById(('sum'+'mary')).value = 'Growth product manager with 5 years of experience leading acquisition and retention programs that added 3M+ registered users. Strong in data-driven decisions, A/B experiment design, and cross-functional delivery. Core PM at two large consumer internet companies.';
 document.getElementById(('showS'+'kills')).checked = true;
 document.getElementById(('skill'+'Tools')).value = 'SQL, Python, Mixpanel, Amplitude, A/B Testing, Figma, Tableau';
-document.getElementById(('skil'+'lLang')).value = 'English (Native), Mandarin (Fluent)';
+document.getElementById(('skil'+'lLang')).value = 'Mandarin (Native), English (CET-6 588)';
 document.getElementById(('skill'+'Certs')).value = 'Google Analytics Certified, PMP';
 S.eduEntries = [];
 S.workEntries = [];
@@ -1286,21 +1582,21 @@ S.projectEntries = [];
 S.awardEntries = [];
 S.pubEntries = [];
 S.eduEntries = [
-{id: Date.now(), data: {school:'Stanford University', degree:'M.S. Computer Science', period:'Sep 2017 — Jun 2020', gpa:'GPA 3.8/4.0, Top 10%'}},
-{id: Date.now()+1, data: {school:'University of Washington', degree:'B.S. Software Engineering', period:'Sep 2013 — Jun 2017', gpa:''}},
+{id: Date.now(), data: {school:'Top-Tier University', degree:'M.S. Computer Science and Technology', period:'Sep 2017 — Jun 2020', gpa:'GPA 3.8/4.0, Top 8% of class'}},
+{id: Date.now()+1, data: {school:'Another University', degree:'B.S. Software Engineering', period:'Sep 2013 — Jun 2017', gpa:'Core coursework: data structures, databases, product design'}},
 ];
 S.workEntries = [
 {id: Date.now()+10, data: {
-company:'Acme Corp',
+company:'Major Internet Company',
 role:'Senior Product Manager · Growth',
 period:'Mar 2022 — Present',
-desc:'• Built referral growth loop for international app launch; "Invite & Earn" mechanism drove +120K DAU in month one, ROI 1:4.2\n• Upgraded attribution from Last-Click to data-driven model, improving channel budget efficiency by 23%\n• Scaled A/B experimentation platform to 60+ concurrent experiments, cutting cycle time by 40%',
+desc:'• Built the overseas app referral loop and a two-sided Invite & Earn incentive, adding 120K DAU in the first month at a 1:4.2 ROI\n• Moved attribution from last-click to a data-driven model, improving channel budget allocation efficiency by 23%\n• Partnered with data to launch a growth experiment platform supporting 60+ concurrent A/B tests and cutting cycle time by 40%',
 }},
 {id: Date.now()+11, data: {
-company:'TechStart Inc.',
+company:'Another Internet Company',
 role:'Product Manager · User Growth',
 period:'Jul 2020 — Feb 2022',
-desc:'• Optimised new-user activation funnel via landing-page stratified experiments, lifting registration CVR by 18%\n• Designed "refer-a-friend" campaign adding 80K linked payment accounts per run; CAC reduced by 35%\n• Led dormant-user re-engagement strategy, improving 7-day return rate from 6% to 11%',
+desc:'• Optimized the new-user activation path for food delivery with stratified landing-page tests, lifting registration conversion by 18%\n• Designed a refer-a-friend campaign that added 80K linked payment users per run and cut CAC by 35%\n• Led segmented win-back for dormant users, raising the 7-day return rate from 6% to 11%',
 }},
 ];
 document.getElementById(('showP'+'roject')).checked = true;
@@ -1309,23 +1605,29 @@ S.projectEntries = [
 name:'Growth Experimentation Platform',
 role:'Product Owner',
 period:'Jun 2023 — Dec 2023',
-link:'',
-desc:'• Eliminated dependency on engineering sprints for experiment setup; PMs self-serve in minutes\n• Stack: React + Node.js + ClickHouse; integrated across 5 business lines\n• 3× faster experiment iterations; saved 200h+ engineering time per month',
+link:'https://example.com/growth-lab',
+desc:'• Removed the need to wait on engineering sprints for experiment setup, so PMs could configure and launch tests themselves\n• Stack: React, Node.js, and ClickHouse, rolled out across 5 business lines\n• Tripled experiment iteration speed and saved 200+ engineering hours per month',
 }},
 {id: Date.now()+21, data: {
 name:'Campaign Attribution Dashboard',
-role:'Solo Designer & Stakeholder',
+role:'Sole Designer and Stakeholder',
 period:'Nov 2022',
 link:'',
-desc:'• Unified multi-channel attribution data for real-time ROI visualisation, replacing 3 manual reports\n• SQL + Tableau pipeline cut data latency from T+1 to under 2 hours',
+desc:'• Combined multi-channel attribution into a live ROI view, replacing 3 manual reports\n• SQL and Tableau pipeline cut data latency from T+1 to refresh within 2 hours',
 }},
 ];
 document.getElementById(('showA'+'wards')).checked = true;
 S.awardEntries = [
-{id: Date.now()+30, data: {name:'Annual Best Growth Initiative Award', org:'Acme Corp', year:'2023'}},
-{id: Date.now()+31, data: {name:'National Math Modeling Competition — 2nd Place', org:'Ministry of Education', year:'2016'}},
+{id: Date.now()+30, data: {name:'Annual Best Growth Initiative', org:'Major Internet Company', year:'2023'}},
+{id: Date.now()+31, data: {name:'National Mathematical Modeling Contest, Second Prize', org:'Ministry of Education', year:'2016'}},
 ];
+document.getElementById(('show'+'Pubs')).checked = true;
+S.pubEntries = [
+{id: Date.now()+40, data: {title:'Designing Referral Loops for Cross-Border Consumer Apps', venue:'Internal Growth Review, 2023', link:'https://example.com/referral-loops'}},
+];
+S.customModules = _demoCustom(true);
 } else {
+document.getElementById(('show'+'Pubs')).checked = false;
 document.getElementById(('na'+'me')).value = '李明远';
 document.getElementById(('nam'+'eEn')).value = 'Alex Li';
 document.getElementById(('jobT'+'itle')).value = '增长产品经理 / Growth PM';
@@ -1385,9 +1687,11 @@ S.awardEntries = [
 {id: Date.now()+30, data: {name:'年度最佳增长项目奖', org:'某互联网公司', year:'2023'}},
 {id: Date.now()+31, data: {name:'全国大学生数学建模竞赛 二等奖', org:'教育部', year:'2016'}},
 ];
+S.customModules = _demoCustom(false);
 }
 S.expanded = new Set();
-['edu','work','project','award'].forEach(t => _t9(t));
+['edu','work','project','award','pub'].forEach(t => _t9(t));
+_renderCustomModules();
 document.querySelectorAll('.sb-section-head').forEach(head => {
 if (!head.classList.contains(('op'+'en'))) {
 head.classList.add(('op'+'en'));
