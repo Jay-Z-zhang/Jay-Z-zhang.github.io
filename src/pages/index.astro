@@ -110,7 +110,7 @@ const projects: CollectionEntry<"projects">[] = (
             <!-- 项目配图 -->
             <div class="aspect-[16/10] bg-secondary overflow-hidden border-b border-border">
               <img
-                src={`/images/${project.id}.svg`}
+                src={project.data.cover ?? `/images/${project.id}.svg`}
                 alt={project.data.title}
                 loading="lazy"
                 decoding="async"

@@ -28,7 +28,7 @@ const projects = (await getCollection("projects"))
             <!-- 项目配图 -->
             <div class="aspect-[16/10] bg-secondary overflow-hidden border-b border-border">
               <img
-                src={`/images/${project.id}.svg`}
+                src={project.data.cover ?? `/images/${project.id}.svg`}
                 alt={project.data.title}
                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 onerror="this.src=`https://placehold.co/800x500/131928/22c55e?text=${encodeURIComponent(project.data.title)}`"
